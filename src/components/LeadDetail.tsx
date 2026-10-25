@@ -1,15 +1,19 @@
 import { intentLabels, statusLabels, type Lead, type Listing } from '../domain';
+import { useState } from 'react';
 export function LeadDetail({
   lead,
   listings,
   onApprove,
   onManual,
+  onRequeue,
 }: {
   lead: Lead;
   listings: Listing[];
   onApprove: () => void;
   onManual: () => void;
+  onRequeue:(reason:string)=>void;
 }) {
+  const [reason,setReason]=useState('');
   const listing = listings.find((x) => x.id === lead.extraction.reference);
   return (
     <section className="panel lead-detail" aria-label="Aanvraagdetails">
@@ -98,10 +102,11 @@ export function LeadDetail({
           Gecontroleerd door {lead.approvedBy}.{' '}
           {lead.status === 'synced'
             ? 'CRM-simulatie bevestigt ontvangst.'
-            : 'Overdracht staat in de wachtrij.'}{' '}
+            : lead.status==='dead'?'Overdracht is gestopt; beheerherstel nodig.':'Overdracht staat in de wachtrij.'}{' '}
           Geen e-mail verstuurd.
         </p>
       ) : null}
+      {lead.status==='dead'?<div className="recovery"><h3>Gecontroleerd herstellen</h3><p className="fine">Demo van een beheeractie. Controleer eerst of het CRM al een record heeft. Prijs en pandstatus worden opnieuw getoetst.</p><label>Herstelreden<input value={reason} onChange={e=>setReason(e.target.value)} minLength={10} maxLength={500} placeholder="Bijvoorbeeld: CRM hersteld, externe sleutel gecontroleerd."/></label><button disabled={reason.trim().length<10} onClick={()=>onRequeue(reason)}>Overdracht opnieuw klaarzetten</button></div>:null}
       <details className="audit">
         <summary>
           Beslissingen & gebeurtenissen <span>({lead.audit.length})</span>

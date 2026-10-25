@@ -34,6 +34,13 @@ export type DifyWorkflowRun = {
   totalTokens?: number;
 };
 
+export type DifyChatRun = {
+  answer: string;
+  conversationId?: string;
+  messageId?: string;
+  metadata?: Record<string, unknown>;
+};
+
 function endpoint(baseUrl: string): string {
   return `${baseUrl.replace(/\/+$/, '')}/v1/workflows/run`;
 }
@@ -92,7 +99,6 @@ export async function runDifyWorkflow(
   }
 }
 
-/** Runs a published Dify Workflow in blocking mode; Dify never receives CRM tools. */
 export async function extractDify(
   input: Intake,
   config: DifyConfig,
@@ -100,4 +106,55 @@ export async function extractDify(
 ): Promise<Extraction> {
   const run = await runDifyWorkflow({ message: input.message }, config, 'blocking', fetcher);
   return validateExtraction(outputValue(run.outputs), input.message);
+}
+
+export async function runDifyAgent(
+  query: string,
+  config: DifyConfig,
+  options: { conversationId?: string; fetcher?: typeof fetch } = {},
+): Promise<DifyChatRun> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), config.timeoutMs ?? 15000);
+  try {
+    const response = await (options.fetcher ?? fetch)(
+      `${(config.baseUrl ?? 'https://api.dify.ai').replace(/\/+$/, '')}/v1/chat-messages`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+          response_mode: 'blocking',
+          user: config.user ?? 'duin-dorp-demo',
+          ...(options.conversationId ? { conversation_id: options.conversationId } : {}),
+        }),
+        signal: controller.signal,
+      },
+    );
+    if (!response.ok) throw new Error(`DIFY_AGENT_HTTP_${response.status}`);
+    const parsed = z
+      .object({
+        answer: z.string(),
+        conversation_id: z.string().optional(),
+        message_id: z.string().optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+      })
+      .passthrough()
+      .safeParse(await response.json());
+    if (!parsed.success) throw new Error('DIFY_AGENT_INVALID_RESPONSE');
+    return {
+      answer: parsed.data.answer,
+      conversationId: parsed.data.conversation_id,
+      messageId: parsed.data.message_id,
+      metadata: parsed.data.metadata,
+    };
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError')
+      throw new Error('DIFY_AGENT_TIMEOUT');
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
 }

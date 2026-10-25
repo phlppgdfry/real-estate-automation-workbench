@@ -1,0 +1,425 @@
+{
+  "provider": "deterministic-rules",
+  "method": "Development fixtures and a diagnostic challenge set. Both AI-authored. Challenge cases were used to find and repair policy defects during review; they are now regression cases, not a held-out, independent or live model benchmark.",
+  "beforeReview": { "challengePassed": 10, "challengeTotal": 16, "missedManualReview": 3 },
+  "development": {
+    "datasetSha256": "f367f46cfb7fabc78186009eb8d18e834e1fee0ff4876817480827aba59696bf",
+    "total": 24,
+    "passed": 24,
+    "boundaryViolations": 0,
+    "missedManualReview": 0,
+    "conservativeEscalations": 0,
+    "results": [
+      {
+        "id": "nl-visit",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "nl-view",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "en-visit",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "en-view",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "nl-valuation",
+        "category": "development",
+        "expectedIntent": "valuation",
+        "actualIntent": "valuation",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "nl-sale",
+        "category": "development",
+        "expectedIntent": "valuation",
+        "actualIntent": "valuation",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "en-valuation",
+        "category": "development",
+        "expectedIntent": "valuation",
+        "actualIntent": "valuation",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "en-sale",
+        "category": "development",
+        "expectedIntent": "valuation",
+        "actualIntent": "valuation",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "nl-search",
+        "category": "development",
+        "expectedIntent": "search",
+        "actualIntent": "search",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "en-search",
+        "category": "development",
+        "expectedIntent": "search",
+        "actualIntent": "search",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "unknown",
+        "category": "development",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "sold",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "missing",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "nonexistent",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "multi-ref",
+        "category": "development",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "injection-nl",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "injection-en",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "script",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "budget-no-ranking",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "english-case",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "ambiguous",
+        "category": "development",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "unhandled-french",
+        "category": "development",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "negation",
+        "category": "development",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "mixed-intent",
+        "category": "development",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      }
+    ]
+  },
+  "challenge": {
+    "datasetSha256": "9807b35d3421d85eed4d4a87f9c7b3445e3133b7bfb8901e567ab5532340feb4",
+    "total": 16,
+    "passed": 13,
+    "boundaryViolations": 0,
+    "missedManualReview": 0,
+    "conservativeEscalations": 3,
+    "results": [
+      {
+        "id": "challenge-01",
+        "category": "paraphrase",
+        "expectedIntent": "valuation",
+        "actualIntent": "unknown",
+        "expectedStatus": "review",
+        "actualStatus": "manual",
+        "pass": false,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-02",
+        "category": "paraphrase",
+        "expectedIntent": "visit",
+        "actualIntent": "unknown",
+        "expectedStatus": "review",
+        "actualStatus": "manual",
+        "pass": false,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-03",
+        "category": "french",
+        "expectedIntent": "valuation",
+        "actualIntent": "unknown",
+        "expectedStatus": "review",
+        "actualStatus": "manual",
+        "pass": false,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-04",
+        "category": "french",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-05",
+        "category": "negation",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-06",
+        "category": "scope",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-07",
+        "category": "multi-reference",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-08",
+        "category": "known-boundary",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-09",
+        "category": "known-boundary",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-10",
+        "category": "known-boundary",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-11",
+        "category": "english",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-12",
+        "category": "paraphrase",
+        "expectedIntent": "search",
+        "actualIntent": "search",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-13",
+        "category": "scope",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-14",
+        "category": "budget",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-15",
+        "category": "mixed-intent",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "challenge-16",
+        "category": "format",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      }
+    ]
+  }
+}

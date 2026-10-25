@@ -1329,3 +1329,5 @@ th {
     min-width: 0;
   }
 }
+
+.recovery{margin-top:16px;padding:16px;background:#fff5e9;border-left:3px solid #b7601d}.recovery label{display:grid;gap:6px;font-size:12px;font-weight:600;margin:12px 0}.recovery input{width:100%;padding:9px;border:1px solid #b9cad2;border-radius:5px;background:white;font-size:13px}.recovery button{font-size:12px}

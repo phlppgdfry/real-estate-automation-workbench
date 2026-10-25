@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { extractDify, runDifyWorkflow } from '../server/dify';
+import { extractDify, runDifyAgent, runDifyWorkflow } from '../server/dify';
 
 const input = {
   eventId: 'evt-dify-1',
@@ -62,6 +62,33 @@ test('Dify client exposes safe run metadata without response secrets', async () 
     workflowId: 'workflow-1',
     elapsedTime: 0.42,
     totalTokens: 31,
+  });
+
+  test('Dify agent adapter keeps conversation continuity without adding tools', async () => {
+    const run = await runDifyAgent(
+      'Leg uit waarom deze aanvraag handmatige controle nodig heeft.',
+      {
+        apiKey: 'app-test',
+      },
+      {
+        conversationId: 'conversation-1',
+        fetcher: async (_url, request) => {
+          const body = JSON.parse(String(request?.body));
+          assert.equal(body.conversation_id, 'conversation-1');
+          assert.equal(body.response_mode, 'blocking');
+          return new Response(
+            JSON.stringify({
+              answer: 'De cataloguscontrole ontbreekt.',
+              conversation_id: 'conversation-1',
+              message_id: 'message-1',
+            }),
+            { status: 200 },
+          );
+        },
+      },
+    );
+    assert.equal(run.answer, 'De cataloguscontrole ontbreekt.');
+    assert.equal(run.conversationId, 'conversation-1');
   });
 });
 

@@ -1,6 +1,7 @@
 # Dify Workflow-integratie
 
-Deze case gebruikt Dify als **begrensde analyseprovider**, niet als autonome vastgoedagent.
+Deze case gebruikt Dify als **begrensde analyseprovider** en read-only operations agent,
+niet als autonome vastgoedagent.
 Dify classificeert alleen de aanvraag. De TypeScript-domeinlaag controleert daarna opnieuw
 het broncitaat, de pandreferentie, catalogusstatus en menselijke goedkeuring.
 
@@ -71,6 +72,14 @@ werken; zo kun je de volledige businessflow testen zonder credits of externe afh
 De integratie doet bewust geen automatische retries op een workflow-POST: een workflow
 kan externe side effects bevatten. Als productie een retry nodig heeft, moet de workflow
 een idempotency-key ondersteunen en moet de outbox de retry beslissen.
+
+Voor de portfolio-opzet zijn drie bouwblokken vastgelegd:
+
+- [`workflow-contract.json`](../dify/workflow-contract.json): lead-extractie.
+- [`agent-contract.json`](../dify/agent-contract.json): exception-assistant zonder tools.
+- [`portfolio-blueprint.json`](../dify/portfolio-blueprint.json): workflow-, agent- en document-review flows.
+
+De volledige senior verhaallijn staat in [`ai-operating-model.md`](ai-operating-model.md).
 
 ## Senior design review
 

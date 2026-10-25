@@ -15,6 +15,7 @@ export const extractionFormat = {
     required: ['intent', 'reference', 'evidence'],
   },
 };
+
 /** Deliberately no tools: untrusted mail cannot trigger CRM or mail actions. */
 export async function extractOpenAI(
   input: Intake,

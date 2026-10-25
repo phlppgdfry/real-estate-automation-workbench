@@ -65,7 +65,7 @@ test('HTTP: signed webhook, replay protection, auth, version conflict, dispatch'
   const s = new Store();
   const server = makeServer({
     store: s,
-    token: 'local-test-token',
+    credentials: [{token:'local-test-token',subject:'integration-reviewer',roles:['reviewer','operator']}],
     webhookSecret: 'test-secret',
     listings: catalog(now),
     now: () => now,
@@ -104,13 +104,14 @@ test('HTTP: signed webhook, replay protection, auth, version conflict, dispatch'
     );
     assert.equal(
       (await fetch(`${base}/api/webhooks/leads`, { method: 'POST', headers, body: raw })).status,
-      201,
+      202,
     );
     assert.equal(
       (await fetch(`${base}/api/webhooks/leads`, { method: 'POST', headers, body: raw })).status,
-      200,
+      202,
     );
     const auth = { Authorization: 'Bearer local-test-token', 'Content-Type': 'application/json' };
+    await fetch(`${base}/api/inbox/process`, {method:'POST',headers:auth,body:'{}'});
     const url = `${base}/api/leads/evt-test/approve`;
     assert.equal(
       (await fetch(url, { method: 'POST', headers: auth, body: '{"version":2}' })).status,

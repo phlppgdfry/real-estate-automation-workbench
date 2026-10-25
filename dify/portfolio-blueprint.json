@@ -1,0 +1,34 @@
+{
+  "name": "Duin & Dorp AI Operations Portfolio",
+  "version": "1.0",
+  "flows": [
+    {
+      "id": "lead-intake",
+      "kind": "workflow",
+      "purpose": "Extract intent and evidence from an untrusted enquiry.",
+      "nodes": ["start.message", "llm.structured-extraction", "code.guardrails", "end.extraction"],
+      "human_gate": "application-review"
+    },
+    {
+      "id": "exception-assistant",
+      "kind": "agent",
+      "purpose": "Explain blocked cases and propose a safe next step.",
+      "tools": [],
+      "human_gate": "always-before-action"
+    },
+    {
+      "id": "document-review",
+      "kind": "workflow",
+      "purpose": "Summarise a supplied document without deciding legal or financial outcomes.",
+      "nodes": ["start.file", "document.extract", "llm.summary", "code.redaction", "end.review"],
+      "human_gate": "always-before-use"
+    }
+  ],
+  "operating_principles": [
+    "Dify analyses; the application decides.",
+    "Every external write is owned by the outbox, not an LLM.",
+    "Every model result is schema-validated and audit-linked.",
+    "No credentials, raw customer email, or hidden prompts in the browser.",
+    "Provider failure is visible; it never becomes a false success."
+  ]
+}

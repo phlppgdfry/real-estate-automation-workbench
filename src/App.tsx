@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
+import { z } from 'zod';
 import {
   approve,
   createLead,
   deliver,
   manual,
+  requeue,
+  LeadSchema,
+  ListingSchema,
   type Intake,
   type Lead,
   type Listing,
@@ -15,6 +19,7 @@ import { IntakeForm, Tour } from './components/Dialogs';
 import { Impact, Technical } from './components/CaseViews';
 const storageKey = 'duin-dorp-demo-v1';
 type Session = { leads: Lead[]; listings: Listing[] };
+const SessionSchema=z.object({leads:z.array(LeadSchema).min(1).max(1000),listings:z.array(ListingSchema).max(1000)}).strict();
 function fresh(): Session {
   const now = new Date().toISOString();
   return { leads: seed(now), listings: catalog(now) };
@@ -22,17 +27,8 @@ function fresh(): Session {
 function load(): Session {
   try {
     const value = JSON.parse(localStorage.getItem(storageKey) ?? 'null');
-    if (
-      value &&
-      Array.isArray(value.leads) &&
-      Array.isArray(value.listings) &&
-      value.leads.length &&
-      value.leads.every(
-        (l: Lead) =>
-          typeof l.id === 'string' && Array.isArray(l.audit) && typeof l.draft === 'string',
-      )
-    )
-      return value;
+    const restored=SessionSchema.safeParse(value);
+    if(restored.success)return restored.data;
   } catch {
     /* Corrupt browser storage starts a fresh demo. */
   }
@@ -55,14 +51,14 @@ export function App() {
     }
   }, [session]);
   const lead = session.leads.find((x) => x.id === selected) ?? session.leads[0];
-  function change(fn: (l: Lead) => Lead) {
+  function change(fn: (l: Lead) => Lead,notice?:string) {
     try {
       const changed = fn(lead);
       setSession((s) => ({ ...s, leads: s.leads.map((x) => (x.id === changed.id ? changed : x)) }));
       setNotice(
-        changed.status === 'queued'
+        notice ?? (changed.status === 'queued'
           ? 'Goedgekeurd en klaargezet. Verwerk de CRM-wachtrij om de overdracht te simuleren.'
-          : 'Aanvraag overgedragen aan een medewerker.',
+          : 'Aanvraag overgedragen aan een medewerker.'),
       );
     } catch (e) {
       setNotice(e instanceof Error ? e.message : 'Actie mislukt.');
@@ -183,6 +179,7 @@ export function App() {
             <div className="workbench">
               <LeadList leads={session.leads} selected={selected} onSelect={setSelected} />
               <LeadDetail
+                key={lead.id}
                 lead={lead}
                 listings={session.listings}
                 onApprove={() =>
@@ -197,6 +194,7 @@ export function App() {
                   )
                 }
                 onManual={() => change((l) => manual(l, new Date().toISOString()))}
+                onRequeue={reason=>change(l=>requeue(l,l.version,'Demo-beheerder',reason,session.listings,new Date().toISOString()),'Overdracht gecontroleerd hersteld. De eerdere fouten blijven in het log.')}
               />
             </div>
             <section className="outbox" aria-label="CRM-simulatie">
