@@ -1,0 +1,15 @@
+.DS_Store
+node_modules/
+site/dist/
+.env
+.env.*
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+dist/
+var/
+.firecrawl/
+test-results/
+playwright-report/
+*.sqlite*

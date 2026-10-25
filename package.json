@@ -1,0 +1,42 @@
+{
+  "name": "real-estate-automation-workbench",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "server": "tsx --env-file-if-exists=.env.local server/index.ts",
+    "setup:local": "tsx scripts/setup-local.ts",
+    "demo:api": "tsx --env-file-if-exists=.env.local scripts/demo-api.ts",
+    "dify:doctor": "tsx --env-file-if-exists=.env.local scripts/dify-doctor.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "test:e2e": "playwright test",
+    "evaluate": "tsx scripts/evaluate.ts",
+    "check": "npm run build && npm test && npm run evaluate && npm run validate:api && npm run format:check && python3 scripts/check-links.py",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validate:api": "tsx scripts/validate-api.ts",
+    "capture": "tsx scripts/capture.ts"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "^13.1.0",
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0"
+  }
+}

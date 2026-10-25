@@ -1,0 +1,21 @@
+# Start hier
+
+Voor recruiter, zaakvoerder en technische reviewer. Kies een route.
+
+## Twee minuten
+
+[Open de rondleiding](https://phlppgdfry.github.io/real-estate-automation-workbench/?tour). Probleem: handwerk tussen aanvraag en opvolging. Oplossing: gecontroleerde werkstroom met menselijke goedkeuring en zichtbare uitzonderingen. Liever lezen? [Samenvatting](application-kit/executive/one-page-summary.md).
+
+## Vijf minuten
+
+Lees [proces en businesscase](CASE_STUDY.md), probeer een verkocht pand en mislukte overdracht, en bekijk [de bewijsmatrix](EVIDENCE.md). De calculator toont scenario-aannames.
+
+## Vijftien minuten
+
+Volg [het demoscript](application-kit/demo/5-minute-story.md), lees [architectuur](docs/architecture.md) en [ontwerpkeuzes](docs/decisions.md), en bekijk [integratietests](tests/integration.test.ts). Let op idempotentie, rollback en herstart.
+
+## Zelf verifiëren
+
+Volg [README](README.md), draai `npm run check`, `npm run test:e2e` en `npm run demo:api`. Lees [het runbook](docs/operations.md) en [de kennisgids](docs/knowledge.md). Geen JavaScript? [Statische samenvatting](public/fallback.html).
+
+Fictieve data, CRM-mock, geen e-mails, geen bewezen bedrijfsresultaten.

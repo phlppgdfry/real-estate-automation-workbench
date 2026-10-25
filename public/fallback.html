@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Duin & Dorp — case in het kort</title>
+    <style>
+      body {
+        max-width: 880px;
+        margin: 50px auto;
+        padding: 0 24px;
+        font: 17px/1.7 system-ui;
+        color: #172b32;
+      }
+      h1 {
+        font-size: 38px;
+        line-height: 1.2;
+      }
+      a {
+        color: #12675b;
+      }
+      img {
+        width: 100%;
+        border: 1px solid #dce4e8;
+        border-radius: 6px;
+      }
+      li {
+        padding: 4px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Elke aanvraag, goed opgevolgd.</h1>
+    <p>
+      Een onafhankelijke portfolio-case voor fictief vastgoedkantoor Duin & Dorp. Geen echte
+      klanten, CRM-koppeling of verzending.
+    </p>
+    <img src="preview.png" alt="Screenshot van de werkende aanvraaglijst en het controlepaneel" />
+    <h2>De keten</h2>
+    <p>
+      Aanvraag → validatie en duplicaatcontrole → intentie en pandreferentie → cataloguscontrole →
+      antwoordvoorstel → menselijke goedkeuring → outbox → CRM-mock → ontvangst.
+    </p>
+    <ul>
+      <li>AI mag geen pandprijzen of beschikbaarheid verzinnen.</li>
+      <li>Verkochte panden en onduidelijke aanvragen gaan naar een medewerker.</li>
+      <li>Herhaalde events worden niet dubbel verwerkt.</li>
+      <li>Goedkeuring en outbox worden samen opgeslagen; fouten zijn zichtbaar en herstelbaar.</li>
+    </ul>
+    <h2>Controleer het bewijs</h2>
+    <p>
+      <a href="https://github.com/phlppgdfry/real-estate-automation-workbench"
+        >Broncode, tests, architectuur, businesscase en kennisgids</a
+      >
+    </p>
+    <p>
+      De openbare demo draait op regels en lokale browseropslag. De aparte lokale API gebruikt
+      SQLite en heeft een optionele OpenAI-adapter; live AI en een echt CRM zijn nog niet
+      geverifieerd. De tijdwinst in de calculator is een scenario.
+    </p>
+    <p>
+      <a href="https://phlppgdfry.github.io/real-estate-automation-workbench/?tour"
+        >Open de interactieve werkplek</a
+      >
+    </p>
+  </body>
+</html>

@@ -1,0 +1,618 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Duin & Dorp local lab API",
+    "version": "1.0.0",
+    "description": "Fictieve portfolio-case. CRM is een lokale duurzame mock. Geen e-mailtransport.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:4318"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "Labstatus zonder gevoelige data",
+        "responses": {
+          "200": {
+            "description": "Beschikbaar",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": ["rules", "openai", "dify"]
+                    },
+                    "crm": {
+                      "type": "string"
+                    },
+                    "sentEmails": {
+                      "type": "integer",
+                      "enum": [0]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/webhooks/leads": {
+      "post": {
+        "operationId": "ingestLead",
+        "summary": "Aanvraag ondertekend ontvangen",
+        "description": "HMAC-SHA256 hex over x-timestamp + punt + exacte body. Timestamp maximaal 300 seconden afwijking. Identiek event geeft 200, nieuw 201; hetzelfde ID met andere inhoud geeft 409.",
+        "security": [
+          {
+            "WebhookSignature": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-timestamp",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]+$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Intake"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Identieke herhaling",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Nieuw record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "AI niet beschikbaar; bron moet heraanbieden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/leads": {
+      "get": {
+        "operationId": "listLeads",
+        "summary": "Lokale leads en tellers",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overzicht",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["leads", "crmRecords", "sentEmails"],
+                  "properties": {
+                    "leads": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Lead"
+                      }
+                    },
+                    "crmRecords": {
+                      "type": "integer"
+                    },
+                    "sentEmails": {
+                      "type": "integer",
+                      "enum": [0]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/leads/{id}/approve": {
+      "post": {
+        "operationId": "approveLead",
+        "summary": "Voorstel goedkeuren en atomair klaarzetten",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["version"],
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Goedgekeurde aanvraag",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lead"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Niet gevonden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/outbox/dispatch": {
+      "post": {
+        "operationId": "dispatchOutbox",
+        "summary": "E\u00e9n batch naar lokale CRM-mock verwerken",
+        "description": "Labfunctie. Geen externe netwerkactie; simulateFailure injecteert een fout. Actor is door de server bepaald.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "simulateFailure": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Validatie-, toegangs- of procesfout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Batchresultaat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["processed", "failed"],
+                  "properties": {
+                    "processed": {
+                      "type": "integer"
+                    },
+                    "failed": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "WebhookSignature": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-signature"
+      }
+    },
+    "schemas": {
+      "Intake": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["eventId", "name", "email", "message", "channel"],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{3,80}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 200
+          },
+          "message": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 4000
+          },
+          "channel": {
+            "type": "string",
+            "enum": ["website", "email", "portal"]
+          }
+        }
+      },
+      "Lead": {
+        "allOf": [
+          {
+            "type": "object",
+            "required": ["eventId", "name", "email", "message", "channel"],
+            "properties": {
+              "eventId": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_-]{3,80}$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 100
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "maxLength": 200
+              },
+              "message": {
+                "type": "string",
+                "minLength": 10,
+                "maxLength": 4000
+              },
+              "channel": {
+                "type": "string",
+                "enum": ["website", "email", "portal"]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "version",
+              "receivedAt",
+              "status",
+              "extraction",
+              "reasons",
+              "draft",
+              "attempts",
+              "audit"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "version": {
+                "type": "integer"
+              },
+              "receivedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["review", "manual", "queued", "synced", "dead"]
+              },
+              "extraction": {
+                "type": "object",
+                "properties": {
+                  "intent": {
+                    "type": "string",
+                    "enum": ["visit", "valuation", "search", "unknown"]
+                  },
+                  "reference": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                }
+              },
+              "reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "draft": {
+                "type": "string"
+              },
+              "attempts": {
+                "type": "integer"
+              },
+              "approvedBy": {
+                "type": "string"
+              },
+              "approvedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "nextAttemptAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "audit": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["at", "action", "detail"],
+                  "properties": {
+                    "at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "action": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Receipt": {
+        "type": "object",
+        "required": ["lead", "duplicate"],
+        "properties": {
+          "lead": {
+            "$ref": "#/components/schemas/Lead"
+          },
+          "duplicate": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
