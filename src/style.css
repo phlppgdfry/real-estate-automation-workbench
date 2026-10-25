@@ -1354,3 +1354,17 @@ th {
 .recovery button {
   font-size: 12px;
 }
+
+.evaluation {
+  border-top: 1px solid var(--line);
+  padding: 22px 0;
+  margin: 8px 0 26px;
+}
+.evaluation h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.evaluation a {
+  display: inline-block;
+  margin-top: 10px;
+}

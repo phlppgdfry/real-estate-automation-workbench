@@ -1,10 +1,10 @@
-# Senior review — v1.0 naar v1.1
+# Senior review — v1.0 naar v2.0
 
 Deze review beoordeelt controleerbaar gedrag, afwegingen en grenzen. Een repo wordt niet senior door meer frameworks; een portfolio-case bewijst bovendien nog geen senior werkervaring van de auteur.
 
 ## Bevindingen en uitgevoerde verbeteringen
 
-| Prioriteit | v1.0-bevinding                                           | v1.1-verandering                                                    | Uitvoerbaar bewijs                                |
+| Prioriteit | v1.0-bevinding                                           | v2.0-verandering                                                    | Uitvoerbaar bewijs                                |
 | ---------- | -------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------- |
 | Hoog       | Providerstoring vóór opslag; bron moet opnieuw aanbieden | Eerst duurzame inbox + 202, daarna analyse                          | `reliability.test.ts`: restart en provider outage |
 | Hoog       | Eén token mag goedkeuren én beheer uitvoeren             | Centrale default-deny functiescheiding met drie labrollen           | HTTP-403-tests voor reader/reviewer/operator      |

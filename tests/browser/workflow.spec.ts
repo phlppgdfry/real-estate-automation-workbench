@@ -70,3 +70,47 @@ test('375px mobile has no horizontal overflow and primary actions work', async (
   await expect(page.getByRole('dialog')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test('three CRM failures can be recovered with a reason while preserving history', async ({
+  page,
+}) => {
+  await page.clock.install({ time: new Date('2026-10-25T10:00:00Z') });
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Goedkeuren & klaarzetten' }).click();
+  await page.getByLabel('CRM-fout simuleren', { exact: true }).check();
+  for (const elapsed of [0, 2100, 4100]) {
+    if (elapsed) await page.clock.fastForward(elapsed);
+    await page.getByRole('button', { name: 'CRM-wachtrij verwerken' }).click();
+  }
+  await expect(
+    page.getByText('Overdracht is gestopt; beheerherstel nodig.', { exact: false }),
+  ).toBeVisible();
+  const retry = page.getByRole('button', { name: 'Overdracht opnieuw klaarzetten' });
+  await expect(retry).toBeDisabled();
+  await page
+    .getByLabel('Herstelreden', { exact: true })
+    .fill('CRM hersteld en externe sleutel gecontroleerd.');
+  await retry.click();
+  await page.getByLabel('CRM-fout simuleren', { exact: true }).uncheck();
+  await page.getByRole('button', { name: 'CRM-wachtrij verwerken' }).click();
+  await expect(page.getByRole('status')).toContainText('bevestigd');
+  await page.getByText('Beslissingen & gebeurtenissen', { exact: false }).click();
+  await expect(page.getByText('crm_requeued', { exact: true })).toBeVisible();
+  await expect(page.getByText('crm_failed', { exact: true })).toHaveCount(3);
+});
+
+test('partly corrupt browser state cannot leave the portfolio blank', async ({ page }) => {
+  await page.addInitScript(() =>
+    localStorage.setItem(
+      'duin-dorp-demo-v1',
+      JSON.stringify({ leads: [{ id: 'broken', draft: 'text', audit: [] }], listings: [] }),
+    ),
+  );
+  await page.goto('./');
+  await expect(page.getByRole('heading', { name: 'Elke aanvraag, goed opgevolgd.' })).toBeVisible();
+  await expect(page.getByRole('button').filter({ hasText: 'Lotte De Smet' })).toBeVisible();
+  await page.getByRole('button', { name: 'Technisch dossier', exact: true }).click();
+  await expect(
+    page.getByRole('region', { name: 'Evaluatie van de herkenningsregels' }),
+  ).toContainText('13/16');
+});

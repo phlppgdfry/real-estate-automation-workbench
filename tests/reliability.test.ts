@@ -129,9 +129,25 @@ test('provider outage is retried from durable inbox; replay requires reason and 
     time = after(6);
     await processInbox(inbox, catalog(now), () => time, failed);
     assert.equal(inbox.receipt(input.eventId).state, 'dead');
-    assert.throws(() => inbox.retry(input.eventId, 3, 'operator', 'short', time));
-    assert.throws(() => inbox.retry(input.eventId, 2, 'operator', 'Provider is hersteld.', time));
-    inbox.retry(input.eventId, 3, 'operator', 'Provider is hersteld.', time);
+    assert.throws(() =>
+      inbox.retry(input.eventId, inbox.receipt(input.eventId).version, 'operator', 'short', time),
+    );
+    assert.throws(() =>
+      inbox.retry(
+        input.eventId,
+        inbox.receipt(input.eventId).version - 1,
+        'operator',
+        'Provider is hersteld.',
+        time,
+      ),
+    );
+    inbox.retry(
+      input.eventId,
+      inbox.receipt(input.eventId).version,
+      'operator',
+      'Provider is hersteld.',
+      time,
+    );
     assert.equal((await processInbox(inbox, catalog(time), () => time)).completed, 1);
     assert.equal(store.all().length, 1);
     const audit = store.db.prepare('SELECT actor,action,reason FROM operations_audit').all();
@@ -191,7 +207,7 @@ test('legacy database migrates without data loss; future schema fails closed', (
     assert.equal(migrated.get('legacy').id, 'legacy');
     assert.equal(
       (migrated.db.prepare('PRAGMA user_version').get() as { user_version: number }).user_version,
-      2,
+      3,
     );
     migrated.db.exec('PRAGMA user_version=99');
     migrated.close();
@@ -338,6 +354,45 @@ test('HTTP roles deny privileged actions; signed receipt is durable while model 
     assert.equal(ops.includes(input.email), false);
   } finally {
     await new Promise<void>((r) => server.close(() => r()));
+    s.close();
+  }
+});
+
+test('a retry request from an older failure cycle cannot replay a new dead job', () => {
+  const s = new Store(),
+    inbox = new Inbox(s);
+  try {
+    inbox.accept(input, now);
+    for (const sec of [0, 2, 6]) {
+      const claim = inbox.claim(after(sec))!;
+      inbox.fail(claim, after(sec));
+    }
+    const old = inbox.receipt(input.eventId);
+    inbox.retry(
+      input.eventId,
+      old.version,
+      'operator',
+      'Provider is gecontroleerd hersteld.',
+      after(6),
+    );
+    for (const sec of [6, 8, 12]) {
+      const claim = inbox.claim(after(sec))!;
+      inbox.fail(claim, after(sec));
+    }
+    const current = inbox.receipt(input.eventId);
+    assert.equal(old.attempts, current.attempts);
+    assert.notEqual(old.version, current.version);
+    assert.throws(() =>
+      inbox.retry(
+        input.eventId,
+        old.version,
+        'operator',
+        'Oude herstelactie mag niet werken.',
+        after(12),
+      ),
+    );
+    assert.equal(inbox.receipt(input.eventId).state, 'dead');
+  } finally {
     s.close();
   }
 });

@@ -13,13 +13,13 @@ Een vastgoedaanvraag één keer ontvangen, controleren en betrouwbaar aan een co
 Website, mailbox en portaal leveren aanvragen aan. Medewerkers moeten het doel herkennen, het juiste pand opzoeken, prijs en beschikbaarheid controleren, een antwoord voorbereiden en opvolging registreren. Bij elke overdracht kan informatie verloren gaan.
 
 ```text
-Aanvraag → ondertekende ontvangst → validatie & duplicaatcontrole
-        → intentie + broncitaat → cataloguscontrole → antwoordvoorstel
+Aanvraag → ondertekende ontvangst → validatie & duplicaatcontrole → duurzame inbox
+        → analyseworker → intentie + broncitaat → cataloguscontrole → antwoordvoorstel
         → menselijke goedkeuring → transactionele outbox
         → CRM-mock → ontvangstbevestiging
 ```
 
-De browserdemo en server delen dezelfde domeinregels. De server gebruikt SQLite voor duurzame opslag. De optionele AI-adapter extraheert uitsluitend intentie, pandreferentie en een letterlijk citaat. Antwoorden worden samengesteld uit gecontroleerde catalogusdata. Er is geen e-mailtransport en geen AI met CRM-tools.
+De browserdemo en server delen dezelfde domeinregels. De server gebruikt SQLite voor duurzame ontvangst vóór AI-analyse, plus een worker met leases. De optionele AI-adapter extraheert uitsluitend intentie, pandreferentie en een letterlijk citaat. Antwoorden worden samengesteld uit gecontroleerde catalogusdata. Er is geen e-mailtransport en geen AI met CRM-tools.
 
 ## Probeer in twee minuten
 
@@ -48,7 +48,7 @@ npm run dev
 ```
 
 ```bash
-npm run check       # types, build, unit/integratie, evaluatie, links
+npm run check       # evaluatie, build, tests, storingsdrill, contract en links
 npx playwright install chromium
 npm run test:e2e    # workflow, rondleiding, mobiel
 ```
@@ -77,7 +77,7 @@ Verwacht: zes fictieve aanvragen. Goedkeuring zet een aanvraag in de wachtrij, s
 | OpenAI-extractie                                   | Adapter en contracttests; live test open    |
 | Productie-SSO, echt CRM, agenda, mail, alertdienst | Niet geïmplementeerd                        |
 
-De [evaluatieset](data/evaluation.json) is een kleine handgeschreven baseline voor regels, geen onafhankelijke benchmark of bewijs van LLM-kwaliteit. Ontkenning en gemengde intentie zijn tijdens evaluatie toegevoegd als stopregels. Er blijven onbekende taalvarianten mogelijk; elk voorstel vereist menselijke beoordeling.
+De ontwikkelset scoort 24/24; de aanvullende diagnostische set 13/16. Drie taalvarianten gaan naar een medewerker. Beide sets zijn AI-geschreven en tijdens ontwikkeling/review gebruikt: geen onafhankelijke benchmark of live LLM-score. [Methode en missers](docs/evaluation.md).
 
 ## Wegwijzer
 
@@ -97,3 +97,11 @@ De [evaluatieset](data/evaluation.json) is een kleine handgeschreven baseline vo
 Philippe Godfroy, met AI-assistentie, 2026. Code MIT; documentatie en fictieve data CC BY 4.0; zie [LICENSE](LICENSE). React MIT, Vite MIT, TypeScript Apache-2.0, Zod MIT, tsx MIT, Playwright Apache-2.0; afhankelijkheden behouden hun eigen licenties. Systeemfonts, geen externe font- of beeldverzoeken. Image Gen leverde de visuele specificatie; de UI is echte HTML/CSS.
 
 Primaire technische bronnen: [React state](https://react.dev/reference/react/useState), [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [Node SQLite](https://nodejs.org/api/sqlite.html), [SQLite-transacties](https://www.sqlite.org/lang_transaction.html). Bedrijfsspecifiek onderzoek en sollicitatievoorbereiding staan uitsluitend in het privédossier.
+
+## Wat v2.0 toevoegt aan het bewijs
+
+Een providerstoring verliest geen geaccepteerde aanvraag meer. Reader/reviewer/operator hebben verschillende rechten; een oude worker mag na een verlopen lease geen resultaat opslaan. Na drie CRM-fouten kan een operator met actuele versie en verplichte reden gecontroleerd herstellen, mits de pandgegevens nog kloppen.
+
+Lees de [senior review](docs/senior-review.md), volg de [technische reviewroute](docs/reviewer-guide.md) en voer `npm run drill` uit: provideruitval → herstart → CRM-uitval → gecontroleerd herstel. Dit vraagt geen live API-key. De API gebruikt nu een ontvangstbewijs met HTTP 202; zie [de migratienotitie](CHANGELOG.md). `setup:local` vult drie rolcredentials aan; het oude APP_TOKEN wordt niet gebruikt.
+
+De [technische screenshot](public/technical-preview.png) toont het zichtbare kwaliteitsrapport. De [ontwerpcontrole](design/QA.md) beschrijft de gerichte UI-uitbreidingen en geteste schermgroottes.

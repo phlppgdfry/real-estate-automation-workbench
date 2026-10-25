@@ -19,3 +19,7 @@ Volg [het demoscript](application-kit/demo/5-minute-story.md), lees [architectuu
 Volg [README](README.md), draai `npm run check`, `npm run test:e2e` en `npm run demo:api`. Lees [het runbook](docs/operations.md) en [de kennisgids](docs/knowledge.md). Geen JavaScript? [Statische samenvatting](public/fallback.html).
 
 Fictieve data, CRM-mock, geen e-mails, geen bewezen bedrijfsresultaten.
+
+## Senior reviewer
+
+[Bevindingen en fixes](docs/senior-review.md) · [technische leesroute](docs/reviewer-guide.md) · [evaluatie inclusief missers](docs/evaluation.md). Voer `npm run drill` uit voor uitval en gecontroleerd herstel.

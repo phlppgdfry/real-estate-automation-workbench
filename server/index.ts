@@ -32,8 +32,14 @@ const server = makeServer({
   difyBaseUrl: process.env.DIFY_API_BASE_URL,
   difyUser: process.env.DIFY_WORKFLOW_USER,
 });
-server.listen(4318, '127.0.0.1', () =>
-  console.log('API: http://127.0.0.1:4318 — CRM is een lokale mock; geen e-mailtransport.'),
+const port = z.coerce
+  .number()
+  .int()
+  .min(1024)
+  .max(65535)
+  .parse(process.env.PORT ?? 4318);
+server.listen(port, '127.0.0.1', () =>
+  console.log(`API: http://127.0.0.1:${port} — CRM is een lokale mock; geen e-mailtransport.`),
 );
 function shutdown() {
   server.close(() => {

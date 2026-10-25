@@ -15,6 +15,7 @@ const migrations = [
    CREATE TABLE operations_audit(
      seq INTEGER PRIMARY KEY, target TEXT NOT NULL, actor TEXT NOT NULL,
      action TEXT NOT NULL, reason TEXT NOT NULL, at TEXT NOT NULL);`,
+  `ALTER TABLE inbox ADD COLUMN revision INTEGER NOT NULL DEFAULT 1;`,
 ];
 
 /** v1's unversioned tables are adopted by IF NOT EXISTS; all later migrations are atomic. */

@@ -27,7 +27,7 @@ sequenceDiagram
 |            | Pages                             | API                                                |
 | ---------- | --------------------------------- | -------------------------------------------------- |
 | Invoer     | Fictief formulier                 | Ondertekende webhook                               |
-| Opslag     | Runtime-gevalideerde localStorage | SQLite WAL, migratieversie 2                       |
+| Opslag     | Runtime-gevalideerde localStorage | SQLite WAL, migratieversie 3                       |
 | Analyse    | Directe regelbaseline             | Duurzame inbox, begrensde worker                   |
 | Identiteit | Expliciete demo-beoordelaar       | Afzonderlijke reader/reviewer/operator-credentials |
 | CRM        | Pure lokale statusovergang        | Duurzame mock met unieke externe sleutel           |

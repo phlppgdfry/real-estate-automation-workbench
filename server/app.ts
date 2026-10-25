@@ -151,7 +151,15 @@ export function makeServer(config: Config) {
         const outbox = config.store.db
           .prepare('SELECT status,count(*) count FROM outbox GROUP BY status')
           .all();
-        return send(res, 200, { inbox: inbox.stats(now), outbox, schemaVersion: 2, sentEmails: 0 });
+        return send(res, 200, {
+          inbox: inbox.stats(now),
+          outbox,
+          schemaVersion: Number(
+            (config.store.db.prepare('PRAGMA user_version').get() as { user_version: number })
+              .user_version,
+          ),
+          sentEmails: 0,
+        });
       }
       const approval = path.match(/^\/api\/leads\/([a-zA-Z0-9_-]+)\/approve$/);
       if (approval && req.method === 'POST') {
@@ -192,7 +200,7 @@ export function makeServer(config: Config) {
         }
         const input = z
           .object({
-            attempts: z.number().int().nonnegative(),
+            version: z.number().int().positive(),
             reason: z.string().trim().min(10).max(500),
           })
           .strict()
@@ -200,7 +208,7 @@ export function makeServer(config: Config) {
         return send(
           res,
           200,
-          inbox.retry(replay[2], input.attempts, principal.subject, input.reason, now),
+          inbox.retry(replay[2], input.version, principal.subject, input.reason, now),
         );
       }
       if (path === '/api/outbox/dispatch' && req.method === 'POST') {

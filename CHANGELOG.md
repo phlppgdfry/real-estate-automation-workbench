@@ -1,6 +1,6 @@
 # Wijzigingen
 
-## 1.1.0 — Betrouwbaarheid en reviewbewijs
+## 2.0.0 — Betrouwbaarheid en reviewbewijs
 
 - Duurzame inbox vóór analyse, 202/statusendpoint, begrensde batches, leases en fencing.
 - Afzonderlijke lees-, beoordelings- en beheerrechten in de lokale API.
@@ -10,7 +10,7 @@
 - Runtime-validatie van browserstate en zichtbaar herstelpad voor de demo.
 - Reproduceerbare storingsdrill, onderzoek, reviewroute en expliciete productiegrenzen.
 
-API-wijziging: intake geeft een ontvangstbewijs (202 bij pending) in plaats van direct een lead. Start analyse met operatorrechten via `/api/inbox/process`; `APP_TOKEN` wordt niet meer gebruikt. `setup:local` vult de nieuwe rolcredentials aan zonder bestaande waarden te overschrijven.
+Major-versie wegens een incompatibele API-wijziging: intake geeft een ontvangstbewijs (202 bij pending) in plaats van direct een lead. Start analyse met operatorrechten via `/api/inbox/process`; `APP_TOKEN` wordt niet meer gebruikt. `setup:local` vult de nieuwe rolcredentials aan zonder bestaande waarden te overschrijven.
 
 ## 1.0.0
 

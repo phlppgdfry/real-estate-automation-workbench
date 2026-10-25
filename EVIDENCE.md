@@ -27,3 +27,13 @@ Open de code en voer de tests uit. Een uitgewerkt project bewijst nog geen zelfs
 | AC-08 | Modelweigering, incomplete output en gefabriceerde bron worden afgewezen              | domein + AI-contracttests                    |
 | AC-09 | UI bewaart status bij herladen, reset herstelt seed, mobiel werkt                     | browser: workflow/tour/375px                 |
 | AC-10 | Geen e-mailtransport beschikbaar                                                      | geen mailadapter; server test `sentEmails=0` |
+
+## Aanvullend bewijs in v1.1
+
+| Onderwerp                       | Code                                                                      | Verificatie                                         |
+| ------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------- |
+| Ontvangst vóór provider-I/O     | [inbox](server/inbox.ts), [worker](server/analysis-worker.ts)             | restart, outage, stale worker, twee verbindingen    |
+| Functiescheiding                | [auth](server/auth.ts), [API](server/app.ts)                              | reader/reviewer/operator krijgen 403 buiten hun rol |
+| Herstel en bron opnieuw toetsen | [domein](src/domain.ts), [Store](server/store.ts)                         | foutgeschiedenis blijft, verkocht pand blokkeert    |
+| Reproduceerbare afweging        | [senior review](docs/senior-review.md), [drill](scripts/failure-drill.ts) | `npm run drill`, CI-artifact                        |
+| Kritische evaluatie             | [rapport](data/evaluation-report.json)                                    | 13/16 challengecases; drie conservatieve escalaties |

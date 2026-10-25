@@ -16,6 +16,7 @@ type Row = {
   body: string;
   state: State;
   attempts: number;
+  revision: number;
   available_at: string;
   received_at: string;
   lease_until: string | null;
@@ -34,6 +35,7 @@ export type Receipt = {
   eventId: string;
   state: State;
   attempts: number;
+  version: number;
   duplicate: boolean;
   statusUrl: string;
 };
@@ -50,6 +52,7 @@ export class Inbox {
       eventId: row.id,
       state: row.state,
       attempts: row.attempts,
+      version: row.revision,
       duplicate,
       statusUrl: `/api/inbox/${row.id}`,
     };
@@ -91,7 +94,7 @@ export class Inbox {
       // A crashed final attempt also has a terminal state, rather than an immortal lease.
       this.store.db
         .prepare(
-          "UPDATE inbox SET state='dead',lease_token=NULL,lease_until=NULL,last_error_code='LEASE_EXHAUSTED' WHERE state='processing' AND lease_until<=? AND attempts>=3",
+          "UPDATE inbox SET state='dead',revision=revision+1,lease_token=NULL,lease_until=NULL,last_error_code='LEASE_EXHAUSTED' WHERE state='processing' AND lease_until<=? AND attempts>=3",
         )
         .run(now);
       const row = this.store.db
@@ -103,7 +106,7 @@ export class Inbox {
       const token = randomUUID();
       this.store.db
         .prepare(
-          "UPDATE inbox SET state='processing',attempts=attempts+1,lease_token=?,lease_until=? WHERE id=?",
+          "UPDATE inbox SET state='processing',revision=revision+1,attempts=attempts+1,lease_token=?,lease_until=? WHERE id=?",
         )
         .run(token, new Date(Date.parse(now) + leaseMs).toISOString(), row.id);
       return {
@@ -137,7 +140,7 @@ export class Inbox {
         .run(row.id, row.fingerprint, JSON.stringify(lead));
       this.store.db
         .prepare(
-          "UPDATE inbox SET state='completed',completed_at=?,lease_token=NULL,lease_until=NULL,last_error_code=NULL WHERE id=?",
+          "UPDATE inbox SET state='completed',revision=revision+1,completed_at=?,lease_token=NULL,lease_until=NULL,last_error_code=NULL WHERE id=?",
         )
         .run(now, row.id);
     });
@@ -148,7 +151,7 @@ export class Inbox {
       const state = row.attempts >= 3 ? 'dead' : 'retry';
       this.store.db
         .prepare(
-          'UPDATE inbox SET state=?,available_at=?,lease_token=NULL,lease_until=NULL,last_error_code=? WHERE id=?',
+          'UPDATE inbox SET state=?,revision=revision+1,available_at=?,lease_token=NULL,lease_until=NULL,last_error_code=? WHERE id=?',
         )
         .run(
           state,
@@ -159,7 +162,7 @@ export class Inbox {
       // No provider error message or source text in operational records.
     });
   }
-  retry(id: string, attempts: number, actor: string, reason: string, now: string): Receipt {
+  retry(id: string, version: number, actor: string, reason: string, now: string): Receipt {
     if (!actor.trim() || reason.trim().length < 10 || reason.length > 500)
       throw new DomainError(
         'REASON',
@@ -167,14 +170,14 @@ export class Inbox {
       );
     return this.store.transaction(() => {
       const row = this.row(id);
-      if (row.state !== 'dead' || row.attempts !== attempts)
+      if (row.state !== 'dead' || row.revision !== version)
         throw new DomainError(
           'STATE',
           'Alleen de actuele mislukte analyse kan opnieuw worden klaargezet.',
         );
       this.store.db
         .prepare(
-          "UPDATE inbox SET state='pending',attempts=0,available_at=?,lease_token=NULL,lease_until=NULL,last_error_code=NULL WHERE id=?",
+          "UPDATE inbox SET state='pending',revision=revision+1,attempts=0,available_at=?,lease_token=NULL,lease_until=NULL,last_error_code=NULL WHERE id=?",
         )
         .run(now, id);
       this.store.db
