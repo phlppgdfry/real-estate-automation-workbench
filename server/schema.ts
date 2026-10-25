@@ -15,6 +15,7 @@ const migrations = [
    CREATE TABLE operations_audit(
      seq INTEGER PRIMARY KEY, target TEXT NOT NULL, actor TEXT NOT NULL,
      action TEXT NOT NULL, reason TEXT NOT NULL, at TEXT NOT NULL);`,
+  `ALTER TABLE inbox ADD COLUMN revision INTEGER NOT NULL DEFAULT 1;`,
 ];
 
 /** v1's unversioned tables are adopted by IF NOT EXISTS; all later migrations are atomic. */
@@ -22,12 +23,17 @@ export function migrate(db: DatabaseSync): void {
   db.exec('PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;');
   db.exec('BEGIN IMMEDIATE');
   try {
-    const version = Number((db.prepare('PRAGMA user_version').get() as {user_version:number}).user_version);
+    const version = Number(
+      (db.prepare('PRAGMA user_version').get() as { user_version: number }).user_version,
+    );
     if (version > migrations.length) throw new Error('DATABASE_NEWER_THAN_APPLICATION');
-    for (let i=version; i<migrations.length; i++) {
+    for (let i = version; i < migrations.length; i++) {
       db.exec(migrations[i]);
-      db.exec(`PRAGMA user_version=${i+1}`);
+      db.exec(`PRAGMA user_version=${i + 1}`);
     }
     db.exec('COMMIT');
-  } catch(error) { db.exec('ROLLBACK'); throw error; }
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  }
 }

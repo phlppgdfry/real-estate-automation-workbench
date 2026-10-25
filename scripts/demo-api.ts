@@ -1,8 +1,13 @@
 import { createHmac } from 'node:crypto';
-const base = 'http://127.0.0.1:4318';
-const token = process.env.APP_TOKEN,
-  secret = process.env.WEBHOOK_SECRET;
-if (!token || !secret) throw new Error('Start eerst setup:local en server.');
+const base = process.env.LAB_API_URL ?? 'http://127.0.0.1:4318';
+const tokens = {
+  reader: process.env.READER_TOKEN,
+  reviewer: process.env.REVIEWER_TOKEN,
+  operator: process.env.OPERATOR_TOKEN,
+};
+const secret = process.env.WEBHOOK_SECRET;
+if (!secret || Object.values(tokens).some((v) => !v))
+  throw new Error('Start eerst setup:local en server.');
 const input = {
   eventId: 'api-demo-001',
   name: 'Robin Demo',
@@ -12,42 +17,54 @@ const input = {
 };
 const raw = JSON.stringify(input),
   timestamp = String(Math.floor(Date.now() / 1000));
-const signature = createHmac('sha256', secret).update(`${timestamp}.${raw}`).digest('hex');
-const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-async function call(path: string, options: RequestInit = {}) {
-  const r = await fetch(base + path, { ...options, headers: { ...headers, ...options.headers } });
-  const data = await r.json();
-  if (!r.ok) throw new Error(`HTTP ${r.status}: ${JSON.stringify(data)}`);
-  return data;
-}
-const received = await call('/api/webhooks/leads', {
-  method: 'POST',
-  headers: { 'x-timestamp': timestamp, 'x-signature': signature },
-  body: raw,
-});
-const again = await call('/api/webhooks/leads', {
-  method: 'POST',
-  headers: { 'x-timestamp': timestamp, 'x-signature': signature },
-  body: raw,
-});
-if (!again.duplicate || again.lead.id !== received.lead.id)
-  throw new Error('Deduplicatie mislukt.');
-console.log('Webhook ontvangen; herhaling levert hetzelfde record.');
-if (received.lead.status === 'review')
-  await call(`/api/leads/${input.eventId}/approve`, {
-    method: 'POST',
-    body: JSON.stringify({ version: received.lead.version }),
+const signed = createHmac('sha256', secret).update(`${timestamp}.${raw}`).digest('hex');
+async function call(path: string, role: keyof typeof tokens = 'reader', options: RequestInit = {}) {
+  const response = await fetch(base + path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${tokens[role]}`,
+      ...options.headers,
+    },
   });
-await call('/api/outbox/dispatch', { method: 'POST', body: '{}' });
+  const result = await response.json();
+  if (!response.ok) throw new Error(`HTTP ${response.status}: ${JSON.stringify(result)}`);
+  return result;
+}
+const options = {
+  method: 'POST',
+  headers: { 'x-timestamp': timestamp, 'x-signature': signed },
+  body: raw,
+};
+const received = await call('/api/webhooks/leads', 'reader', options),
+  again = await call('/api/webhooks/leads', 'reader', options);
+if (!again.duplicate || again.eventId !== received.eventId)
+  throw new Error('Deduplicatie mislukt.');
+console.log('Aanvraag duurzaam ontvangen; herhaling levert hetzelfde ontvangstbewijs.');
+const forbidden = await fetch(base + '/api/inbox/process', {
+  method: 'POST',
+  headers: { Authorization: `Bearer ${tokens.reader}` },
+  body: '{}',
+});
+if (forbidden.status !== 403) throw new Error('Rolscheiding ontbreekt.');
+console.log('Leesrol kan geen worker starten (403).');
+await call('/api/inbox/process', 'operator', { method: 'POST', body: '{}' });
+const lead = await call(`/api/leads/${input.eventId}`);
+if (lead.status === 'review')
+  await call(`/api/leads/${input.eventId}/approve`, 'reviewer', {
+    method: 'POST',
+    body: JSON.stringify({ version: lead.version }),
+  });
+await call('/api/outbox/dispatch', 'operator', { method: 'POST', body: '{}' });
 const status = await call('/api/leads');
-const lead = status.leads.find((x: { id: string }) => x.id === input.eventId);
-if (lead.status !== 'synced')
+const result = await call(`/api/leads/${input.eventId}`);
+if (result.status !== 'synced')
   throw new Error(
-    `Niet afgehandeld: ${lead.status}. Controleer catalogusouderdom of gebeurtenissen.`,
+    'Niet afgehandeld. Controleer catalogus, inbox en gebeurtenissen; gebruik geen nieuw event-ID.',
   );
 console.log(
-  `Leadstatus: ${lead.status}. CRM-records totaal: ${status.crmRecords}. E-mails: ${status.sentEmails}.`,
+  `Leadstatus: ${result.status}. CRM-records totaal: ${status.crmRecords}. E-mails: ${status.sentEmails}.`,
 );
 console.log(
-  'Opnieuw uitvoeren maakt voor hetzelfde event geen extra record. CRM blijft een lokale mock.',
+  'Opnieuw uitvoeren maakt geen extra record. Rollen zijn labcredentials; CRM is een lokale mock.',
 );

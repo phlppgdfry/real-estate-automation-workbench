@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Duin & Dorp local lab API",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "Fictieve portfolio-case. CRM is een lokale duurzame mock. Geen e-mailtransport.",
     "license": {
       "name": "MIT",
@@ -52,8 +52,8 @@
     "/api/webhooks/leads": {
       "post": {
         "operationId": "ingestLead",
-        "summary": "Aanvraag ondertekend ontvangen",
-        "description": "HMAC-SHA256 hex over x-timestamp + punt + exacte body. Timestamp maximaal 300 seconden afwijking. Identiek event geeft 200, nieuw 201; hetzelfde ID met andere inhoud geeft 409.",
+        "summary": "Duurzaam ontvangen vóór analyse",
+        "description": "HMAC op timestamp + punt + exacte body. Ontvangst is opgeslagen vóór 202. Analyse gebeurt afzonderlijk; 200 bij eerder voltooide analyse. Zelfde ID met andere inhoud geeft 409.",
         "security": [
           {
             "WebhookSignature": []
@@ -132,7 +132,7 @@
             }
           },
           "200": {
-            "description": "Identieke herhaling",
+            "description": "Eerder voltooid ontvangstbewijs",
             "content": {
               "application/json": {
                 "schema": {
@@ -141,22 +141,25 @@
               }
             }
           },
-          "201": {
-            "description": "Nieuw record",
+          "202": {
+            "description": "Duurzaam opgeslagen; analyse pending",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Receipt"
                 }
               }
-            }
-          },
-          "503": {
-            "description": "AI niet beschikbaar; bron moet heraanbieden",
-            "content": {
-              "application/json": {
+            },
+            "headers": {
+              "Location": {
+                "description": "Statusendpoint (leestoegang vereist)",
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "string"
+                }
+              },
+              "Retry-After": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -175,18 +178,24 @@
         ],
         "responses": {
           "200": {
-            "description": "Overzicht",
+            "description": "Begrensde pagina",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["leads", "crmRecords", "sentEmails"],
                   "properties": {
                     "leads": {
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Lead"
                       }
+                    },
+                    "nextCursor": {
+                      "type": "integer",
+                      "nullable": true
+                    },
+                    "totalLeads": {
+                      "type": "integer"
                     },
                     "crmRecords": {
                       "type": "integer"
@@ -201,6 +210,16 @@
             }
           },
           "401": {
+            "description": "Identiteit ontbreekt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "400": {
             "description": "Validatie-, toegangs- of procesfout",
             "content": {
               "application/json": {
@@ -209,8 +228,39 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Functie niet toegestaan voor deze rol",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
-        }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "x-required-role": "reader, reviewer or operator"
       }
     },
     "/api/leads/{id}/approve": {
@@ -262,7 +312,7 @@
             }
           },
           "401": {
-            "description": "Validatie-, toegangs- of procesfout",
+            "description": "Identiteit ontbreekt",
             "content": {
               "application/json": {
                 "schema": {
@@ -320,14 +370,25 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Functie niet toegestaan voor deze rol",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
-        }
+        },
+        "x-required-role": "reviewer"
       }
     },
     "/api/outbox/dispatch": {
       "post": {
         "operationId": "dispatchOutbox",
-        "summary": "E\u00e9n batch naar lokale CRM-mock verwerken",
+        "summary": "Eén batch naar lokale CRM-mock verwerken",
         "description": "Labfunctie. Geen externe netwerkactie; simulateFailure injecteert een fout. Actor is door de server bepaald.",
         "security": [
           {
@@ -363,7 +424,7 @@
             }
           },
           "401": {
-            "description": "Validatie-, toegangs- of procesfout",
+            "description": "Identiteit ontbreekt",
             "content": {
               "application/json": {
                 "schema": {
@@ -420,8 +481,477 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Functie niet toegestaan voor deze rol",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
-        }
+        },
+        "x-required-role": "operator"
+      }
+    },
+    "/api/leads/{id}": {
+      "get": {
+        "operationId": "getLead",
+        "summary": "Lees één aanvraag",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aanvraag",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lead"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Onbekend",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Identiteit ontbreekt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Functie niet toegestaan voor deze rol",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-required-role": "reader, reviewer or operator"
+      }
+    },
+    "/api/inbox/{id}": {
+      "get": {
+        "operationId": "getReceipt",
+        "summary": "Lees ontvangststatus zonder berichtinhoud",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ontvangststatus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Onbekend",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Identiteit ontbreekt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Functie niet toegestaan voor deze rol",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-required-role": "reader, reviewer or operator"
+      }
+    },
+    "/api/inbox/process": {
+      "post": {
+        "operationId": "processInbox",
+        "summary": "Operator: analyseer één begrensde batch",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 50,
+                    "default": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batchresultaat; providerfouten blijven duurzaam bewaard",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "completed": {
+                      "type": "integer"
+                    },
+                    "failed": {
+                      "type": "integer"
+                    },
+                    "fenced": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Identiteit ontbreekt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Functie niet toegestaan voor deze rol",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-required-role": "operator"
+      }
+    },
+    "/api/operations": {
+      "get": {
+        "operationId": "operations",
+        "summary": "Queue-aantallen en ouderdom zonder klantgegevens",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operationele status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "inbox": {
+                      "type": "object"
+                    },
+                    "outbox": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "schemaVersion": {
+                      "type": "integer"
+                    },
+                    "sentEmails": {
+                      "type": "integer",
+                      "enum": [0]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Identiteit ontbreekt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Functie niet toegestaan voor deze rol",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-required-role": "reader, reviewer or operator"
+      }
+    },
+    "/api/inbox/{id}/retry": {
+      "post": {
+        "operationId": "retryInbox",
+        "summary": "Operator: gecontroleerd herstel met actuele versie en reden",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["version", "reason"],
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 500
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Opnieuw klaargezet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Receipt"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Versie, status of bron gewijzigd",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Identiteit ontbreekt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Functie niet toegestaan voor deze rol",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-required-role": "operator"
+      }
+    },
+    "/api/leads/{id}/retry": {
+      "post": {
+        "operationId": "retryLeads",
+        "summary": "Operator: gecontroleerd herstel met actuele versie en reden",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["version", "reason"],
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 500
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Opnieuw klaargezet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lead"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Versie, status of bron gewijzigd",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Identiteit ontbreekt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Functie niet toegestaan voor deze rol",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "x-required-role": "operator"
       }
     }
   },
@@ -591,13 +1121,27 @@
       },
       "Receipt": {
         "type": "object",
-        "required": ["lead", "duplicate"],
+        "required": ["eventId", "state", "attempts", "version", "duplicate", "statusUrl"],
         "properties": {
-          "lead": {
-            "$ref": "#/components/schemas/Lead"
+          "eventId": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["pending", "processing", "retry", "completed", "dead"]
+          },
+          "attempts": {
+            "type": "integer"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
           },
           "duplicate": {
             "type": "boolean"
+          },
+          "statusUrl": {
+            "type": "string"
           }
         }
       },

@@ -1,6 +1,6 @@
 {
   "name": "real-estate-automation-workbench",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -17,11 +17,12 @@
     "test": "tsx --test tests/*.test.ts",
     "test:e2e": "playwright test",
     "evaluate": "tsx scripts/evaluate.ts",
-    "check": "npm run build && npm test && npm run evaluate && npm run validate:api && npm run format:check && python3 scripts/check-links.py",
+    "check": "npm run evaluate && npm run build && npm test && npm run drill && npm run validate:api && npm run format:check && python3 scripts/check-links.py",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate:api": "tsx scripts/validate-api.ts",
-    "capture": "tsx scripts/capture.ts"
+    "capture": "tsx scripts/capture.ts",
+    "drill": "tsx scripts/failure-drill.ts"
   },
   "dependencies": {
     "react": "^19.2.0",

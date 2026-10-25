@@ -17,7 +17,12 @@ export class Store {
   db: DatabaseSync;
   constructor(path = ':memory:') {
     this.db = new DatabaseSync(path);
-    try { migrate(this.db); } catch(error) { this.db.close(); throw error; }
+    try {
+      migrate(this.db);
+    } catch (error) {
+      this.db.close();
+      throw error;
+    }
   }
   transaction<T>(fn: () => T): T {
     this.db.exec('BEGIN IMMEDIATE');
@@ -44,17 +49,35 @@ export class Store {
   save(lead: Lead) {
     this.db.prepare('UPDATE leads SET body=? WHERE id=?').run(JSON.stringify(lead), lead.id);
   }
-  page(limit=50,before?:number):{leads:Lead[];nextCursor:number|null}{
-    const rows=this.db.prepare('SELECT rowid cursor,body FROM leads WHERE rowid<? ORDER BY rowid DESC LIMIT ?').all(before??Number.MAX_SAFE_INTEGER,limit+1) as {cursor:number;body:string}[];
-    return {leads:rows.slice(0,limit).map(r=>JSON.parse(r.body)),nextCursor:rows.length>limit?Number(rows[limit-1].cursor):null};
+  page(limit = 50, before?: number): { leads: Lead[]; nextCursor: number | null } {
+    const rows = this.db
+      .prepare('SELECT rowid cursor,body FROM leads WHERE rowid<? ORDER BY rowid DESC LIMIT ?')
+      .all(before ?? Number.MAX_SAFE_INTEGER, limit + 1) as { cursor: number; body: string }[];
+    return {
+      leads: rows.slice(0, limit).map((r) => JSON.parse(r.body)),
+      nextCursor: rows.length > limit ? Number(rows[limit - 1].cursor) : null,
+    };
   }
-  requeue(id:string,version:number,actor:string,reason:string,listings:Listing[],now:string):Lead {
-    return this.transaction(()=>{
-      const next=requeue(this.get(id),version,actor,reason,listings,now);
+  requeue(
+    id: string,
+    version: number,
+    actor: string,
+    reason: string,
+    listings: Listing[],
+    now: string,
+  ): Lead {
+    return this.transaction(() => {
+      const next = requeue(this.get(id), version, actor, reason, listings, now);
       this.save(next);
-      const result=this.db.prepare("UPDATE outbox SET status='pending' WHERE id=?").run(id);
-      if(Number(result.changes)!==1)throw new DomainError('STATE','De overdrachtopdracht ontbreekt; afstemming door beheer is nodig.');
-      this.db.prepare('INSERT INTO operations_audit(target,actor,action,reason,at) VALUES(?,?,?,?,?)').run(id,actor,'crm_requeued',reason,now);
+      const result = this.db.prepare("UPDATE outbox SET status='pending' WHERE id=?").run(id);
+      if (Number(result.changes) !== 1)
+        throw new DomainError(
+          'STATE',
+          'De overdrachtopdracht ontbreekt; afstemming door beheer is nodig.',
+        );
+      this.db
+        .prepare('INSERT INTO operations_audit(target,actor,action,reason,at) VALUES(?,?,?,?,?)')
+        .run(id, actor, 'crm_requeued', reason, now);
       return next;
     });
   }
@@ -126,7 +149,7 @@ export class Store {
   }
   stats() {
     return {
-      leads: Number((this.db.prepare('SELECT count(*) n FROM leads').get() as {n:number}).n),
+      leads: Number((this.db.prepare('SELECT count(*) n FROM leads').get() as { n: number }).n),
       crmRecords: Number(
         (this.db.prepare('SELECT count(*) n FROM crm_mock').get() as { n: number }).n,
       ),

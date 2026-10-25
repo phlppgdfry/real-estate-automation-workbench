@@ -142,7 +142,7 @@ export function Tour({ onClose }: { onClose: () => void }) {
       <p className="tour-label">± 2 minuten</p>
       <h3 className="tour-title">{steps[step][0]}</h3>
       <p>{steps[step][1]}</p>
-      <progress max={steps.length} value={step + 1} />
+      <progress aria-label="Voortgang rondleiding" max={steps.length} value={step + 1} />
       <div className="actions">
         <button disabled={step === 0} onClick={() => setStep((x) => x - 1)}>
           Vorige
