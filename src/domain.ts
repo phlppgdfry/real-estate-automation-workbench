@@ -18,8 +18,17 @@ export const ExtractionSchema = z
   })
   .strict();
 export type Extraction = z.infer<typeof ExtractionSchema>;
-export const ListingSchema=z.object({id:z.string().regex(/^DD-\d{3}$/),title:z.string().min(1),city:z.string().min(1),price:z.number().positive(),status:z.enum(['available','sold']),checkedAt:z.iso.datetime()}).strict();
-export type Listing=z.infer<typeof ListingSchema>;
+export const ListingSchema = z
+  .object({
+    id: z.string().regex(/^DD-\d{3}$/),
+    title: z.string().min(1),
+    city: z.string().min(1),
+    price: z.number().positive(),
+    status: z.enum(['available', 'sold']),
+    checkedAt: z.iso.datetime(),
+  })
+  .strict();
+export type Listing = z.infer<typeof ListingSchema>;
 export type Status = 'review' | 'manual' | 'queued' | 'synced' | 'dead';
 export type Audit = { at: string; action: string; detail: string };
 export type Lead = Intake & {
@@ -36,7 +45,22 @@ export type Lead = Intake & {
   nextAttemptAt?: string;
   audit: Audit[];
 };
-export const LeadSchema=IntakeSchema.extend({id:z.string(),version:z.number().int().positive(),receivedAt:z.iso.datetime(),status:z.enum(['review','manual','queued','synced','dead']),extraction:ExtractionSchema,reasons:z.array(z.string()),draft:z.string(),approvedBy:z.string().optional(),approvedAt:z.iso.datetime().optional(),attempts:z.number().int().nonnegative(),nextAttemptAt:z.iso.datetime().optional(),audit:z.array(z.object({at:z.iso.datetime(),action:z.string(),detail:z.string()}).strict())});
+export const LeadSchema = IntakeSchema.extend({
+  id: z.string(),
+  version: z.number().int().positive(),
+  receivedAt: z.iso.datetime(),
+  status: z.enum(['review', 'manual', 'queued', 'synced', 'dead']),
+  extraction: ExtractionSchema,
+  reasons: z.array(z.string()),
+  draft: z.string(),
+  approvedBy: z.string().optional(),
+  approvedAt: z.iso.datetime().optional(),
+  attempts: z.number().int().nonnegative(),
+  nextAttemptAt: z.iso.datetime().optional(),
+  audit: z.array(
+    z.object({ at: z.iso.datetime(), action: z.string(), detail: z.string() }).strict(),
+  ),
+});
 export const intentLabels = {
   visit: 'Bezoekaanvraag',
   valuation: 'Schatting',
@@ -82,10 +106,19 @@ export function extractRules(message: string): Extraction {
   };
 }
 function ambiguousRequest(message: string): boolean {
-  const negated=/(?:\bniet\b|\bgeen\b|\bnot\b|don't)[\s\S]{0,30}(?:bezoek|bezichtig|visit|viewing)|(?:bezoek|bezichtig|visit|viewing)[\s\S]{0,32}(?:\bniet\b|\bnot\b)/i.test(message);
-  const intentCount=[/bezoek|bezichtig|visit|viewing/i,/schatting|verkopen|valuation|sell my/i,/\bzoek\b|op zoek|looking for|search/i].filter(pattern=>pattern.test(message)).length;
-  const references=new Set((message.match(/\bDD-\d{3}\b/gi)??[]).map(ref=>ref.toUpperCase()));
-  return negated||intentCount>1||references.size>1;
+  const negated =
+    /(?:\bniet\b|\bgeen\b|\bnot\b|don't)[\s\S]{0,30}(?:bezoek|bezichtig|visit|viewing)|(?:bezoek|bezichtig|visit|viewing)[\s\S]{0,32}(?:\bniet\b|\bnot\b)/i.test(
+      message,
+    );
+  const intentCount = [
+    /bezoek|bezichtig|visit|viewing/i,
+    /schatting|verkopen|valuation|sell my/i,
+    /\bzoek\b|op zoek|looking for|search/i,
+  ].filter((pattern) => pattern.test(message)).length;
+  const references = new Set(
+    (message.match(/\bDD-\d{3}\b/gi) ?? []).map((ref) => ref.toUpperCase()),
+  );
+  return negated || intentCount > 1 || references.size > 1;
 }
 export function validateExtraction(raw: unknown, message: string): Extraction {
   const e = ExtractionSchema.parse(raw);
@@ -121,7 +154,9 @@ export function assess(
     reasons.push('Ontkenning of meerdere vragen: controleer de bedoeling handmatig.');
   if (rules.intent !== 'unknown' && rules.intent !== extraction.intent)
     reasons.push('Model en expliciete brontekst spreken elkaar tegen.');
-  if (new Set((input.message.match(/\bDD-\d{3}\b/gi)??[]).map(ref=>ref.toUpperCase())).size>1)
+  if (
+    new Set((input.message.match(/\bDD-\d{3}\b/gi) ?? []).map((ref) => ref.toUpperCase())).size > 1
+  )
     reasons.push('Meerdere pandreferenties: controleer de juiste koppeling.');
   if (extraction.intent === 'visit' && !extraction.reference)
     reasons.push('Pandreferentie ontbreekt.');
@@ -253,11 +288,38 @@ export function deliver(lead: Lead, fail: boolean, now: string): Lead {
     ],
   };
 }
-export function requeue(lead:Lead,version:number,actor:string,reason:string,listings:Listing[],now:string):Lead {
-  if(lead.version!==version)throw new DomainError('VERSION','Deze aanvraag is gewijzigd.');
-  if(lead.status!=='dead'||!lead.approvedBy)throw new DomainError('STATE','Alleen een eerder goedgekeurde mislukte overdracht kan hersteld worden.');
-  if(!actor.trim()||reason.trim().length<10||reason.length>500)throw new DomainError('REASON','Geef een herstelreden van 10 tot 500 tekens.');
-  const current=assess(lead,lead.extraction,listings,now);
-  if(current.reasons.length||current.draft!==lead.draft)throw new DomainError('STALE','Pandgegevens zijn gewijzigd; hernieuwde beoordeling is nodig.');
-  return {...lead,version:lead.version+1,status:'queued',attempts:0,nextAttemptAt:undefined,audit:[...lead.audit,{at:now,action:'crm_requeued',detail:`${actor}: ${reason.trim()}. Vorige pogingen blijven in dit log.`}]};
+export function requeue(
+  lead: Lead,
+  version: number,
+  actor: string,
+  reason: string,
+  listings: Listing[],
+  now: string,
+): Lead {
+  if (lead.version !== version) throw new DomainError('VERSION', 'Deze aanvraag is gewijzigd.');
+  if (lead.status !== 'dead' || !lead.approvedBy)
+    throw new DomainError(
+      'STATE',
+      'Alleen een eerder goedgekeurde mislukte overdracht kan hersteld worden.',
+    );
+  if (!actor.trim() || reason.trim().length < 10 || reason.length > 500)
+    throw new DomainError('REASON', 'Geef een herstelreden van 10 tot 500 tekens.');
+  const current = assess(lead, lead.extraction, listings, now);
+  if (current.reasons.length || current.draft !== lead.draft)
+    throw new DomainError('STALE', 'Pandgegevens zijn gewijzigd; hernieuwde beoordeling is nodig.');
+  return {
+    ...lead,
+    version: lead.version + 1,
+    status: 'queued',
+    attempts: 0,
+    nextAttemptAt: undefined,
+    audit: [
+      ...lead.audit,
+      {
+        at: now,
+        action: 'crm_requeued',
+        detail: `${actor}: ${reason.trim()}. Vorige pogingen blijven in dit log.`,
+      },
+    ],
+  };
 }

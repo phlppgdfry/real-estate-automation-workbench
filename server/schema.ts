@@ -22,12 +22,17 @@ export function migrate(db: DatabaseSync): void {
   db.exec('PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000;');
   db.exec('BEGIN IMMEDIATE');
   try {
-    const version = Number((db.prepare('PRAGMA user_version').get() as {user_version:number}).user_version);
+    const version = Number(
+      (db.prepare('PRAGMA user_version').get() as { user_version: number }).user_version,
+    );
     if (version > migrations.length) throw new Error('DATABASE_NEWER_THAN_APPLICATION');
-    for (let i=version; i<migrations.length; i++) {
+    for (let i = version; i < migrations.length; i++) {
       db.exec(migrations[i]);
-      db.exec(`PRAGMA user_version=${i+1}`);
+      db.exec(`PRAGMA user_version=${i + 1}`);
     }
     db.exec('COMMIT');
-  } catch(error) { db.exec('ROLLBACK'); throw error; }
+  } catch (error) {
+    db.exec('ROLLBACK');
+    throw error;
+  }
 }

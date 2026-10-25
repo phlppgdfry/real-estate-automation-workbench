@@ -86,7 +86,7 @@
   {
     "id": "multi-ref",
     "message": "Graag DD-204 en DD-209 bezoeken.",
-    "intent": "visit",
+    "intent": "unknown",
     "status": "manual"
   },
   {

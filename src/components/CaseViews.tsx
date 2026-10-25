@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import evaluation from '../../data/evaluation-report.json';
 const repo = 'https://github.com/phlppgdfry/real-estate-automation-workbench';
 export function Impact() {
   const [volume, setVolume] = useState(250);
@@ -131,6 +132,8 @@ export function Technical() {
       <div className="architecture">
         <span>Ondertekende webhook</span>
         <b>→</b>
+        <span>Duurzame inbox</span>
+        <b>→</b>
         <span>Validatie + intentie</span>
         <b>→</b>
         <span>Cataloguscontrole</span>
@@ -147,10 +150,12 @@ export function Technical() {
           <ul>
             <li>HMAC-SHA256 op exacte payload + timestamp.</li>
             <li>Herhaalde events leveren hetzelfde record op.</li>
+            <li>Ontvangst vóór AI; workerlease met bescherming tegen oude workers.</li>
+            <li>Aparte lees-, beoordelings- en beheerrechten in de lab-API.</li>
             <li>Goedkeuring met versiecontrole.</li>
             <li>Lead en outbox in één database-transactie.</li>
             <li>Persistente CRM-mock met unieke externe sleutel.</li>
-            <li>Retry met wachttijd en interventie na drie fouten.</li>
+            <li>Retry met wachttijd en herstel met reden na drie fouten.</li>
             <li>AI-uitvoer met schema én bronvalidatie.</li>
           </ul>
         </div>
@@ -160,17 +165,41 @@ export function Technical() {
             <li>Pages draait zonder server, AI of echt CRM.</li>
             <li>De API draait lokaal met een enkel proces.</li>
             <li>Geen verzendfunctie, echte CRM-connector of agenda.</li>
-            <li>Geen productie-SSO, rollenbeheer of tenanttest.</li>
+            <li>Labrollen zijn geen productie-SSO of tenantisolatie.</li>
             <li>Live AI is pas geverifieerd na een echte API-test.</li>
             <li>Patroonherkenning detecteert niet elke promptinjectie.</li>
           </ul>
         </div>
       </div>
+      <section className="evaluation" aria-label="Evaluatie van de herkenningsregels">
+        <h3>Kwaliteit meten, ook waar het misgaat</h3>
+        <p>
+          Ontwikkelset:{' '}
+          <strong>
+            {evaluation.development.passed}/{evaluation.development.total}
+          </strong>
+          . Diagnostische challengeset:{' '}
+          <strong>
+            {evaluation.challenge.passed}/{evaluation.challenge.total}
+          </strong>
+          . Gemiste handmatige controles in deze set:{' '}
+          <strong>{evaluation.challenge.missedManualReview}</strong>.
+        </p>
+        <p className="fine">
+          Drie taalvarianten gaan onnodig naar een medewerker. Deze AI-geschreven voorbeelden zijn
+          tijdens de review gebruikt en zijn geen onafhankelijke benchmark of live AI-test.
+        </p>
+        <a href={`${import.meta.env.BASE_URL}evaluation.json`}>
+          Open het reproduceerbare meetrapport ↗
+        </a>
+      </section>
       <h3>Beoordeel de bron</h3>
       <div className="doc-links">
         {[
           ['START-HERE.md', 'Start hier · 2 / 5 / 15 minuten'],
           ['EVIDENCE.md', 'Functie-eis → code → test'],
+          ['docs/senior-review.md', 'Senior review · bevindingen, fixes en grenzen'],
+          ['docs/evaluation.md', 'Evaluatie · methode, missers en releasebesluit'],
           ['docs/architecture.md', 'Architectuur & API-contract'],
           ['docs/decisions.md', 'Ontwerpkeuzes & alternatieven'],
           ['docs/operations.md', 'Beheer, privacy & pilot'],
