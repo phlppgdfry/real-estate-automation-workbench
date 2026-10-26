@@ -23,5 +23,7 @@ def main(model_text: str, source: str) -> dict:
         raise ValueError('DOCUMENT_MISSING_FIELDS')
     if not isinstance(value['risks'], list) or len(value['risks']) > 10 or any(not isinstance(x, str) or len(x) > 500 for x in value['risks']):
         raise ValueError('DOCUMENT_RISKS')
+    required = {'reference', 'price', 'city', 'status'}
+    value['missing_fields'] = sorted(set(value['missing_fields']) | (required - seen))
     value['requires_human'] = True
     return {'result': json.dumps(value, ensure_ascii=False)}

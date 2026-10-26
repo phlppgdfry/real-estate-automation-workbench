@@ -74,19 +74,19 @@ workflow:
         type: custom
         position:
           x: 0
-          y: 280
+          y: 235
         positionAbsolute:
           x: 0
-          y: 280
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: start
           title: Dossiervraag
-          desc: ''
+          desc: Ontvangt een vraag en optionele context. De lokale API haalt de context zelf uit de store; de browser kan geen feiten meegeven.
           selected: false
           variables:
             - variable: case_context
@@ -98,20 +98,20 @@ workflow:
       - id: prepare
         type: custom
         position:
-          x: 330
-          y: 280
+          x: 285
+          y: 235
         positionAbsolute:
-          x: 330
-          y: 280
+          x: 285
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: code
           title: Alleen aangeleverde feiten
-          desc: ''
+          desc: Python accepteert maximaal twintig unieke feiten met een bron-ID. Ongeldige context wordt afgewezen.
           selected: false
           code_language: python3
           code: |
@@ -152,20 +152,20 @@ workflow:
       - id: explain
         type: custom
         position:
-          x: 660
-          y: 280
+          x: 570
+          y: 235
         positionAbsolute:
-          x: 660
-          y: 280
+          x: 570
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: llm
           title: Voorstel voor medewerker
-          desc: ''
+          desc: Het model legt de situatie uit en stelt een concrete menselijke controle voor. Het citeert de aangeleverde feiten exact.
           selected: false
           context:
             enabled: false
@@ -233,20 +233,20 @@ workflow:
       - id: validate
         type: custom
         position:
-          x: 990
-          y: 280
+          x: 855
+          y: 235
         positionAbsolute:
-          x: 990
-          y: 280
+          x: 855
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: code
           title: Bronnen en menselijke controle
-          desc: ''
+          desc: Elke bron-ID moet bestaan en het citaat moet exact gelijk zijn aan het statusfeit. Code voegt requires_human=true toe.
           selected: false
           code_language: python3
           code: |
@@ -290,23 +290,184 @@ workflow:
       - id: answer
         type: custom
         position:
-          x: 1320
-          y: 280
+          x: 1140
+          y: 235
         positionAbsolute:
-          x: 1320
-          y: 280
+          x: 1140
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: answer
           title: Voorstel · medewerker beslist
-          desc: ''
+          desc: Geeft het gecontroleerde voorstel terug. De werkbank toont bronnen en advies leesbaar; ruwe metadata is uitklapbaar.
           selected: false
           answer: '{{#validate.result#}}'
           variables: []
+      - id: note-overview
+        type: custom-note
+        position:
+          x: 0
+          y: 0
+        positionAbsolute:
+          x: 0
+          y: 0
+        width: 900
+        height: 180
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Dossierassistent · Een volgende stap die een collega kan controleren","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een collega begrijpt waarom een dossier vastloopt en welke controle nodig is, met verwijzingen naar de aangeleverde statusfeiten.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Leesrichting: invoer → modelvoorstel → onafhankelijke controle → menselijke beoordeling.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: blue
+          width: 900
+          height: 180
+      - id: note-boundary
+        type: custom-note
+        position:
+          x: 930
+          y: 0
+        positionAbsolute:
+          x: 930
+          y: 0
+        width: 450
+        height: 180
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Gegevensgrens & verantwoordelijkheid","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"De server maakt dossierfeiten: intentie, status, pogingen, catalogusstatus en blokkades. Geen naam, contactgegevens, ruwe aanvraag of vrij auditlog. Elke request start een nieuwe conversatie.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: violet
+          width: 450
+          height: 180
+      - id: note-input
+        type: custom-note
+        position:
+          x: 0
+          y: 420
+        positionAbsolute:
+          x: 0
+          y: 420
+        width: 440
+        height: 245
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"01 · Invoer & voorbereiding","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Ontvangt een vraag en optionele context. De lokale API haalt de context zelf uit de store; de browser kan geen feiten meegeven.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"In: sys.query + case_context","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Python accepteert maximaal twintig unieke feiten met een bron-ID. Ongeldige context wordt afgewezen.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: yellow
+          width: 440
+          height: 245
+      - id: note-model
+        type: custom-note
+        position:
+          x: 470
+          y: 420
+        positionAbsolute:
+          x: 470
+          y: 420
+        width: 440
+        height: 245
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"02 · Begrensde modeltaak","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Het model legt de situatie uit en stelt een concrete menselijke controle voor. Het citeert de aangeleverde feiten exact.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Uit: Samenvatting, broncitaten, risico’s en volgende stap","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Geen actietools. Vrije tekst blijft een voorstel, ook met geldige citaten.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: yellow
+          width: 440
+          height: 245
+      - id: note-guard
+        type: custom-note
+        position:
+          x: 940
+          y: 420
+        positionAbsolute:
+          x: 940
+          y: 420
+        width: 440
+        height: 245
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"03 · Controle & overdracht","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Elke bron-ID moet bestaan en het citaat moet exact gelijk zijn aan het statusfeit. Code voegt requires_human=true toe.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een medewerker beoordeelt het advies. Alleen een operator mag een vastgelopen overdracht herstellen.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een chatantwoord kan geen dossier goedkeuren of CRM-record wijzigen.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: violet
+          width: 440
+          height: 245
+      - id: note-tests
+        type: custom-note
+        position:
+          x: 0
+          y: 705
+        positionAbsolute:
+          x: 0
+          y: 705
+        width: 675
+        height: 250
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Test het gedrag zelf","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Verkocht pand: Waarom kan DD-209 niet worden ingepland?\nVerwacht: Verwijzing naar het verkochte pand; geen bezoekbelofte.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Herstelvraag: Wat moet een medewerker controleren bij drie CRM-fouten?\nVerwacht: Controle van overdracht en beheerherstel; geen autonome retry.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Ontbrekend bewijs: Welke bezoekdatum heeft de klant bevestigd?\nVerwacht: Benoem ontbrekend bewijs; verzin geen afspraakdatum.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: blue
+          width: 675
+          height: 250
+      - id: note-operations
+        type: custom-note
+        position:
+          x: 705
+          y: 705
+        positionAbsolute:
+          x: 705
+          y: 705
+        width: 675
+        height: 250
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Als het misgaat","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een citaat met een onbekende bron of andere tekst stopt de run. Geen automatisch alternatief advies; toon de fout en raadpleeg het bronsysteem.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Beheer: sleutels alleen op de server; Web App uit; geen actietools. Wijzig broncode/prompts → dify:sync → tests → importeer → publiceer → live smoke.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: violet
+          width: 675
+          height: 250
     edges:
       - id: start-source-prepare-target
         source: start
@@ -357,6 +518,6 @@ workflow:
           sourceType: code
           targetType: answer
     viewport:
-      x: 40
-      y: 30
-      zoom: 0.65
+      x: 75
+      y: 35
+      zoom: 0.78

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DifyFlowGuide } from './DifyFlowGuide';
 import { AssistanceSchema, DocumentReviewSchema } from '../dify-contracts';
 import { z } from 'zod';
 type Result = Record<string, unknown>;
@@ -92,15 +93,26 @@ function ReadableResult({ value }: { value: Result }) {
             </table>
           </div>
           <p>
-            Ontbrekende verplichte velden:{' '}
+            Niet bevestigde of ontbrekende velden:{' '}
             {document.data.missing_fields.map((f) => labels[f]).join(', ') ||
-              'geen gemeld door het model'}
+              'alle basisvelden hebben een gecontroleerd citaat'}
             .
           </p>
           {document.data.risks.map((r, i) => (
             <p key={i}>Aandachtspunt: {r}</p>
           ))}
-          <p>Controleer ook velden die het model mogelijk heeft overgeslagen.</p>
+          <p>
+            Brondekking basisvelden:{' '}
+            <strong>
+              {
+                ['reference', 'price', 'city', 'status'].filter((field) =>
+                  document.data.facts.some((fact) => fact.field === field),
+                ).length
+              }
+              /4
+            </strong>
+            . Controleer ook velden die het model mogelijk heeft overgeslagen.
+          </p>
         </>
       ) : null}
       <details>
@@ -277,6 +289,7 @@ export function DifyWorkbench() {
                   ? 'Documenttekst (maximaal 12.000 tekens)'
                   : 'Vraag of aanvraag'}
                 <textarea
+                  id="dify-input"
                   rows={8}
                   maxLength={tool === 'document' ? 12000 : tool === 'analyse' ? 4000 : 1000}
                   value={text}
@@ -346,6 +359,17 @@ export function DifyWorkbench() {
           )}
         </div>
       </div>
+      <DifyFlowGuide
+        key={tool}
+        tool={tool}
+        allowExamples={local}
+        onExample={(value) => {
+          setText(value);
+          setResult(null);
+          setError('');
+          document.getElementById('dify-input')?.focus();
+        }}
+      />
       <div className="dify-gallery">
         {[
           ['lead', 'Aanvraaganalyse'],
@@ -357,10 +381,15 @@ export function DifyWorkbench() {
               <img
                 loading="lazy"
                 src={`${base}dify/screenshots/${id}.png`}
-                alt={`Echte Dify Studio-run: ${label}`}
+                alt={`Dify Studio-canvas met uitleg: ${label}`}
               />
             </a>
-            <figcaption>{label} · Dify Studio</figcaption>
+            <figcaption>
+              {label} · canvas met uitleg ·{' '}
+              <a href={`${base}dify/screenshots/${id}-run.png`} target="_blank" rel="noreferrer">
+                Echte run bekijken ↗
+              </a>
+            </figcaption>
           </figure>
         ))}
       </div>

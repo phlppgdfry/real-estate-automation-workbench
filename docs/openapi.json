@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Duin & Dorp local lab API",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "description": "Fictieve portfolio-case. CRM is een lokale duurzame mock. Geen e-mailtransport.",
     "license": {
       "name": "MIT",
@@ -1714,7 +1714,8 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "description": "Onbevestigde velden: code vult referentie, prijs, gemeente en status zonder gevalideerd citaat aan. Dit is geen juridische volledigheidstoets."
           },
           "risks": {
             "type": "array",

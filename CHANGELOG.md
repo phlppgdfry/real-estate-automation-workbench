@@ -23,3 +23,12 @@ Eerste portfolio-case met fictieve vastgoedaanvragen, gedeelde domeinregels, men
 - Geauthenticeerde read-only modelroutes en een lokale werkbank met broncitaten, tekstupload, dossierselectie en veilige sessietokens.
 - Vijf echte provider-smoketests en een volledige lokale HTTP-ketentest met Dify, menselijke goedkeuring en CRM-mock; bewijs en echte screenshots in de repo.
 - Actuele installatiehandleiding, OpenAPI-contracten, reproduceerbare DSL-synchronisatie en regressietests. Publieke Pages toont vastgelegde runs en bevat geen providersleutels.
+
+## 2.2.0 — Uitlegbare Dify-canvassen
+
+- Zeven echte canvasnotities per app, beschrijvingen per node en een vaste visuele leesrichting; centraal beheerd en importeerbaar.
+- Interactieve flow-uitleg op de site met invoer, uitvoer, verantwoordelijkheden, gegevensgrenzen, foutpaden en testvoorbeelden.
+- Onbevestigde documentbasisvelden worden onafhankelijk van de modeluitvoer aangevuld; Python en TypeScript gedragen zich gelijk.
+- Nieuwe echte canvas- en runscreenshots, uitgebreid live API-bewijs met DSL-fingerprints, senior reviewgids en bijgewerkt importpakket.
+- Begrensde CI-looptijd en een afzonderlijke timeout voor browserinstallatie.
+- Browservalidatie gebruikt de gedocumenteerde Zod jitless-modus, zodat de lokale CSP behouden blijft zonder eval-waarschuwing; regressietest toegevoegd.

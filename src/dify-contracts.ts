@@ -58,5 +58,9 @@ export function validateDocument(raw: unknown, source: string): DocumentReview {
   }
   if (value.missing_fields.some((f) => seen.has(f)))
     throw new Error('DIFY_DOCUMENT_MISSING_CONFLICT');
-  return value;
+  const missing = new Set([
+    ...value.missing_fields,
+    ...(['reference', 'price', 'city', 'status'] as const).filter((field) => !seen.has(field)),
+  ]);
+  return { ...value, missing_fields: [...missing].sort() };
 }

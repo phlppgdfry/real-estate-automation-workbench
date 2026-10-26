@@ -25,9 +25,23 @@ async function record(tool: string, input: unknown, run: () => Promise<unknown>)
   const start = performance.now();
   try {
     const result = await run();
+    const appFile = (
+      {
+        analyse: 'lead-intake',
+        assist: 'operations-assistant',
+        document: 'document-review',
+        negation: 'lead-intake',
+        injection: 'lead-intake',
+        'document-incomplete': 'document-review',
+      } as Record<string, string>
+    )[tool];
+    const dslSha256 = createHash('sha256')
+      .update(readFileSync(`dify/apps/${appFile}.yml`))
+      .digest('hex');
     cases.push({
       tool,
       status: 'passed',
+      dslSha256,
       input,
       inputSha256: createHash('sha256').update(JSON.stringify(input)).digest('hex'),
       elapsedMs: Math.round(performance.now() - start),
@@ -85,6 +99,19 @@ await record(
       config(required[0]),
     );
     if (r.extraction.intent !== 'unknown') throw new Error('INJECTION_NOT_ESCALATED');
+    return r;
+  },
+);
+await record(
+  'document-incomplete',
+  { text: 'Referentie: DD-204\nGemeente: Oudenburg\nDeze fiche is fictief.' },
+  async () => {
+    const r = await reviewDocumentDify(
+      'Referentie: DD-204\nGemeente: Oudenburg\nDeze fiche is fictief.',
+      config(required[2]),
+    );
+    if (!r.review.missing_fields.includes('price') || !r.review.missing_fields.includes('status'))
+      throw new Error('MISSING_BASIS_FIELDS');
     return r;
   },
 );

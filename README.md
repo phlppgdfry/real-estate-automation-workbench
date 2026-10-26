@@ -32,6 +32,12 @@ De browserdemo en server delen dezelfde domeinregels. De server gebruikt SQLite 
 5. Open **Dify werkbank**, kies een toepassing en bekijk een vastgelegde echte run met broncitaten.
 6. Open **Proces & impact** en verander de aannames van de businesscase.
 
+## Dify-flows die je kunt uitleggen en overdragen
+
+Elke importeerbare flow bevat procesuitleg, gegevensgrenzen, controlepunten, testscenario’s en foutafhandeling **op het Dify-canvas zelf**. De werkbank toont die inhoud ook als klikbare stappen. De documentguard markeert basisvelden zonder gecontroleerd citaat zelfstandig als onbevestigd. [Canvas-review en senior afwegingen](docs/dify-canvas-review.md).
+
+![Geannoteerde Dify-documentflow](public/dify/screenshots/document.png)
+
 ## Belangrijkste keuzes
 
 - **AI als begrensde extractor:** schema én bronvalidatie; prijzen komen uit een catalogus; medewerker beslist. [Afwegingen](docs/decisions.md)
