@@ -205,6 +205,7 @@ export function DifyWorkbench() {
         {tools.map(([id, label]) => (
           <button
             key={id}
+            disabled={busy}
             aria-pressed={tool === id}
             className={tool === id ? 'primary' : ''}
             onClick={() => {
