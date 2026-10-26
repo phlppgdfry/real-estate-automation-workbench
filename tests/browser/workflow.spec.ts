@@ -112,5 +112,5 @@ test('partly corrupt browser state cannot leave the portfolio blank', async ({ p
   await page.getByRole('button', { name: 'Technisch dossier', exact: true }).click();
   await expect(
     page.getByRole('region', { name: 'Evaluatie van de herkenningsregels' }),
-  ).toContainText('13/16');
+  ).toContainText('16/16');
 });
