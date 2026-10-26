@@ -1,3 +1,6 @@
+import { readFileSync, existsSync, statSync } from 'node:fs';
+import { resolve, extname, sep } from 'node:path';
+import { analyseDify, assistDify, reviewDocumentDify } from './dify-services';
 import { createHmac } from 'node:crypto';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { z } from 'zod';
@@ -19,6 +22,9 @@ export type Config = {
   aiKey?: string;
   aiModel?: string;
   difyKey?: string;
+  difyAgentKey?: string;
+  difyDocumentKey?: string;
+  staticRoot?: string;
   difyBaseUrl?: string;
   difyUser?: string;
 };
@@ -98,6 +104,33 @@ export function makeServer(config: Config) {
           'Retry-After': '2',
         });
       }
+      if (req.method === 'GET' && config.staticRoot && !path.startsWith('/api/')) {
+        const root = resolve(config.staticRoot);
+        const relative = path
+          .replace(/^\/real-estate-automation-workbench/, '')
+          .replace(/^\/+/, '');
+        const file = resolve(root, relative || 'index.html');
+        if (file.startsWith(root + sep) && existsSync(file) && statSync(file).isFile()) {
+          const mime: Record<string, string> = {
+            '.html': 'text/html; charset=utf-8',
+            '.js': 'text/javascript; charset=utf-8',
+            '.css': 'text/css; charset=utf-8',
+            '.json': 'application/json',
+            '.png': 'image/png',
+            '.svg': 'image/svg+xml',
+            '.txt': 'text/plain; charset=utf-8',
+          };
+          res.writeHead(200, {
+            'Content-Type': mime[extname(file)] ?? 'application/octet-stream',
+            'X-Content-Type-Options': 'nosniff',
+            'Cache-Control': 'no-store',
+            'Content-Security-Policy':
+              "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'",
+          });
+          return res.end(readFileSync(file));
+        }
+        return send(res, 404, { error: 'NOT_FOUND' });
+      }
       const principal = authenticate(String(req.headers.authorization ?? ''), config.credentials);
       if (!principal) return send(res, 401, { error: 'AUTH' });
       const permit = (permission: 'read' | 'review' | 'operate') => {
@@ -105,6 +138,84 @@ export function makeServer(config: Config) {
         send(res, 403, { error: 'FORBIDDEN' });
         return false;
       };
+      if (path === '/api/dify/status' && req.method === 'GET') {
+        if (!permit('read')) return;
+        return send(res, 200, {
+          analysis: Boolean(config.difyKey),
+          assistant: Boolean(config.difyAgentKey),
+          document: Boolean(config.difyDocumentKey),
+          requiresHuman: true,
+        });
+      }
+      if (path.startsWith('/api/dify/') && req.method === 'POST') {
+        if (!permit('review')) return;
+        const key =
+          path === '/api/dify/analyse'
+            ? config.difyKey
+            : path === '/api/dify/assist'
+              ? config.difyAgentKey
+              : path === '/api/dify/document'
+                ? config.difyDocumentKey
+                : undefined;
+        if (!['/api/dify/analyse', '/api/dify/assist', '/api/dify/document'].includes(path))
+          return send(res, 404, { error: 'NOT_FOUND' });
+        if (!key) return send(res, 503, { error: 'DIFY_NOT_CONFIGURED' });
+        const raw = JSON.parse(await body(req));
+        const options = { apiKey: key, baseUrl: config.difyBaseUrl, user: config.difyUser };
+        // Validate requests separately from upstream output: provider contract failures are 502.
+        const input =
+          path === '/api/dify/analyse'
+            ? z
+                .object({ message: z.string().trim().min(10).max(4000) })
+                .strict()
+                .parse(raw)
+            : path === '/api/dify/assist'
+              ? z
+                  .object({
+                    leadId: z.string().min(1).max(100),
+                    question: z.string().trim().min(10).max(1000),
+                  })
+                  .strict()
+                  .parse(raw)
+              : z
+                  .object({ text: z.string().trim().min(20).max(12000) })
+                  .strict()
+                  .parse(raw);
+        try {
+          if ('message' in input)
+            return send(
+              res,
+              200,
+              await analyseDify(
+                {
+                  message: input.message,
+                  eventId: 'preview',
+                  name: 'Demo',
+                  email: 'demo@example.com',
+                  channel: 'website',
+                },
+                options,
+              ),
+            );
+          if ('question' in input) {
+            const lead = config.store.get(input.leadId);
+            return send(
+              res,
+              200,
+              await assistDify(lead, config.listings, input.question, options, principal.subject),
+            );
+          }
+          return send(res, 200, await reviewDocumentDify(input.text, options));
+        } catch (error) {
+          if (error instanceof DomainError && error.code === 'NOT_FOUND')
+            return send(res, 404, { error: 'NOT_FOUND' });
+          return send(res, 502, {
+            error: 'DIFY_REVIEW_REQUIRED',
+            message:
+              'Dify gaf geen controleerbaar resultaat. Probeer opnieuw of draag over aan een medewerker.',
+          });
+        }
+      }
       if (path === '/api/leads' && req.method === 'GET') {
         if (!permit('read')) return;
         const query = z

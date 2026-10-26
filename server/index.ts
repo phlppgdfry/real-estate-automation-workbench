@@ -29,6 +29,9 @@ const server = makeServer({
   aiKey: process.env.OPENAI_API_KEY,
   aiModel: process.env.OPENAI_MODEL,
   difyKey: process.env.DIFY_WORKFLOW_API_KEY,
+  difyAgentKey: process.env.DIFY_AGENT_API_KEY,
+  difyDocumentKey: process.env.DIFY_DOCUMENT_API_KEY,
+  staticRoot: 'dist',
   difyBaseUrl: process.env.DIFY_API_BASE_URL,
   difyUser: process.env.DIFY_WORKFLOW_USER,
 });

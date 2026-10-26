@@ -42,7 +42,50 @@ export type DifyChatRun = {
 };
 
 function endpoint(baseUrl: string): string {
-  return `${baseUrl.replace(/\/+$/, '')}/v1/workflows/run`;
+  return `${difyBaseUrl(baseUrl)}/v1/workflows/run`;
+}
+export function difyBaseUrl(baseUrl = 'https://api.dify.ai'): string {
+  const url = new URL(baseUrl);
+  if (url.username || url.password || url.search || url.hash)
+    throw new Error('DIFY_INVALID_BASE_URL');
+  if (
+    url.protocol !== 'https:' &&
+    !(url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
+  )
+    throw new Error('DIFY_INSECURE_BASE_URL');
+  return url.toString().replace(/\/+$/, '').replace(/\/v1$/, '');
+}
+async function readResponse(response: Response): Promise<unknown> {
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error('DIFY_EMPTY_RESPONSE');
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.length;
+    if (size > 262144) {
+      await reader.cancel();
+      throw new Error('DIFY_RESPONSE_TOO_LARGE');
+    }
+    chunks.push(value);
+  }
+  const merged = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.length;
+  }
+  try {
+    return JSON.parse(new TextDecoder().decode(merged));
+  } catch {
+    throw new Error('DIFY_INVALID_JSON');
+  }
+}
+function timeout(config: DifyConfig): number {
+  const ms = config.timeoutMs ?? 30000;
+  if (!Number.isInteger(ms) || ms < 100 || ms > 90000) throw new Error('DIFY_INVALID_TIMEOUT');
+  return ms;
 }
 
 function outputValue(outputs: Record<string, unknown>): unknown {
@@ -65,7 +108,7 @@ export async function runDifyWorkflow(
 ): Promise<DifyWorkflowRun> {
   if (mode !== 'blocking') throw new Error('DIFY_STREAMING_UNSUPPORTED');
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), config.timeoutMs ?? 15000);
+  const timer = setTimeout(() => controller.abort(), timeout(config));
   try {
     const response = await fetcher(endpoint(config.baseUrl ?? 'https://api.dify.ai'), {
       method: 'POST',
@@ -81,7 +124,7 @@ export async function runDifyWorkflow(
       signal: controller.signal,
     });
     if (!response.ok) throw new Error(`DIFY_HTTP_${response.status}`);
-    const parsed = DifyResponseSchema.safeParse(await response.json());
+    const parsed = DifyResponseSchema.safeParse(await readResponse(response));
     if (!parsed.success) throw new Error('DIFY_INVALID_RESPONSE');
     return {
       outputs: parsed.data.data.outputs,
@@ -111,13 +154,17 @@ export async function extractDify(
 export async function runDifyAgent(
   query: string,
   config: DifyConfig,
-  options: { conversationId?: string; fetcher?: typeof fetch } = {},
+  options: {
+    conversationId?: string;
+    inputs?: Record<string, string>;
+    fetcher?: typeof fetch;
+  } = {},
 ): Promise<DifyChatRun> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), config.timeoutMs ?? 15000);
+  const timer = setTimeout(() => controller.abort(), timeout(config));
   try {
     const response = await (options.fetcher ?? fetch)(
-      `${(config.baseUrl ?? 'https://api.dify.ai').replace(/\/+$/, '')}/v1/chat-messages`,
+      `${difyBaseUrl(config.baseUrl)}/v1/chat-messages`,
       {
         method: 'POST',
         headers: {
@@ -125,6 +172,7 @@ export async function runDifyAgent(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          inputs: options.inputs ?? {},
           query,
           response_mode: 'blocking',
           user: config.user ?? 'duin-dorp-demo',
@@ -142,7 +190,7 @@ export async function runDifyAgent(
         metadata: z.record(z.string(), z.unknown()).optional(),
       })
       .passthrough()
-      .safeParse(await response.json());
+      .safeParse(await readResponse(response));
     if (!parsed.success) throw new Error('DIFY_AGENT_INVALID_RESPONSE');
     return {
       answer: parsed.data.answer,

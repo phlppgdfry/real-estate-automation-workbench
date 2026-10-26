@@ -67,3 +67,9 @@ Een echte netwerkconnector vraagt remote idempotentie, lease, timeout, jitter, r
 `server/schema.ts` past migraties atomair toe met `PRAGMA user_version`. De oorspronkelijke onversioneerde v1-tabellen worden behouden. Een nieuwere database dan de applicatie wordt geweigerd. Restart, tweeverbindingsclaims, rollback en migratie worden uitgevoerd in [de betrouwbaarheidstests](../tests/reliability.test.ts).
 
 De leadbody en functionele audit blijven JSON. Inboxvelden zijn afzonderlijk geïndexeerd voor claimgedrag. SQLite en audit zijn niet door de app versleuteld of onveranderbaar gemaakt. Er is geen online back-updienst of tenantisolatie. [Runbook](operations.md), [senior review](senior-review.md).
+
+## Dify-werkbank naast de duurzame intake
+
+De bestaande inbox kan Dify gebruiken als extractor, zonder de ontvangsttransactie of outboxregels te wijzigen. Daarnaast heeft de server drie read-only reviewer-routes voor analysevoorbeelden, dossieradvies en documentcontrole. De dossierroute haalt de context zelf uit de lokale store; de browser kan geen vervalste feiten of bestaande conversatie-ID aanleveren. De documentroute minimaliseert contactpatronen vóór provider-I/O en valideert citaten opnieuw na de Dify-codeguard. Deze routes maken geen lead of CRM-opdracht.
+
+De gebouwde React-app kan op dezelfde localhost-server worden bediend. De publieke GitHub Pages-versie gebruikt uitsluitend expliciet gelabeld opgeslagen runbewijs. Zie [Dify-installatie](dify-integration.md), [OpenAPI](openapi.json) en [lokale ketenverificatie](../public/dify/local-verification.json).

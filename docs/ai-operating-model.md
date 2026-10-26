@@ -18,40 +18,40 @@ signed intake
 The companion operations agent is deliberately read-only. It explains exceptions and
 proposes a next step; it cannot book, email, edit CRM records, or bypass review.
 
-## Dify build plan
+## Implemented Dify apps
 
 ### 1. Lead Intake Workflow
 
 - Start: `message` text input.
 - LLM: structured output with `intent`, `reference`, `evidence`.
-- Code: reject invented citations, unknown listings, mixed intent, and prompt injection signals.
-- End: return only the three contract fields.
+- Code: reject invalid schemas, invented citations and references absent from the input. The application separately enforces catalog status, mixed intent and suspicious-input rules.
+- End: return the three contract fields as JSON in outputs.result.
 
 ### 2. Operations Agent
 
-- Give it the validated lead, catalog snapshot, audit trail, and operating policy as context.
+- Give it only validated intent, work status, catalog status and blocking reasons. Do not send the name, email, raw enquiry or audit trail.
 - Configure no tools for the portfolio version.
 - Require the response shape in `dify/agent-contract.json`.
 - Expose it only to an authenticated internal reviewer.
 
 ### 3. Document Review Workflow
 
-- Accept one uploaded document.
+- Accept pasted text or one TXT/Markdown document (no PDF/OCR).
 - Extract text and summarise observable facts.
-- Redact or minimise personal data before persistence.
+- Minimise email and phone-like strings before the provider call; this is heuristic, not anonymisation.
 - Route legal, financial, or customer-facing conclusions to a human.
 
 ## What is implemented versus designed
 
-| Capability                                 | Status                                        |
-| ------------------------------------------ | --------------------------------------------- |
-| Dify Workflow API adapter                  | Implemented and contract-tested               |
-| Dify Agent API adapter                     | Implemented and contract-tested               |
-| Rules fallback                             | Implemented and deterministic                 |
-| Agent tool allowlist                       | Contract and policy defined; empty by default |
-| Human approval and outbox                  | Implemented locally                           |
-| Live Dify credentials and published app    | Not stored or claimed                         |
-| Production identity, retention, monitoring | Design documented; deployment-specific        |
+| Capability                                 | Status                                             |
+| ------------------------------------------ | -------------------------------------------------- |
+| Dify Workflow API adapter                  | Implemented, contract-tested and live-smoke-tested |
+| Dify Agent API adapter                     | Implemented, contract-tested and live-smoke-tested |
+| Rules fallback                             | Implemented and deterministic                      |
+| Agent tools                                | No tool nodes in the importable Chatflow           |
+| Human approval and outbox                  | Implemented locally                                |
+| Live Dify applications                     | Three Studio apps tested with fictional fixtures   |
+| Production identity, retention, monitoring | Design documented; deployment-specific             |
 
 This distinction is intentional: a senior portfolio should show production judgement,
-not pretend that a local mock is a live enterprise integration.
+not pretend that a local CRM mock is a live enterprise integration. See [Dify evidence](dify-integration.md) for actual provider runs.

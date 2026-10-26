@@ -1368,3 +1368,141 @@ th {
   display: inline-block;
   margin-top: 10px;
 }
+
+.dify-workbench {
+  padding: 28px 0;
+}
+.dify-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 24px 0;
+}
+.dify-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.dify-card {
+  background: #fff;
+  border: 1px solid #dfe4df;
+  border-radius: 14px;
+  padding: 24px;
+  min-width: 0;
+}
+.dify-card label {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+  font-weight: 600;
+}
+.dify-card input,
+.dify-card textarea {
+  width: 100%;
+  font: inherit;
+  border: 1px solid #bdc8bf;
+  padding: 12px;
+  border-radius: 7px;
+  box-sizing: border-box;
+}
+.dify-card button {
+  margin: 10px 8px 0 0;
+}
+.dify-note {
+  padding: 16px;
+  background: #f3f5ed;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+.dify-result {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  background: #f4f6f3;
+  padding: 16px;
+  border-radius: 8px;
+  max-height: 650px;
+  overflow: auto;
+}
+.dify-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin: 28px 0;
+}
+.dify-gallery figure {
+  margin: 0;
+  min-width: 0;
+}
+.dify-gallery img {
+  width: 100%;
+  border: 1px solid #dfe4df;
+  border-radius: 8px;
+}
+.dify-gallery figcaption {
+  margin-top: 9px;
+  font-size: 13px;
+  color: #56655b;
+}
+@media (max-width: 850px) {
+  .dify-grid,
+  .dify-gallery {
+    grid-template-columns: 1fr;
+  }
+  .dify-card {
+    padding: 18px;
+  }
+}
+.dify-card blockquote {
+  border-left: 3px solid #698269;
+  margin: 18px 0;
+  padding: 10px 14px;
+  background: #f4f6f3;
+  overflow-wrap: anywhere;
+}
+.dify-card h4 {
+  font-size: 19px;
+  line-height: 1.4;
+}
+.dify-table {
+  overflow-x: auto;
+}
+.dify-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dify-table th,
+.dify-table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 12px 9px;
+  border-bottom: 1px solid #e1e7e0;
+}
+.dify-card details {
+  margin-top: 24px;
+}
+.dify-card summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sidebar {
+    min-width: 0;
+  }
+}
+@media (max-width: 620px) {
+  .sidebar nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .sidebar nav button {
+    white-space: normal;
+    text-align: center;
+  }
+}

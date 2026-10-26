@@ -1,39 +1,24 @@
-import { execFileSync } from 'node:child_process';
-
-const checks: { name: string; ok: boolean; detail: string }[] = [];
-
-function commandExists(command: string): boolean {
-  try {
-    execFileSync('sh', ['-lc', `command -v ${command}`], { stdio: 'ignore' });
-    return true;
-  } catch {
-    return false;
-  }
+import { difyBaseUrl } from '../server/dify';
+let ok = true;
+for (const [name, env] of [
+  ['aanvraaganalyse', 'DIFY_WORKFLOW_API_KEY'],
+  ['dossierassistent', 'DIFY_AGENT_API_KEY'],
+  ['documentcontrole', 'DIFY_DOCUMENT_API_KEY'],
+]) {
+  const present = Boolean(process.env[env]);
+  ok &&= present;
+  console.log(
+    `${present ? 'PASS' : 'MISSING'} ${name}: ${present ? 'sleutel ingesteld (verborgen)' : `zet ${env} in .env.local`}`,
+  );
 }
-
-checks.push({
-  name: 'difyctl',
-  ok: commandExists('difyctl'),
-  detail: commandExists('difyctl')
-    ? 'CLI gevonden'
-    : 'Installeer difyctl via de officiële installer',
-});
-checks.push({
-  name: 'workflow API key',
-  ok: Boolean(process.env.DIFY_WORKFLOW_API_KEY),
-  detail: process.env.DIFY_WORKFLOW_API_KEY
-    ? 'ingesteld (waarde verborgen)'
-    : 'niet ingesteld; rules fallback blijft actief',
-});
-checks.push({
-  name: 'API base URL',
-  ok: !process.env.DIFY_API_BASE_URL || /^https:\/\//.test(process.env.DIFY_API_BASE_URL),
-  detail: process.env.DIFY_API_BASE_URL ?? 'standaard https://api.dify.ai',
-});
-
-for (const check of checks)
-  console.log(`${check.ok ? 'PASS' : 'INFO'}  ${check.name}: ${check.detail}`);
+try {
+  difyBaseUrl(process.env.DIFY_API_BASE_URL);
+  console.log('PASS API URL geldig');
+} catch {
+  ok = false;
+  console.log('FAIL API URL ongeldig');
+}
 console.log(
-  `\nDify mode: ${process.env.DIFY_WORKFLOW_API_KEY ? 'workflow provider' : 'deterministic rules fallback'}`,
+  'difyctl is niet nodig: importeer de DSL in Studio en publiceer elke app. Dit controleert configuratie; npm run dify:smoke controleert echte runs.',
 );
-if (!checks.every((check) => check.ok || check.name === 'workflow API key')) process.exitCode = 1;
+if (!ok) process.exitCode = 1;

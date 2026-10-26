@@ -56,3 +56,7 @@ Meet inclusief controle, fouten en beheer. Minder benodigde minuten leveren capa
 ## Zelfstandig eigenaarschap
 
 Leg de keten zonder spiekbrief uit, wijzig een regel met test, diagnoseer een fout en verdedig een alternatief zoals Power Automate of PostgreSQL. Een AI-uitgewerkte case helpt leren maar vervangt dat niet. Modeltraining, zware wiskunde en Kubernetes hebben hier minder prioriteit dan een klein nuttig proces van begin tot beheer kunnen uitvoeren.
+
+## Dify praktisch aantonen
+
+De [drie importeerbare apps](dify-integration.md) vormen een concrete oefening: leg uit waarom schema-output en een exact citaat nog geen inhoudelijke juistheid bewijzen, waarom de menselijke controle buiten het model wordt afgedwongen en waarom het dossieradvies geen ruwe klantgegevens krijgt. Laat daarna zien hoe je een Python-guard wijzigt, `npm run dify:sync` uitvoert en de regressietests draait. De [echte runfixtures](../public/dify/evidence.json) zijn een smoke-suite; verwissel die niet met de deterministische taalbaseline of een onafhankelijke kwaliteitsmeting.

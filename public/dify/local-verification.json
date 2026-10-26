@@ -1,0 +1,119 @@
+{
+  "recordedAt": "2026-10-26T16:23:33.868Z",
+  "status": "passed",
+  "mode": "Dify Cloud via local authenticated HTTP API",
+  "eventId": "dify-e2e-1793031813869",
+  "steps": [
+    "signed durable receipt",
+    "Dify worker extraction",
+    "catalogue check",
+    "human approval",
+    "transactional outbox",
+    "durable CRM mock receipt",
+    "read-only assistant",
+    "text document review",
+    "analysis preview"
+  ],
+  "leadStatus": "synced",
+  "extraction": {
+    "intent": "visit",
+    "reference": "DD-204",
+    "evidence": "Ik wil DD-204 bezoeken."
+  },
+  "assistant": {
+    "proposal": {
+      "summary": "De huidige werkstatus is gesynchroniseerd met 1 geregistreerde CRM-poging. Een medewerker moet de klantcommunicatie controleren.",
+      "facts": [
+        {
+          "source_id": "F2",
+          "quote": "De werkstatus is synced; er zijn 1 CRM-pogingen geregistreerd."
+        },
+        {
+          "source_id": "F3",
+          "quote": "Een medewerker beslist over klantcommunicatie. De assistent mag geen acties uitvoeren."
+        }
+      ],
+      "risks": ["Onvoldoende communicatie kan leiden tot klantontevredenheid."],
+      "next_action": "Controleer de klantcommunicatie en de geregistreerde CRM-pogingen.",
+      "requires_human": true
+    },
+    "sourceFacts": [
+      {
+        "id": "F1",
+        "text": "Het doel van de aanvraag is visit."
+      },
+      {
+        "id": "F2",
+        "text": "De werkstatus is synced; er zijn 1 CRM-pogingen geregistreerd."
+      },
+      {
+        "id": "F3",
+        "text": "Een medewerker beslist over klantcommunicatie. De assistent mag geen acties uitvoeren."
+      },
+      {
+        "id": "F4",
+        "text": "Pand DD-204 heeft catalogusstatus beschikbaar."
+      }
+    ],
+    "run": {
+      "conversationId": "6668e9b0-4c09-4388-ae4d-7eacdaf2282f",
+      "messageId": "0570fb2c-8502-4cf4-9a2e-00192bd2cf2c"
+    },
+    "requires_human": true
+  },
+  "document": {
+    "review": {
+      "document_type": "property-sheet",
+      "facts": [
+        {
+          "field": "reference",
+          "value": "DD-204",
+          "quote": "Referentie: DD-204"
+        },
+        {
+          "field": "city",
+          "value": "Oudenburg",
+          "quote": "Gemeente: Oudenburg"
+        },
+        {
+          "field": "price",
+          "value": "€ 389.000",
+          "quote": "Vraagprijs: € 389.000"
+        },
+        {
+          "field": "status",
+          "value": "Beschikbaar",
+          "quote": "Status: Beschikbaar"
+        }
+      ],
+      "missing_fields": [],
+      "risks": ["De gegevens zijn verzonnen en niet afkomstig van een echte eigenaar."],
+      "requires_human": true
+    },
+    "redactedSource": "FICTIEVE VASTGOEDFICHE — UITSLUITEND DEMODATA\n\nReferentie: DD-204\nGemeente: Oudenburg\nVraagprijs: € 389.000\nStatus: Beschikbaar\nWoonoppervlakte: 145 m²\nEPC-verbruik: 158 kWh/m² per jaar\n\nDeze gegevens zijn verzonnen en niet afkomstig van een echte eigenaar.\nEen bezoekmoment is nog niet bevestigd.\nDemo-contact: [EMAIL]",
+    "minimisationApplied": true,
+    "run": {
+      "workflowRunId": "2a70fe2a-f1ad-4a60-bb77-fa0d68b7a0d9",
+      "workflowId": "efde3db8-4845-4120-b599-1961171816ad",
+      "taskId": "390e9f0a-8c54-4b0e-a875-39f0bbb07562",
+      "elapsedTime": 3.166902,
+      "totalTokens": 630
+    },
+    "requires_human": true
+  },
+  "analysis": {
+    "extraction": {
+      "intent": "valuation",
+      "reference": null,
+      "evidence": "waardebepaling van mijn woning"
+    },
+    "run": {
+      "workflowRunId": "b98cb44d-1bde-4383-a1bf-0dbf74bafc23",
+      "workflowId": "97827bd1-328a-404f-a6f1-8b1782704293",
+      "taskId": "74cfef9d-187e-4137-881a-7afb16b421b3",
+      "elapsedTime": 1.352362,
+      "totalTokens": 394
+    }
+  },
+  "sentEmails": 0
+}

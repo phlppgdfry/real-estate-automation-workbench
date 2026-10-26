@@ -23,3 +23,7 @@ Fictieve data, CRM-mock, geen e-mails, geen bewezen bedrijfsresultaten.
 ## Senior reviewer
 
 [Bevindingen en fixes](docs/senior-review.md) · [technische leesroute](docs/reviewer-guide.md) · [evaluatie inclusief missers](docs/evaluation.md). Voer `npm run drill` uit voor uitval en gecontroleerd herstel.
+
+## Dify beoordelen
+
+Open **Dify werkbank** in de demo: lees aanvraagclassificatie, dossieradvies en documentfeiten in gewone taal met hun broncitaten. De knop voor een vastgelegde run maakt geen nieuwe providerrequest. De [installatiegids](docs/dify-integration.md) bevat de drie importeerbare apps, echte screenshots, modelrunbewijs en de lokale end-to-end ketentest.
