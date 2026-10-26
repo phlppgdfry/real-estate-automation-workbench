@@ -27,3 +27,24 @@ De screenshot wordt met `npm run capture` gemaakt. Voor een actuele volledige co
 De hoofdwerkplek behoudt de vastgelegde structuur, kleuren, typografie en hoofdcopy. Toegevoegd binnen bestaande componentfamilies: herstelreden en herstelknop uitsluitend bij een gestopte overdracht; technisch kwaliteitsrapport met echte gegenereerde cijfers. [Technische render](../public/technical-preview.png). Geen nieuw visueel concept nodig voor deze gerichte uitbreiding.
 
 Playwright Chromium, 1536×1024, 1280×800 en 375×812. De actuele desktop- en mobiele screenshots zijn visueel geïnspecteerd; het oorspronkelijke concept en de nieuwe render zijn samen met view_image bekeken. Geen onbedoelde hoofdcopywijziging; de nieuwe technische copy en herstelbediening zijn intentioneel. Vijf browserflows controleren ook drie fouten → herstelreden → succesvolle mock-overdracht en beschadigde browseropslag → bruikbare seed. Geen relevante consolefouten in de hoofdflow. Live backend, echte CRM en live modelkwaliteit worden hiermee niet bewezen.
+
+## Dify v2.2 — canvas en overdracht
+
+De gecontroleerde gebruikersroute is: Dify werkbank → toepassing kiezen → echte opgeslagen run bekijken → verwerkingsstap openen → testscenario bekijken → lokaal een voorbeeld laden. Dify Studio is afzonderlijk met CUA bediend; notities zijn echt geïmporteerd en gepubliceerde API-runs zijn opnieuw uitgevoerd.
+
+Browser-plugin niet beschikbaar; de lokale visuele controle gebruikt de bestaande Playwright-installatie. Omgeving: `http://127.0.0.1:4331/real-estate-automation-workbench/?view=dify&evidence`, desktop 1536×1050 en mobiel 375×812.
+
+| Controle                               | Resultaat                                   | Bewijs                                                                                           |
+| -------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Juiste pagina en betekenisvolle inhoud | Geslaagd                                    | Titel Duin & Dorp; werkbank, resultaten en stappen zichtbaar                                     |
+| Frameworkfouten / console              | Geen appfouten; geen CSP-overtreding        | Parser in gedocumenteerde jitless-modus; scriptbeleid ongewijzigd                                |
+| Interactie                             | Geslaagd                                    | Stapkeuze, reset per toepassing, scenario-invoer, veilige sessie en tekstupload                  |
+| Mobiele weergave                       | Geen horizontale overflow                   | 375 px; [mobiel beeld](../public/dify/screenshots/mobile.png)                                    |
+| Afbeeldingen                           | Alle canvasbeelden geladen                  | Echte Studio-captures met een afzonderlijke link naar runbewijs                                  |
+| Canvasoverdracht                       | Drie apps, elk zeven notities               | Notities zijn DSL-inhoud; geen uitvoeringsverbindingen; bron en nodebeschrijvingen gecontroleerd |
+| Regressie                              | 49 code-/integratietests, 9 browsertests    | Inclusief CSP zonder eval en onafhankelijke documentdekking                                      |
+| Provider / volledige keten             | Zes API-cases en lokale HTTP-keten geslaagd | [Runbewijs](../public/dify/evidence.json), [ketenbewijs](../public/dify/local-verification.json) |
+
+[Desktopwerkbank](../public/dify/screenshots/workbench.png) · [interactieve uitleg](../public/dify/screenshots/guide.png) · [canvas-review](../docs/dify-canvas-review.md).
+
+Grens: desktop en één mobiel formaat zijn gecontroleerd met Chromium, geen volledige browsermatrix. De modelcases zijn kleine fictieve acceptatievoorbeelden, geen onafhankelijke kwaliteitsbenchmark. Notities tonen ontwerp en beheer; uitvoering en veiligheid worden door de daadwerkelijke code bepaald.

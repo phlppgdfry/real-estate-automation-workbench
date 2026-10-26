@@ -35,3 +35,7 @@ De actuele [Node.js 24 SQLite-documentatie](https://nodejs.org/docs/latest-v24.x
 5. **Werkelijke pilot.** Nulmeting en twee weken schaduwmodus; meet actieve behandeltijd inclusief correcties. Geen businessresultaat claimen op basis van de calculator.
 
 Dit zijn de volgende betekenisvolle stappen. Kubernetes, extra agentframeworks, een tweede dashboard of meer certificaten leveren voorlopig minder bewijswaarde op.
+
+## Overdracht en documentdekking in v2.2
+
+De [Dify-canvasreview](dify-canvas-review.md) voegt zichtbaar eigenaarschap, gegevensgrenzen en concrete beoordelingsvragen toe. De toelichting zit in de importeerbare flow en in de site, vanuit dezelfde bron. De documentguard vult niet bevestigde basisvelden onafhankelijk aan; de Python- en TypeScript-tests verifiëren hetzelfde gedrag. Notities zijn geen uitvoerbare guards en worden niet als beveiligingsbewijs gepresenteerd.

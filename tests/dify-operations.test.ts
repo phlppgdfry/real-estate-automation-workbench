@@ -181,6 +181,17 @@ test('importable DSL has no tools/secrets and embedded code equals tested source
     assert.equal(doc.version, '0.7.0');
     assert.deepEqual(doc.workflow.environment_variables, []);
     for (const node of doc.workflow.graph.nodes) {
+      if (node.type === 'custom-note') {
+        assert.ok(JSON.parse(node.data.text).root.children.length >= 2);
+        assert.equal(
+          doc.workflow.graph.edges.some(
+            (edge: { source: string; target: string }) =>
+              edge.source === node.id || edge.target === node.id,
+          ),
+          false,
+        );
+        continue;
+      }
       assert.ok(['start', 'code', 'llm', 'end', 'answer'].includes(node.data.type));
       if (node.data.type === 'llm') assert.equal(node.data.structured_output_enabled, true);
       if (node.data.type === 'code') {
@@ -235,5 +246,57 @@ test('Dify routes require reviewer role, expose only availability and do not mut
   } finally {
     server.close();
     store.close();
+  }
+});
+
+// A partial model result must not silently present an incomplete property sheet as complete.
+test('document completeness is derived independently in Python and TypeScript', () => {
+  const raw = {
+    document_type: 'property-sheet',
+    facts: [{ field: 'reference', value: 'DD-204', quote: 'Referentie: DD-204' }],
+    missing_fields: [],
+    risks: [],
+  };
+  const expected = ['city', 'price', 'status'];
+  const fromPython = JSON.parse(
+    py('validate_document', { model_text: JSON.stringify(raw), source: 'Referentie: DD-204' })
+      .result,
+  );
+  assert.deepEqual(fromPython.missing_fields, expected);
+  assert.deepEqual(
+    validateDocument({ ...raw, requires_human: true }, 'Referentie: DD-204').missing_fields,
+    expected,
+  );
+});
+
+test('canvas documentation covers each executable node and has no overlapping note panels', () => {
+  const guide = JSON.parse(readFileSync('dify/canvas/guide.json', 'utf8'));
+  for (const app of guide.apps) {
+    const doc = YAML.parse(readFileSync(`dify/apps/${app.id}.yml`, 'utf8'));
+    const nodes = doc.workflow.graph.nodes;
+    assert.equal(new Set(nodes.map((n: any) => n.id)).size, nodes.length);
+    assert.deepEqual(
+      nodes
+        .filter((n: any) => n.type !== 'custom-note')
+        .map((n: any) => n.id)
+        .sort(),
+      app.steps.map((s: any) => s.id).sort(),
+    );
+    for (const step of app.steps)
+      assert.equal(nodes.find((n: any) => n.id === step.id).data.desc, step.description);
+    const notes = nodes.filter((n: any) => n.type === 'custom-note');
+    assert.equal(notes.length, 7);
+    for (let i = 0; i < notes.length; i++)
+      for (let j = i + 1; j < notes.length; j++) {
+        const a = notes[i],
+          b = notes[j];
+        assert.equal(
+          a.position.x < b.position.x + b.width &&
+            a.position.x + a.width > b.position.x &&
+            a.position.y < b.position.y + b.height &&
+            a.position.y + a.height > b.position.y,
+          false,
+        );
+      }
   }
 });

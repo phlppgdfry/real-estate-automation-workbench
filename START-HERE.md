@@ -27,3 +27,5 @@ Fictieve data, CRM-mock, geen e-mails, geen bewezen bedrijfsresultaten.
 ## Dify beoordelen
 
 Open **Dify werkbank** in de demo: lees aanvraagclassificatie, dossieradvies en documentfeiten in gewone taal met hun broncitaten. De knop voor een vastgelegde run maakt geen nieuwe providerrequest. De [installatiegids](docs/dify-integration.md) bevat de drie importeerbare apps, echte screenshots, modelrunbewijs en de lokale end-to-end ketentest.
+
+De drie flows bevatten nu ook de uitleg op het Dify-canvas zelf. Open de [canvas-reviewgids](docs/dify-canvas-review.md), volg de kleuren en stel één van de demonstratievragen. De site toont dezelfde uitleg zonder dat je toegang tot de workspace nodig hebt.

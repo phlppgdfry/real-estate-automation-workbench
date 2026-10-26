@@ -72,19 +72,19 @@ workflow:
         type: custom
         position:
           x: 0
-          y: 280
+          y: 235
         positionAbsolute:
           x: 0
-          y: 280
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: start
           title: Documenttekst · fictieve fiche
-          desc: ''
+          desc: Ontvangt geplakte tekst of inhoud uit TXT/Markdown. Gebruik de fictieve pandfiche uit de repository.
           selected: false
           variables:
             - variable: document_text
@@ -96,20 +96,20 @@ workflow:
       - id: redact
         type: custom
         position:
-          x: 330
-          y: 280
+          x: 285
+          y: 235
         positionAbsolute:
-          x: 330
-          y: 280
+          x: 285
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: code
           title: Contactgegevens minimaliseren
-          desc: ''
+          desc: Vervangt e-mail en telefoonachtige patronen door markers. De lokale server doet dit ook vóór overdracht naar Dify.
           selected: false
           code_language: python3
           code: |
@@ -137,20 +137,20 @@ workflow:
       - id: extract
         type: custom
         position:
-          x: 660
-          y: 280
+          x: 570
+          y: 235
         positionAbsolute:
-          x: 660
-          y: 280
+          x: 570
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: llm
           title: Feiten met broncitaten
-          desc: ''
+          desc: Extraheert referentie, prijs, gemeente en status; EPC en oppervlakte kunnen aanvullend worden gevonden. Waarden blijven letterlijk.
           selected: false
           context:
             enabled: false
@@ -231,20 +231,20 @@ workflow:
       - id: validate
         type: custom
         position:
-          x: 990
-          y: 280
+          x: 855
+          y: 235
         positionAbsolute:
-          x: 990
-          y: 280
+          x: 855
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: code
           title: Elk citaat terugvinden
-          desc: ''
+          desc: Controleert dat elke waarde in een exact broncitaat staat. Niet bevestigde basisvelden worden door code aangevuld in missing_fields.
           selected: false
           code_language: python3
           code: |
@@ -273,6 +273,8 @@ workflow:
                     raise ValueError('DOCUMENT_MISSING_FIELDS')
                 if not isinstance(value['risks'], list) or len(value['risks']) > 10 or any(not isinstance(x, str) or len(x) > 500 for x in value['risks']):
                     raise ValueError('DOCUMENT_RISKS')
+                required = {'reference', 'price', 'city', 'status'}
+                value['missing_fields'] = sorted(set(value['missing_fields']) | (required - seen))
                 value['requires_human'] = True
                 return {'result': json.dumps(value, ensure_ascii=False)}
           variables:
@@ -291,20 +293,20 @@ workflow:
       - id: end
         type: custom
         position:
-          x: 1320
-          y: 280
+          x: 1140
+          y: 235
         positionAbsolute:
-          x: 1320
-          y: 280
+          x: 1140
+          y: 235
         sourcePosition: right
         targetPosition: left
         width: 242
-        height: 120
+        height: 140
         selected: false
         data:
           type: end
           title: Documentvoorstel voor controle
-          desc: ''
+          desc: De werkbank toont een tabel met bronpassages en open punten. De bron en veilige runmetadata blijven controleerbaar.
           selected: false
           outputs:
             - variable: result
@@ -312,6 +314,167 @@ workflow:
                 - validate
                 - result
               value_type: string
+      - id: note-overview
+        type: custom-note
+        position:
+          x: 0
+          y: 0
+        positionAbsolute:
+          x: 0
+          y: 0
+        width: 900
+        height: 180
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Documentcontrole · Pandgegevens voorbereiden met zichtbare bronpassages","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een collega hoeft de basisgegevens niet over te typen en ziet per gevonden veld het bewijs. Niet bevestigde basisvelden blijven zichtbaar voor opvolging.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Leesrichting: invoer → modelvoorstel → onafhankelijke controle → menselijke beoordeling.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: blue
+          width: 900
+          height: 180
+      - id: note-boundary
+        type: custom-note
+        position:
+          x: 930
+          y: 0
+        positionAbsolute:
+          x: 930
+          y: 0
+        width: 450
+        height: 180
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Gegevensgrens & verantwoordelijkheid","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Tekst, TXT of Markdown; geen PDF/OCR. E-mail en telefoonachtige patronen worden vóór de modelcall beperkt. Dit is geen volledige anonimisering; Dify kan invoer en logs bewaren.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: violet
+          width: 450
+          height: 180
+      - id: note-input
+        type: custom-note
+        position:
+          x: 0
+          y: 420
+        positionAbsolute:
+          x: 0
+          y: 420
+        width: 440
+        height: 245
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"01 · Invoer & voorbereiding","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Ontvangt geplakte tekst of inhoud uit TXT/Markdown. Gebruik de fictieve pandfiche uit de repository.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"In: document_text · 20–12.000 tekens","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Vervangt e-mail en telefoonachtige patronen door markers. De lokale server doet dit ook vóór overdracht naar Dify.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: yellow
+          width: 440
+          height: 245
+      - id: note-model
+        type: custom-note
+        position:
+          x: 470
+          y: 420
+        positionAbsolute:
+          x: 470
+          y: 420
+        width: 440
+        height: 245
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"02 · Begrensde modeltaak","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Extraheert referentie, prijs, gemeente en status; EPC en oppervlakte kunnen aanvullend worden gevonden. Waarden blijven letterlijk.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Uit: Gevonden velden, bronpassages, ontbrekende velden en risico’s","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Geen taxatie, juridische conclusie of garantie over EPC of beschikbaarheid.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: yellow
+          width: 440
+          height: 245
+      - id: note-guard
+        type: custom-note
+        position:
+          x: 940
+          y: 420
+        positionAbsolute:
+          x: 940
+          y: 420
+        width: 440
+        height: 245
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"03 · Controle & overdracht","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Controleert dat elke waarde in een exact broncitaat staat. Niet bevestigde basisvelden worden door code aangevuld in missing_fields.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"De medewerker controleert volledigheid, tegenstrijdigheden en interpretatie vóór gegevens in een dossier worden gebruikt.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Geen PDF/OCR, automatische publicatie of echte CRM-write.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: violet
+          width: 440
+          height: 245
+      - id: note-tests
+        type: custom-note
+        position:
+          x: 0
+          y: 705
+        positionAbsolute:
+          x: 0
+          y: 705
+        width: 675
+        height: 250
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Test het gedrag zelf","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Fictieve pandfiche: gebruik data/dify/fictieve-pandfiche.txt. Verwacht: vier basisvelden met bronpassages en een contactmarker.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Onvolledige fiche: alleen referentie en gemeente aanwezig. Verwacht: prijs en status blijven onbevestigd, ook als het model dit niet meldt.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Verzonnen citaat: de opgegeven bronpassage ontbreekt in de tekst. Verwacht: guard weigert; geen dossierwijziging.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: blue
+          width: 675
+          height: 250
+      - id: note-operations
+        type: custom-note
+        position:
+          x: 705
+          y: 705
+        positionAbsolute:
+          x: 705
+          y: 705
+        width: 675
+        height: 250
+        selected: false
+        zIndex: 0
+        data:
+          author: Duin & Dorp portfolio
+          desc: ''
+          title: ''
+          type: ''
+          selected: false
+          showAuthor: false
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Als het misgaat","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een verzonnen waarde of bronpassage wordt geweigerd. Niet geciteerde basisvelden komen in missing_fields. Geen documentopslag of automatische cataloguswijziging.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Beheer: sleutels alleen op de server; Web App uit; geen actietools. Wijzig broncode/prompts → dify:sync → tests → importeer → publiceer → live smoke.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          theme: violet
+          width: 675
+          height: 250
     edges:
       - id: start-source-redact-target
         source: start
@@ -362,6 +525,6 @@ workflow:
           sourceType: code
           targetType: end
     viewport:
-      x: 40
-      y: 30
-      zoom: 0.65
+      x: 75
+      y: 35
+      zoom: 0.78

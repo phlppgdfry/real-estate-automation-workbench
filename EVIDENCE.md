@@ -41,3 +41,7 @@ Open de code en voer de tests uit. Een uitgewerkt project bewijst nog geen zelfs
 ## Dify operationeel in v2.1
 
 Drie apps, native schema-output, Python-broncontrole en onafhankelijke TypeScript-validatie. [Importeerbare DSL](dify/apps/lead-intake.yml), [werkbank](src/components/DifyWorkbench.tsx), [live fixtures en run-ID’s](public/dify/evidence.json), [volledige HTTP-keten](public/dify/local-verification.json) en [installatie met screenshots](docs/dify-integration.md). De echte CRM-koppeling en productiehosting blijven buiten scope.
+
+## Overdraagbaarheid en controle in v2.2
+
+[Centraal beheerde canvasgids](dify/canvas/guide.json) → [DSL-generator](scripts/dify/canvas.ts) → drie importeerbare apps én [interactieve site-uitleg](src/components/DifyFlowGuide.tsx). De tests controleren de aansluiting op uitvoerbare nodes, geldige notities zonder uitvoeringsverbindingen en het ontbreken van overlappende notitiepanelen. [Senior review met demonstratievragen](docs/dify-canvas-review.md). De onafhankelijke documentguard vult onbevestigde basisvelden aan, ook als het model die niet meldt.

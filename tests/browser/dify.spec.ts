@@ -80,3 +80,63 @@ test('local dossier selection uses reviewer session without persisting token and
   await page.getByRole('button', { name: 'Dify werkbank', exact: true }).click();
   await expect(page.getByRole('textbox', { name: 'Reviewer-token' })).toHaveValue('');
 });
+
+test('flow guide explains ownership, resets steps per tool and loads a partial document example', async ({
+  page,
+}) => {
+  await page.goto('./?view=dify');
+  const guide = page.getByRole('region', { name: 'Uitleg van de Dify-flow' });
+  await expect(guide.getByRole('heading', { name: 'Zo werkt aanvraaganalyse' })).toBeVisible();
+  await guide.getByRole('button', { name: '3 · Bron en schema toetsen', exact: true }).click();
+  await expect(
+    guide.getByRole('heading', { name: '3 · Bron en schema toetsen', exact: true }),
+  ).toBeVisible();
+  await expect(guide).toContainText('De TypeScript-server valideert opnieuw');
+  await page.getByRole('button', { name: 'Documentcontrole', exact: true }).click();
+  await expect(
+    guide.getByRole('button', { name: '1 · Documenttekst', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await guide.getByText('Testscenario’s & verwachte uitkomst', { exact: true }).click();
+  await guide.getByRole('button', { name: 'Gebruik dit voorbeeld hierboven' }).click();
+  await expect(page.getByRole('textbox', { name: 'Documenttekst' })).toHaveValue(
+    'Referentie: DD-204\nGemeente: Oudenburg\nDeze fiche is fictief.',
+  );
+  await page.setViewportSize({ width: 375, height: 812 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.goto('./?view=dify&evidence');
+  await expect(page.getByRole('textbox', { name: 'Reviewer-token' })).toHaveCount(0);
+  await page
+    .getByRole('region', { name: 'Uitleg van de Dify-flow' })
+    .getByText('Testscenario’s & verwachte uitkomst', { exact: true })
+    .click();
+  await expect(page.getByRole('button', { name: 'Gebruik dit voorbeeld hierboven' })).toHaveCount(
+    0,
+  );
+});
+
+test('browser validation works without eval under a restrictive script policy', async ({
+  page,
+}) => {
+  await page.route('**/*', async (route) => {
+    if (route.request().resourceType() !== 'document') return route.continue();
+    const response = await route.fetch();
+    await route.fulfill({
+      response,
+      headers: {
+        ...response.headers(),
+        'content-security-policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws:; img-src 'self' data:",
+      },
+    });
+  });
+  await page.addInitScript(() => {
+    (window as any).cspViolations = [];
+    document.addEventListener('securitypolicyviolation', (event) => {
+      (window as any).cspViolations.push(event.blockedURI);
+    });
+  });
+  await page.goto('./?view=dify');
+  await page.getByRole('button', { name: 'Bekijk vastgelegde echte run' }).click();
+  await expect(page.getByRole('heading', { name: 'Waardebepaling', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => (window as any).cspViolations)).toEqual([]);
+});

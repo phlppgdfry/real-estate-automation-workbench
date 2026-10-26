@@ -1506,3 +1506,132 @@ th {
     text-align: center;
   }
 }
+
+.flow-guide {
+  margin: 30px 0;
+  padding: 26px;
+  background: #f8faf8;
+  border: 1px solid #dfe5e0;
+  border-radius: 14px;
+}
+.flow-guide-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: start;
+}
+.flow-guide-title > div {
+  max-width: 850px;
+}
+.flow-guide-title h3 {
+  font-size: 23px;
+}
+.flow-guide-title > a {
+  white-space: nowrap;
+}
+.flow-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 15px;
+}
+.flow-steps button {
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  background: white;
+  border: 1px solid #cbd8d0;
+  border-radius: 8px;
+  min-height: 64px;
+  padding: 12px;
+}
+.flow-steps button[aria-pressed='true'] {
+  background: #e1efea;
+  color: #095f53;
+  border: 2px solid #176d5f;
+}
+.flow-step-detail {
+  background: white;
+  border-left: 3px solid #176d5f;
+  padding: 20px 24px;
+  border-radius: 6px;
+}
+.flow-step-detail h4,
+.flow-boundaries h4 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.flow-step-detail dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 16px 0;
+}
+.flow-step-detail dt {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #596d62;
+}
+.flow-step-detail dd {
+  margin: 3px 0;
+}
+.flow-boundaries {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin: 24px 0;
+}
+.flow-boundaries p {
+  margin-bottom: 14px;
+}
+.flow-scenarios summary {
+  font-weight: 650;
+  cursor: pointer;
+}
+.flow-scenarios > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 18px 0;
+}
+.flow-scenarios article {
+  padding: 18px;
+  background: white;
+  border: 1px solid #dfe5e0;
+  border-radius: 8px;
+}
+.flow-example-text {
+  white-space: pre-wrap;
+  margin: 12px 0;
+}
+.flow-scenarios button {
+  margin-top: 14px;
+}
+@media (max-width: 900px) {
+  .flow-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .flow-guide-title {
+    display: block;
+  }
+  .flow-guide-title > a {
+    display: inline-block;
+    margin-top: 12px;
+  }
+}
+@media (max-width: 620px) {
+  .flow-guide {
+    padding: 18px;
+  }
+  .flow-boundaries,
+  .flow-scenarios > div,
+  .flow-step-detail dl {
+    grid-template-columns: 1fr;
+  }
+  .flow-step-detail {
+    padding: 16px;
+  }
+}

@@ -8,6 +8,10 @@ De werkbank bevat drie importeerbare Dify-apps: aanvraaganalyse, een dossierassi
 | Dossierassistent | Legt blokkades uit vanuit aangeleverde statusfeiten en stelt een volgende stap voor                         | [Chatflow DSL](../dify/apps/operations-assistant.yml) |
 | Documentcontrole | Zet tekst om in controleerbare pandgegevens met exacte bronpassages en ontbrekende velden                   | [Workflow DSL](../dify/apps/document-review.yml)      |
 
+## Leesbare canvassen
+
+Elke app bevat zeven gekleurde notitiepanelen en een beschrijving per uitvoerbare stap. Die uitleg reist mee met de importeerbare DSL. De site biedt dezelfde inhoud als klikbare stappen met invoer, uitvoer, controlepunt, gegevensgrens, eigenaar en testscenario’s. Lees de [canvas-reviewgids](dify-canvas-review.md) voor de ontwerpafwegingen en demonstratievragen.
+
 ## Starten
 
 ```bash
@@ -61,6 +65,8 @@ Documentcontrole ondersteunt geplakte tekst, TXT en Markdown; maximaal 12.000 te
 
 ## Grenzen die in code worden gecontroleerd
 
+Bij documentcontrole wordt de lijst met onbevestigde basisvelden onafhankelijk afgeleid van de gevalideerde citaten. Als het model een veld overslaat en `missing_fields` leeg laat, vult code dit aan. Referentie, prijs, gemeente en status zijn de vier basisvelden; een volledig geciteerde set is nog geen inhoudelijke of juridische volledigheidsverklaring.
+
 - LLM-output gebruikt native structured output; aparte Python-code controleert schema en letterlijke broncitaten. De TypeScript-server valideert opnieuw.
 - De verplichte menselijke controle wordt door code toegevoegd, niet door het model bepaald. De assistent heeft geen tools, geheugen tussen dossiers of schrijfrechten.
 - Dossiercontext bevat alleen intentie, werkstatus, catalogusstatus en redenen; geen naam, e-mailadres, ruwe aanvraag of vrij auditlog. Een gepseudonimiseerde gebruikers-ID wordt per serverprincipal afgeleid. Elke aanvraag start een nieuwe conversatie.
@@ -73,16 +79,16 @@ Documentcontrole ondersteunt geplakte tekst, TXT en Markdown; maximaal 12.000 te
 
 De [lokale verificatie](../public/dify/local-verification.json) bewijst ook de volledige ondertekende intake met Dify, menselijke goedkeuring en CRM-mock, gevolgd door de drie beveiligde werkbankroutes. `npm run dify:verify-local` maakt daarvoor een nieuw fictief dossier; de modelcalls verbruiken providerbudget.
 
-De kleine [live smoke-suite](../scripts/dify/smoke.ts) test waardebepaling, dossieradvies bij een verkocht pand, de [fictieve pandfiche](../data/dify/fictieve-pandfiche.txt), ontkenning en een verdachte instructie. Bekijk de status per case in het [runbewijs](../public/dify/evidence.json). Dit is geen representatieve nauwkeurigheidsmeting. De deterministische evaluatie in `data/evaluation-report.json` blijft daarvan gescheiden.
+De kleine [live smoke-suite](../scripts/dify/smoke.ts) test waardebepaling, dossieradvies bij een verkocht pand, de [fictieve pandfiche](../data/dify/fictieve-pandfiche.txt), ontkenning, een verdachte instructie en een onvolledige pandfiche. Bekijk de status per case in het [runbewijs](../public/dify/evidence.json). Dit is geen representatieve nauwkeurigheidsmeting. De deterministische evaluatie in `data/evaluation-report.json` blijft daarvan gescheiden.
 
 De eerste live runs brachten echte incompatibiliteiten aan het licht: een string `"null"`, een optioneel veld als Python `None`, en booleans die de modelconnector anders verwerkte. Native schema-output, expliciete lege-contextafhandeling en een menselijke controle die door code wordt toegevoegd lossen die integratieproblemen op. De guards zijn niet versoepeld om verzonnen bronnen door te laten.
 
 Wijzig prompts/code/schema's in hun bronmappen en voer `npm run dify:sync` uit. De CI controleert dat de code in de importeerbare DSL exact overeenkomt met de geteste Python-bron. De tests controleren ook foutieve citaten, te grote antwoorden, timeout, veilige dossiercontext, contactminimisatie en roltoegang.
 
-![Echte aanvraagrun](../public/dify/screenshots/lead.png)
+![Aanvraagcanvas met uitleg](../public/dify/screenshots/lead.png)
 
-![Echt dossieradvies](../public/dify/screenshots/assistant.png)
+![Dossiercanvas met uitleg](../public/dify/screenshots/assistant.png)
 
-![Echte documentcontrole](../public/dify/screenshots/document.png)
+![Documentcanvas met uitleg](../public/dify/screenshots/document.png)
 
 Officiële referenties: [Dify Workflow API](https://docs.dify.ai/en/api-reference/guides/workflow), [Dify Chatflow API](https://docs.dify.ai/en/api-reference/guides/chatflow), [Dify DSL import/export](https://docs.dify.ai/en/use-dify/workspace/app-management).

@@ -199,6 +199,7 @@ export function Technical() {
           ['START-HERE.md', 'Start hier · 2 / 5 / 15 minuten'],
           ['EVIDENCE.md', 'Functie-eis → code → test'],
           ['docs/senior-review.md', 'Senior review · bevindingen, fixes en grenzen'],
+          ['docs/dify-canvas-review.md', 'Dify-canvassen · uitleg, afwegingen en overdracht'],
           ['docs/evaluation.md', 'Evaluatie · methode, missers en releasebesluit'],
           ['docs/architecture.md', 'Architectuur & API-contract'],
           ['docs/decisions.md', 'Ontwerpkeuzes & alternatieven'],
