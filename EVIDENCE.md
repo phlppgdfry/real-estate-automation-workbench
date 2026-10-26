@@ -2,16 +2,16 @@
 
 Open de code en voer de tests uit. Een uitgewerkt project bewijst nog geen zelfstandige beheersing: laat de auteur het uitleggen en aanpassen.
 
-| Vaardigheid                      | Concreet bewijs                                                 | Demo / controle                 | Grens                                           |
-| -------------------------------- | --------------------------------------------------------------- | ------------------------------- | ----------------------------------------------- |
-| Procesanalyse en bedrijfsinzicht | [AS-IS, TO-BE, KPI's](CASE_STUDY.md)                            | Proces & impact, tour 1/7       | Werkhypothese; geen echte workshop              |
-| API's en systeemintegraties      | [API](server/app.ts), [contract](docs/openapi.json)             | Technisch dossier, HTTP-tests   | Lokale mock, geen echte CRM-credentials         |
-| LLMs praktisch toepassen         | [Extractor](server/ai.ts), [regels](src/domain.ts)              | Broncitaat, tour 2/3            | Contracttests; live modelkwaliteit niet gemeten |
-| Workflow en foutafhandeling      | [Outbox](server/store.ts)                                       | Fout simuleren, tour 4/5        | Eén lokale worker; geen netwerkgarantie         |
-| Database en gegevensvalidatie    | [Store](server/store.ts), [schema](src/domain.ts)               | Rollback-/restarttests          | Geen productiecluster of migratieplatform       |
-| Scripts en eigen toepassingen    | [React](src/App.tsx), [API-demo](scripts/demo-api.ts)           | Nieuwe aanvraag, filter, reset  | Browser en API zijn aparte adapters             |
-| Testen, verbeteren, documenteren | [Tests](tests/domain.test.ts), [evaluatie](scripts/evaluate.ts) | Uitzonderingen, tour 6          | Handgeschreven kleine fixturebaseline           |
-| Medewerkers en beheer meenemen   | [Handleiding](docs/user-guide.md), [pilot](docs/operations.md)  | Calculator en gebeurtenissenlog | Geen uitgevoerde pilot of gemeten besparing     |
+| Vaardigheid                      | Concreet bewijs                                                 | Demo / controle                 | Grens                                                                             |
+| -------------------------------- | --------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
+| Procesanalyse en bedrijfsinzicht | [AS-IS, TO-BE, KPI's](CASE_STUDY.md)                            | Proces & impact, tour 1/7       | Werkhypothese; geen echte workshop                                                |
+| API's en systeemintegraties      | [API](server/app.ts), [contract](docs/openapi.json)             | Technisch dossier, HTTP-tests   | Lokale mock, geen echte CRM-credentials                                           |
+| LLMs praktisch toepassen         | [Extractor](server/ai.ts), [regels](src/domain.ts)              | Broncitaat, tour 2/3            | Dify live smoke-tests met fictieve fixtures; geen onafhankelijke kwaliteitsmeting |
+| Workflow en foutafhandeling      | [Outbox](server/store.ts)                                       | Fout simuleren, tour 4/5        | Eén lokale worker; geen netwerkgarantie                                           |
+| Database en gegevensvalidatie    | [Store](server/store.ts), [schema](src/domain.ts)               | Rollback-/restarttests          | Geen productiecluster of migratieplatform                                         |
+| Scripts en eigen toepassingen    | [React](src/App.tsx), [API-demo](scripts/demo-api.ts)           | Nieuwe aanvraag, filter, reset  | Browser en API zijn aparte adapters                                               |
+| Testen, verbeteren, documenteren | [Tests](tests/domain.test.ts), [evaluatie](scripts/evaluate.ts) | Uitzonderingen, tour 6          | Handgeschreven kleine fixturebaseline                                             |
+| Medewerkers en beheer meenemen   | [Handleiding](docs/user-guide.md), [pilot](docs/operations.md)  | Calculator en gebeurtenissenlog | Geen uitgevoerde pilot of gemeten besparing                                       |
 
 ## Acceptatiecriteria
 
@@ -37,3 +37,7 @@ Open de code en voer de tests uit. Een uitgewerkt project bewijst nog geen zelfs
 | Herstel en bron opnieuw toetsen | [domein](src/domain.ts), [Store](server/store.ts)                         | foutgeschiedenis blijft, verkocht pand blokkeert    |
 | Reproduceerbare afweging        | [senior review](docs/senior-review.md), [drill](scripts/failure-drill.ts) | `npm run drill`, CI-artifact                        |
 | Kritische evaluatie             | [rapport](data/evaluation-report.json)                                    | 13/16 challengecases; drie conservatieve escalaties |
+
+## Dify operationeel in v2.1
+
+Drie apps, native schema-output, Python-broncontrole en onafhankelijke TypeScript-validatie. [Importeerbare DSL](dify/apps/lead-intake.yml), [werkbank](src/components/DifyWorkbench.tsx), [live fixtures en run-ID’s](public/dify/evidence.json), [volledige HTTP-keten](public/dify/local-verification.json) en [installatie met screenshots](docs/dify-integration.md). De echte CRM-koppeling en productiehosting blijven buiten scope.

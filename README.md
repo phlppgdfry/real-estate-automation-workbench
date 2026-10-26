@@ -2,11 +2,13 @@
 
 Een vastgoedaanvraag één keer ontvangen, controleren en betrouwbaar aan een collega overdragen. Deze case verbindt procesanalyse met een werkende app en een geteste lokale API.
 
-**[Demo + rondleiding](https://phlppgdfry.github.io/real-estate-automation-workbench/?tour)** · **[Start hier](START-HERE.md)** · **[Bewijsmatrix](EVIDENCE.md)** · **[Architectuur](docs/architecture.md)** · **[Kennisgids](docs/knowledge.md)**
+**[Demo + rondleiding](https://phlppgdfry.github.io/real-estate-automation-workbench/?tour)** · **[Dify werkbank](https://phlppgdfry.github.io/real-estate-automation-workbench/?view=dify)** · **[Dify-installatie](docs/dify-integration.md)** · **[Start hier](START-HERE.md)** · **[Bewijsmatrix](EVIDENCE.md)** · **[Architectuur](docs/architecture.md)** · **[Kennisgids](docs/knowledge.md)**
 
 > Onafhankelijke portfolio-case voor een fictief vastgoedkantoor. Alle namen, aanvragen en panden zijn verzonnen. Geen relatie met een echte werkgever, vertrouwelijke informatie, geclaimde productie-ervaring of gerealiseerde besparing. Uitgewerkt met AI-assistentie; beoordeel de bron en laat de auteur keuzes uitleggen en aanpassen.
 
 ![Werkende vastgoedwerkplek](public/preview.png)
+
+![Dify werkbank met echte broncitaten](public/dify/screenshots/workbench.png)
 
 ## Het probleem
 
@@ -27,7 +29,8 @@ De browserdemo en server delen dezelfde domeinregels. De server gebruikt SQLite 
 2. Schakel **CRM-fout simuleren** in en verwerk de wachtrij. Bekijk het gebeurtenissenlog. Schakel de fout uit en probeer na de wachttijd opnieuw.
 3. Open Noor: het pand is verkocht. Goedkeuring is geblokkeerd.
 4. Maak een aanvraag met een verdachte instructie of ontbrekende referentie.
-5. Open **Proces & impact** en verander de aannames van de businesscase.
+5. Open **Dify werkbank**, kies een toepassing en bekijk een vastgelegde echte run met broncitaten.
+6. Open **Proces & impact** en verander de aannames van de businesscase.
 
 ## Belangrijkste keuzes
 
@@ -62,20 +65,21 @@ npm run server     # uitsluitend http://127.0.0.1:4318
 npm run demo:api    # signed webhook → goedkeuring → CRM-mock; herhaalbaar
 ```
 
-De standaard-API gebruikt herkenningsregels. De [OpenAI](server/ai.ts)- en [Dify](docs/dify-integration.md)-adapters zijn aanwezig en met nagebootste HTTP-antwoorden getest; live modelaanroepen zijn nog niet geverifieerd. Dify gebruikt uitsluitend blocking mode. API-sleutels horen uitsluitend in de genegeerde serveromgeving. De browser gebruikt nooit een sleutel. De volledige demo en lokale keten werken zonder live AI.
+De standaard-API gebruikt herkenningsregels. De [Dify-integratie](docs/dify-integration.md) bevat drie importeerbare en werkelijk geteste Cloud-apps: aanvraaganalyse, dossieradvies en documentcontrole. De lokale server bedient ook de gebouwde werkbank en biedt geauthenticeerde Dify-routes. De publieke website toont expliciet vastgelegde echte runs. App-sleutels blijven in de genegeerde serveromgeving; een lokale reviewer gebruikt een aparte sessietoken. De [OpenAI-adapter](server/ai.ts) heeft contracttests; daarvoor wordt geen live verificatie geclaimd. De oorspronkelijke demo blijft zonder providerbudget bruikbaar.
 
 Verwacht: zes fictieve aanvragen. Goedkeuring zet een aanvraag in de wachtrij, succesvolle simulatie verandert die in afgehandeld. De e-mailteller blijft nul. `demo:api` bewijst de persistente serverketen afzonderlijk. De Pages-browser communiceert niet met de lokale API: de publieke demo is zonder accounts of infrastructuur te beoordelen.
 
 ## Bewijs en grenzen
 
-| Onderdeel                                          | Status                                      |
-| -------------------------------------------------- | ------------------------------------------- |
-| App, formulieren, filtering, goedkeuring, retry    | Werkend met browseropslag                   |
-| HMAC-webhook, versiecontrole, domeinregels         | Werkend, getest                             |
-| SQLite-outbox en unieke CRM-ontvangst              | Lokaal werkend; herstart en rollback getest |
-| CRM, panden, klanten, tijdwinst                    | Mock / fictief / scenario                   |
-| OpenAI-extractie                                   | Adapter en contracttests; live test open    |
-| Productie-SSO, echt CRM, agenda, mail, alertdienst | Niet geïmplementeerd                        |
+| Onderdeel                                          | Status                                                                                   |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| App, formulieren, filtering, goedkeuring, retry    | Werkend met browseropslag                                                                |
+| HMAC-webhook, versiecontrole, domeinregels         | Werkend, getest                                                                          |
+| SQLite-outbox en unieke CRM-ontvangst              | Lokaal werkend; herstart en rollback getest                                              |
+| CRM, panden, klanten, tijdwinst                    | Mock / fictief / scenario                                                                |
+| Dify-analyse, dossieradvies, tekstcontrole         | Drie Cloud-apps, echte API-runs en lokale ketentest; [bewijs](public/dify/evidence.json) |
+| OpenAI-extractie                                   | Adapter en contracttests; live test open                                                 |
+| Productie-SSO, echt CRM, agenda, mail, alertdienst | Niet geïmplementeerd                                                                     |
 
 De ontwikkelset scoort 24/24; de aanvullende diagnostische set 13/16. Drie taalvarianten gaan naar een medewerker. Beide sets zijn AI-geschreven en tijdens ontwikkeling/review gebruikt: geen onafhankelijke benchmark of live LLM-score. [Methode en missers](docs/evaluation.md).
 

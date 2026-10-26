@@ -16,6 +16,7 @@ import { catalog, seed } from './seed';
 import { LeadList } from './components/LeadList';
 import { LeadDetail } from './components/LeadDetail';
 import { IntakeForm, Tour } from './components/Dialogs';
+import { DifyWorkbench } from './components/DifyWorkbench';
 import { Impact, Technical } from './components/CaseViews';
 const storageKey = 'duin-dorp-demo-v1';
 type Session = { leads: Lead[]; listings: Listing[] };
@@ -42,7 +43,9 @@ function load(): Session {
 export function App() {
   const [session, setSession] = useState(load);
   const [selected, setSelected] = useState(session.leads[0].id);
-  const [view, setView] = useState('leads');
+  const [view, setView] = useState(
+    new URLSearchParams(location.search).get('view') === 'dify' ? 'dify' : 'leads',
+  );
   const [form, setForm] = useState(false);
   const [tour, setTour] = useState(new URLSearchParams(location.search).has('tour'));
   const [fail, setFail] = useState(false);
@@ -123,6 +126,7 @@ export function App() {
         <nav aria-label="Werkplek">
           {[
             ['leads', 'Aanvragen'],
+            ['dify', 'Dify werkbank'],
             ['impact', 'Proces & impact'],
             ['technical', 'Technisch dossier'],
           ].map(([id, label]) => (
@@ -245,6 +249,8 @@ export function App() {
               </button>
             </section>
           </>
+        ) : view === 'dify' ? (
+          <DifyWorkbench />
         ) : view === 'impact' ? (
           <Impact />
         ) : (

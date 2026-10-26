@@ -1,6 +1,6 @@
 {
   "name": "Duin & Dorp AI Operations Portfolio",
-  "version": "1.0",
+  "version": "2.1",
   "flows": [
     {
       "id": "lead-intake",
@@ -10,8 +10,8 @@
       "human_gate": "application-review"
     },
     {
-      "id": "exception-assistant",
-      "kind": "agent",
+      "id": "operations-assistant",
+      "kind": "chatflow",
       "purpose": "Explain blocked cases and propose a safe next step.",
       "tools": [],
       "human_gate": "always-before-action"
@@ -19,15 +19,21 @@
     {
       "id": "document-review",
       "kind": "workflow",
-      "purpose": "Summarise a supplied document without deciding legal or financial outcomes.",
-      "nodes": ["start.file", "document.extract", "llm.summary", "code.redaction", "end.review"],
+      "purpose": "Extract source-cited property facts from text or TXT/Markdown for human review.",
+      "nodes": [
+        "start.document_text",
+        "code.contact-minimisation",
+        "llm.structured-facts",
+        "code.literal-citation-check",
+        "end.review"
+      ],
       "human_gate": "always-before-use"
     }
   ],
   "operating_principles": [
     "Dify analyses; the application decides.",
     "Every external write is owned by the outbox, not an LLM.",
-    "Every model result is schema-validated and audit-linked.",
+    "Every model result is schema-validated; workbench runs expose safe provider metadata.",
     "No credentials, raw customer email, or hidden prompts in the browser.",
     "Provider failure is visible; it never becomes a false success."
   ]

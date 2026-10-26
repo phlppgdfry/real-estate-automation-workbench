@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Duin & Dorp local lab API",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Fictieve portfolio-case. CRM is een lokale duurzame mock. Geen e-mailtransport.",
     "license": {
       "name": "MIT",
@@ -52,8 +52,8 @@
     "/api/webhooks/leads": {
       "post": {
         "operationId": "ingestLead",
-        "summary": "Duurzaam ontvangen vóór analyse",
-        "description": "HMAC op timestamp + punt + exacte body. Ontvangst is opgeslagen vóór 202. Analyse gebeurt afzonderlijk; 200 bij eerder voltooide analyse. Zelfde ID met andere inhoud geeft 409.",
+        "summary": "Duurzaam ontvangen v\u00f3\u00f3r analyse",
+        "description": "HMAC op timestamp + punt + exacte body. Ontvangst is opgeslagen v\u00f3\u00f3r 202. Analyse gebeurt afzonderlijk; 200 bij eerder voltooide analyse. Zelfde ID met andere inhoud geeft 409.",
         "security": [
           {
             "WebhookSignature": []
@@ -388,7 +388,7 @@
     "/api/outbox/dispatch": {
       "post": {
         "operationId": "dispatchOutbox",
-        "summary": "Eén batch naar lokale CRM-mock verwerken",
+        "summary": "E\u00e9n batch naar lokale CRM-mock verwerken",
         "description": "Labfunctie. Geen externe netwerkactie; simulateFailure injecteert een fout. Actor is door de server bepaald.",
         "security": [
           {
@@ -499,7 +499,7 @@
     "/api/leads/{id}": {
       "get": {
         "operationId": "getLead",
-        "summary": "Lees één aanvraag",
+        "summary": "Lees \u00e9\u00e9n aanvraag",
         "security": [
           {
             "BearerAuth": []
@@ -627,7 +627,7 @@
     "/api/inbox/process": {
       "post": {
         "operationId": "processInbox",
-        "summary": "Operator: analyseer één begrensde batch",
+        "summary": "Operator: analyseer \u00e9\u00e9n begrensde batch",
         "security": [
           {
             "BearerAuth": []
@@ -953,6 +953,493 @@
         },
         "x-required-role": "operator"
       }
+    },
+    "/api/dify/status": {
+      "get": {
+        "operationId": "difyStatus",
+        "summary": "Beschikbaarheid zonder sleutels (reader)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gecontroleerd resultaat; geen dossiermutatie.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["analysis", "assistant", "document", "requiresHuman"],
+                  "properties": {
+                    "analysis": {
+                      "type": "boolean"
+                    },
+                    "assistant": {
+                      "type": "boolean"
+                    },
+                    "document": {
+                      "type": "boolean"
+                    },
+                    "requiresHuman": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ontbreekt of ongeldig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dify/analyse": {
+      "post": {
+        "operationId": "difyAnalyse",
+        "summary": "Analyseer een fictieve aanvraag (reviewer)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["message"],
+                "additionalProperties": false,
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 4000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gecontroleerd resultaat; geen dossiermutatie.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["extraction", "run"],
+                  "properties": {
+                    "extraction": {
+                      "type": "object",
+                      "required": ["intent", "reference", "evidence"],
+                      "properties": {
+                        "intent": {
+                          "type": "string",
+                          "enum": ["visit", "valuation", "search", "unknown"]
+                        },
+                        "reference": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "evidence": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "run": {
+                      "type": "object",
+                      "properties": {
+                        "workflowRunId": {
+                          "type": "string"
+                        },
+                        "workflowId": {
+                          "type": "string"
+                        },
+                        "taskId": {
+                          "type": "string"
+                        },
+                        "elapsedTime": {
+                          "type": "number"
+                        },
+                        "totalTokens": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ontbreekt of ongeldig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Reviewer-rol vereist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Bericht groter dan 16 KiB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Providerfout of broncontrole mislukt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "App-sleutel niet geconfigureerd",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dify/assist": {
+      "post": {
+        "operationId": "difyAssist",
+        "summary": "Verklaar een lokaal dossier met bronfeiten (reviewer)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["leadId", "question"],
+                "additionalProperties": false,
+                "properties": {
+                  "leadId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "question": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 1000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gecontroleerd resultaat; geen dossiermutatie.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["proposal", "sourceFacts", "run", "requires_human"],
+                  "properties": {
+                    "proposal": {
+                      "$ref": "#/components/schemas/DifyAssistance"
+                    },
+                    "sourceFacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": ["id", "text"],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "text": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "run": {
+                      "type": "object",
+                      "properties": {
+                        "conversationId": {
+                          "type": "string"
+                        },
+                        "messageId": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "requires_human": {
+                      "type": "boolean",
+                      "enum": [true]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ontbreekt of ongeldig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Reviewer-rol vereist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Bericht groter dan 16 KiB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Providerfout of broncontrole mislukt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "App-sleutel niet geconfigureerd",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dossier bestaat niet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dify/document": {
+      "post": {
+        "operationId": "difyDocument",
+        "summary": "Controleer geplakte tekst of TXT/Markdown-inhoud (reviewer)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 12000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gecontroleerd resultaat; geen dossiermutatie.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "review",
+                    "redactedSource",
+                    "minimisationApplied",
+                    "run",
+                    "requires_human"
+                  ],
+                  "properties": {
+                    "review": {
+                      "$ref": "#/components/schemas/DifyDocumentReview"
+                    },
+                    "redactedSource": {
+                      "type": "string"
+                    },
+                    "minimisationApplied": {
+                      "type": "boolean"
+                    },
+                    "run": {
+                      "type": "object",
+                      "properties": {
+                        "workflowRunId": {
+                          "type": "string"
+                        },
+                        "workflowId": {
+                          "type": "string"
+                        },
+                        "taskId": {
+                          "type": "string"
+                        },
+                        "elapsedTime": {
+                          "type": "number"
+                        },
+                        "totalTokens": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "requires_human": {
+                      "type": "boolean",
+                      "enum": [true]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ontbreekt of ongeldig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Reviewer-rol vereist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Bericht groter dan 16 KiB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Providerfout of broncontrole mislukt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "App-sleutel niet geconfigureerd",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1156,6 +1643,92 @@
             "type": "string"
           }
         }
+      },
+      "DifyAssistance": {
+        "type": "object",
+        "properties": {
+          "summary": {
+            "type": "string"
+          },
+          "facts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "source_id": {
+                  "type": "string"
+                },
+                "quote": {
+                  "type": "string"
+                }
+              },
+              "required": ["source_id", "quote"],
+              "additionalProperties": false
+            }
+          },
+          "risks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "next_action": {
+            "type": "string"
+          },
+          "requires_human": {
+            "type": "boolean",
+            "enum": [true]
+          }
+        },
+        "required": ["summary", "facts", "risks", "next_action", "requires_human"],
+        "additionalProperties": false
+      },
+      "DifyDocumentReview": {
+        "type": "object",
+        "properties": {
+          "document_type": {
+            "type": "string",
+            "enum": ["property-sheet", "other", "unknown"]
+          },
+          "facts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "enum": ["reference", "price", "city", "status", "epc", "area"]
+                },
+                "value": {
+                  "type": "string"
+                },
+                "quote": {
+                  "type": "string"
+                }
+              },
+              "required": ["field", "value", "quote"],
+              "additionalProperties": false
+            }
+          },
+          "missing_fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "risks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requires_human": {
+            "type": "boolean",
+            "enum": [true]
+          }
+        },
+        "required": ["document_type", "facts", "missing_fields", "risks", "requires_human"],
+        "additionalProperties": false
       }
     }
   }

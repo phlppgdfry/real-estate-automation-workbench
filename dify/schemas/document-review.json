@@ -1,0 +1,43 @@
+{
+  "type": "object",
+  "properties": {
+    "document_type": {
+      "type": "string",
+      "enum": ["property-sheet", "other", "unknown"]
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": ["reference", "price", "city", "status", "epc", "area"]
+          },
+          "value": {
+            "type": "string"
+          },
+          "quote": {
+            "type": "string"
+          }
+        },
+        "required": ["field", "value", "quote"],
+        "additionalProperties": false
+      }
+    },
+    "missing_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": ["document_type", "facts", "missing_fields", "risks"],
+  "additionalProperties": false
+}

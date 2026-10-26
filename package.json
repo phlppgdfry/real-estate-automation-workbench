@@ -1,6 +1,6 @@
 {
   "name": "real-estate-automation-workbench",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -17,12 +17,15 @@
     "test": "tsx --test tests/*.test.ts",
     "test:e2e": "playwright test",
     "evaluate": "tsx scripts/evaluate.ts",
-    "check": "npm run evaluate && npm run build && npm test && npm run drill && npm run validate:api && npm run format:check && python3 scripts/check-links.py",
+    "check": "node --import tsx scripts/dify/sync.ts --check && npm run evaluate && npm run build && npm test && npm run drill && npm run validate:api && npm run format:check && python3 scripts/check-links.py",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate:api": "tsx scripts/validate-api.ts",
     "capture": "tsx scripts/capture.ts",
-    "drill": "tsx scripts/failure-drill.ts"
+    "drill": "tsx scripts/failure-drill.ts",
+    "dify:sync": "node --import tsx scripts/dify/sync.ts",
+    "dify:smoke": "node --import tsx --env-file-if-exists=.env.local scripts/dify/smoke.ts",
+    "dify:verify-local": "node --import tsx --env-file-if-exists=.env.local scripts/dify/verify-local.ts"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -38,6 +41,7 @@
     "prettier": "^3.9.10",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0",
-    "vite": "^7.1.0"
+    "vite": "^7.1.0",
+    "yaml": "^2.9.1"
   }
 }

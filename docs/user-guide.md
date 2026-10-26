@@ -21,3 +21,9 @@ Verkocht pand, ontbrekende of onbekende referentie, oude data en verdachte instr
 ## Nieuwe aanvraag en reset
 
 Kies **+ Nieuwe aanvraag**, een scenario en fictieve gegevens. De browser onthoudt je demo bij herladen. **Reset demo** herstelt zes fictieve aanvragen. **Proces & impact** rekent met instelbare aannames; **Technisch dossier** opent de bewijsstukken.
+
+## Dify werkbank
+
+De tab **Dify werkbank** toont aanvraaganalyse, dossieradvies en documentcontrole. In de publieke demo kun je voor elk onderdeel een vastgelegde echte run openen; de bronpassages en voorgestelde volgende stap zijn leesbaar zonder JSON te hoeven interpreteren. De technische uitvoer blijft uitklapbaar.
+
+Voor nieuwe modelruns start je de gebouwde werkbank via de lokale server en gebruik je je reviewer-token. Haal lokale dossiers op bij de dossierassistent; deze zijn gescheiden van de zes browserdemo-aanvragen. Documentcontrole accepteert geplakte tekst of TXT/Markdown en doet geen PDF/OCR. De uitkomst blijft een voorstel voor menselijke controle. Zie [installatie, grenzen en screenshots](dify-integration.md).
