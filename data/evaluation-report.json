@@ -255,39 +255,39 @@
   "challenge": {
     "datasetSha256": "9807b35d3421d85eed4d4a87f9c7b3445e3133b7bfb8901e567ab5532340feb4",
     "total": 16,
-    "passed": 13,
+    "passed": 16,
     "boundaryViolations": 0,
     "missedManualReview": 0,
-    "conservativeEscalations": 3,
+    "conservativeEscalations": 0,
     "results": [
       {
         "id": "challenge-01",
         "category": "paraphrase",
         "expectedIntent": "valuation",
-        "actualIntent": "unknown",
+        "actualIntent": "valuation",
         "expectedStatus": "review",
-        "actualStatus": "manual",
-        "pass": false,
+        "actualStatus": "review",
+        "pass": true,
         "boundaryViolation": false
       },
       {
         "id": "challenge-02",
         "category": "paraphrase",
         "expectedIntent": "visit",
-        "actualIntent": "unknown",
+        "actualIntent": "visit",
         "expectedStatus": "review",
-        "actualStatus": "manual",
-        "pass": false,
+        "actualStatus": "review",
+        "pass": true,
         "boundaryViolation": false
       },
       {
         "id": "challenge-03",
         "category": "french",
         "expectedIntent": "valuation",
-        "actualIntent": "unknown",
+        "actualIntent": "valuation",
         "expectedStatus": "review",
-        "actualStatus": "manual",
-        "pass": false,
+        "actualStatus": "review",
+        "pass": true,
         "boundaryViolation": false
       },
       {

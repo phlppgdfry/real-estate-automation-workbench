@@ -89,8 +89,13 @@ const money = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 export function extractRules(message: string): Extraction {
-  const visit = /bezoek|bezichtig|visit|viewing/i.exec(message);
-  const valuation = /schatting|verkopen|valuation|sell my/i.exec(message);
+  const visit = /bezoek|bezichtig|visit|viewing|kijkje\s+nemen|visite(?:\s+du\s+bien)?/i.exec(
+    message,
+  );
+  const valuation =
+    /schatting|waardebepaling|verkopen|valuation|sell my|estimer|estimation|évaluer|évaluation/i.exec(
+      message,
+    );
   const search = /\bzoek\b|op zoek|looking for|search/i.exec(message);
   if (ambiguousRequest(message))
     return {
@@ -107,12 +112,12 @@ export function extractRules(message: string): Extraction {
 }
 function ambiguousRequest(message: string): boolean {
   const negated =
-    /(?:\bniet\b|\bgeen\b|\bnot\b|don't)[\s\S]{0,30}(?:bezoek|bezichtig|visit|viewing)|(?:bezoek|bezichtig|visit|viewing)[\s\S]{0,32}(?:\bniet\b|\bnot\b)/i.test(
+    /(?:\bniet\b|\bgeen\b|\bnot\b|don't)[\s\S]{0,30}(?:bezoek|bezichtig|visit|viewing|kijkje\s+nemen|visite)|(?:bezoek|bezichtig|visit|viewing|kijkje\s+nemen|visite)[\s\S]{0,32}(?:\bniet\b|\bnot\b)/i.test(
       message,
     );
   const intentCount = [
-    /bezoek|bezichtig|visit|viewing/i,
-    /schatting|verkopen|valuation|sell my/i,
+    /bezoek|bezichtig|visit|viewing|kijkje\s+nemen|visite/i,
+    /schatting|waardebepaling|verkopen|valuation|sell my|estimer|estimation|évaluer|évaluation/i,
     /\bzoek\b|op zoek|looking for|search/i,
   ].filter((pattern) => pattern.test(message)).length;
   const references = new Set(
