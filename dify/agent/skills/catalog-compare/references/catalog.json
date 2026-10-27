@@ -1,0 +1,66 @@
+{
+  "snapshot": "fictional-2026-10-26",
+  "source_kind": "fictional-static-fixture",
+  "listings": [
+    {
+      "id": "DD-204",
+      "title": "Parkwoning",
+      "city": "Oudenburg",
+      "price": 389000,
+      "status": "available",
+      "bedrooms": 3,
+      "area_m2": 145,
+      "epc": 158
+    },
+    {
+      "id": "DD-209",
+      "title": "Duinappartement",
+      "city": "Oostende",
+      "price": 315000,
+      "status": "sold",
+      "bedrooms": 2,
+      "area_m2": 84,
+      "epc": 160
+    },
+    {
+      "id": "DD-212",
+      "title": "Polderwoning",
+      "city": "Oudenburg",
+      "price": 365000,
+      "status": "available",
+      "bedrooms": 3,
+      "area_m2": 140,
+      "epc": 182
+    },
+    {
+      "id": "DD-218",
+      "title": "Kanaalhuis",
+      "city": "Brugge",
+      "price": 425000,
+      "status": "available",
+      "bedrooms": 4,
+      "area_m2": 160,
+      "epc": 216
+    },
+    {
+      "id": "DD-223",
+      "title": "Marktappartement",
+      "city": "Oudenburg",
+      "price": 275000,
+      "status": "available",
+      "bedrooms": 2,
+      "area_m2": 92,
+      "epc": 114
+    },
+    {
+      "id": "DD-229",
+      "title": "Zeedijkstudio",
+      "city": "Oostende",
+      "price": 189000,
+      "status": "sold",
+      "bedrooms": 1,
+      "area_m2": 42,
+      "epc": 230
+    }
+  ]
+}

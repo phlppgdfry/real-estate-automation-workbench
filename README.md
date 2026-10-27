@@ -32,6 +32,14 @@ De browserdemo en server delen dezelfde domeinregels. De server gebruikt SQLite 
 5. Open **Dify werkbank**, kies een toepassing en bekijk een vastgelegde echte run met broncitaten.
 6. Open **Proces & impact** en verander de aannames van de businesscase.
 
+## Native Agent met aantoonbare grenzen
+
+De **Pandvergelijker** gebruikt Dify Build Mode, een gepubliceerde native Agent, een echte Python-skill en een Agent Node. De workflow toetst daarna zelfstandig prijzen, bronvelden, zoekcriteria en de volledige set beschikbare matches; de lokale API valideert nogmaals in TypeScript. Een mislukte eerste run en de oplossing zijn vastgelegd. [Onderzoek, functies en reproduceerbaarheid](docs/dify-agent-review.md).
+
+De site heeft nu een favicon en een toegankelijke beeldviewer: volledige canvassen, zoom, runbewijs, vorige/volgende flow en Escape met focusterugkeer. De eerder afgesneden dossierfoto is opnieuw opgenomen in de echte Dify-editor.
+
+![Volledige native Agent-workflow met uitleg](public/dify/screenshots/comparison.png)
+
 ## Dify-flows die je kunt uitleggen en overdragen
 
 Elke importeerbare flow bevat procesuitleg, gegevensgrenzen, controlepunten, testscenario’s en foutafhandeling **op het Dify-canvas zelf**. De werkbank toont die inhoud ook als klikbare stappen. De documentguard markeert basisvelden zonder gecontroleerd citaat zelfstandig als onbevestigd. [Canvas-review en senior afwegingen](docs/dify-canvas-review.md).
@@ -71,7 +79,7 @@ npm run server     # uitsluitend http://127.0.0.1:4318
 npm run demo:api    # signed webhook → goedkeuring → CRM-mock; herhaalbaar
 ```
 
-De standaard-API gebruikt herkenningsregels. De [Dify-integratie](docs/dify-integration.md) bevat drie importeerbare en werkelijk geteste Cloud-apps: aanvraaganalyse, dossieradvies en documentcontrole. De lokale server bedient ook de gebouwde werkbank en biedt geauthenticeerde Dify-routes. De publieke website toont expliciet vastgelegde echte runs. App-sleutels blijven in de genegeerde serveromgeving; een lokale reviewer gebruikt een aparte sessietoken. De [OpenAI-adapter](server/ai.ts) heeft contracttests; daarvoor wordt geen live verificatie geclaimd. De oorspronkelijke demo blijft zonder providerbudget bruikbaar.
+De standaard-API gebruikt herkenningsregels. De [Dify-integratie](docs/dify-integration.md) bevat vier importeerbare workflows: aanvraaganalyse, dossieradvies, documentcontrole en een native Agent-pandvergelijker met Python-skill en onafhankelijke broncontrole. De vierde flow is ook via de geauthenticeerde lokale API getest. De lokale server bedient ook de gebouwde werkbank en biedt geauthenticeerde Dify-routes. De publieke website toont expliciet vastgelegde echte runs. App-sleutels blijven in de genegeerde serveromgeving; een lokale reviewer gebruikt een aparte sessietoken. De [OpenAI-adapter](server/ai.ts) heeft contracttests; daarvoor wordt geen live verificatie geclaimd. De oorspronkelijke demo blijft zonder providerbudget bruikbaar.
 
 Verwacht: zes fictieve aanvragen. Goedkeuring zet een aanvraag in de wachtrij, succesvolle simulatie verandert die in afgehandeld. De e-mailteller blijft nul. `demo:api` bewijst de persistente serverketen afzonderlijk. De Pages-browser communiceert niet met de lokale API: de publieke demo is zonder accounts of infrastructuur te beoordelen.
 
@@ -87,7 +95,7 @@ Verwacht: zes fictieve aanvragen. Goedkeuring zet een aanvraag in de wachtrij, s
 | OpenAI-extractie                                   | Adapter en contracttests; live test open                                                 |
 | Productie-SSO, echt CRM, agenda, mail, alertdienst | Niet geïmplementeerd                                                                     |
 
-De ontwikkelset scoort 24/24; de aanvullende diagnostische set 13/16. Drie taalvarianten gaan naar een medewerker. Beide sets zijn AI-geschreven en tijdens ontwikkeling/review gebruikt: geen onafhankelijke benchmark of live LLM-score. [Methode en missers](docs/evaluation.md).
+De ontwikkelset scoort 24/24; de aanvullende diagnostische regressieset 16/16 na de recente uitbreiding van Nederlandse en Franse intentieherkenning. Beide sets zijn AI-geschreven en tijdens ontwikkeling/review gebruikt: geen onafhankelijke benchmark of live LLM-score. [Methode en missers](docs/evaluation.md).
 
 ## Wegwijzer
 

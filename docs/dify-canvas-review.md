@@ -1,6 +1,6 @@
 # Een Dify-canvas dat een collega kan overnemen
 
-Deze drie flows zijn tevens een overdraagbaar technisch dossier. De notities zitten **in de importeerbare DSL** en verschijnen dus ook in je eigen Dify Studio, zoals bij de officiële leersjablonen. De Lexical-notitiestructuur is gebaseerd op een echte Dify 0.7.0-template-export; de eigen inhoud staat centraal in [guide.json](../dify/canvas/guide.json).
+De oorspronkelijke drie flows zijn tevens een overdraagbaar technisch dossier. De notities zitten **in de importeerbare DSL** en verschijnen dus ook in je eigen Dify Studio, zoals bij de officiële leersjablonen. De Lexical-notitiestructuur is gebaseerd op een echte Dify 0.7.0-template-export; de eigen inhoud staat centraal in [guide.json](../dify/canvas/guide.json).
 
 ## Lees de flow in drie minuten
 
@@ -43,3 +43,5 @@ De site biedt dezelfde uitleg stap voor stap, leesbaar op mobiel. Een testscenar
 Bij een wijziging: bronbestanden aanpassen → `npm run dify:sync` → `npm run check` en browsertests → bestaande apps bijwerken via Import DSL → preview testen → Publish Update → `npm run dify:smoke` → screenshots actualiseren. Bewaar bestaande app-sleutels lokaal; er is geen nieuwe sleutel nodig voor deze update.
 
 De DSL-fingerprint identificeert het lokale importbestand dat voor de test is gebruikt; het is geen cryptografische attestatie van de provider. Dify-runtime-ID’s en echte resultaatcapturen vormen het aanvullende bewijs. De [visuele QA](../design/QA.md) beschrijft viewport, consolecontrole, interacties en resterende testgrenzen.
+
+De vierde toepassing voegt een native Agent met een echte Python-skill toe voor een afzonderlijke catalogustaak. Zie de [onderzoeks- en overdrachtsgids](dify-agent-review.md) voor de functiematrix, beta-beperkingen, de twee live kaarten tegenover zeven importkaarten en het echte API-bewijs. De bovenstaande afweging over begrensde context blijft gelden voor de oorspronkelijke drie processen.

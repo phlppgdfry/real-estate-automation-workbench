@@ -140,3 +140,70 @@ test('browser validation works without eval under a restrictive script policy', 
   await expect(page.getByRole('heading', { name: 'Waardebepaling', exact: true })).toBeVisible();
   expect(await page.evaluate(() => (window as any).cspViolations)).toEqual([]);
 });
+
+test('complete canvas viewer fits, zooms, switches evidence, traps focus and closes with focus restored', async ({
+  page,
+}) => {
+  await page.goto('./?view=dify&evidence');
+  const opener = page.getByRole('button', {
+    name: 'Vergroot canvas: Dossierassistent',
+    exact: true,
+  });
+  await opener.click();
+  const viewer = page.getByRole('dialog');
+  await expect(viewer).toBeVisible();
+  await viewer.getByRole('button', { name: 'Beeldviewer sluiten', exact: true }).focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(viewer.getByRole('link', { name: 'Origineel openen ↗', exact: true })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(
+    viewer.getByRole('button', { name: 'Beeldviewer sluiten', exact: true }),
+  ).toBeFocused();
+  const image = viewer.getByRole('img');
+  await expect(image).toHaveJSProperty('complete', true);
+  const fits = () =>
+    image.evaluate((e) => {
+      const r = e.getBoundingClientRect(),
+        p = e.parentElement!.getBoundingClientRect();
+      return r.x >= p.x - 1 && r.y >= p.y - 1 && r.right <= p.right + 1 && r.bottom <= p.bottom + 1;
+    });
+  expect(await fits()).toBe(true);
+  await viewer.getByRole('button', { name: 'Inzoomen', exact: true }).click();
+  await expect(viewer.locator('output')).toHaveText('150%');
+  await viewer.getByRole('button', { name: 'Passend maken', exact: true }).click();
+  expect(await fits()).toBe(true);
+  await viewer.getByRole('button', { name: 'Echte run', exact: true }).click();
+  await expect(image).toHaveAttribute('src', /assistant-run.png\?v=2.3.0/);
+  await viewer.getByRole('button', { name: 'Volgende flow →', exact: true }).click();
+  await expect(
+    viewer.getByRole('heading', { name: 'Documentcontrole', exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(opener).toBeFocused();
+  await page.setViewportSize({ width: 375, height: 812 });
+  await opener.click();
+  expect(await fits()).toBe(true);
+  await page.keyboard.press('Escape');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const icon = await page.locator('link[rel=icon]').getAttribute('href');
+  expect(icon).toContain('/real-estate-automation-workbench/favicon.svg');
+  const response = await page.request.get(icon!);
+  expect(response.ok()).toBe(true);
+  expect(await response.text()).toContain('Duin');
+});
+test('native Agent proof renders property sources and exclusions without a model call', async ({
+  page,
+}) => {
+  await page.goto('./?view=dify&evidence');
+  await page.getByRole('button', { name: 'Agent · Pandvergelijker', exact: true }).click();
+  await page.getByRole('button', { name: 'Bekijk vastgelegde echte run', exact: true }).click();
+  await expect(page.getByRole('cell', { name: /Polderwoning/ })).toContainText('catalog:DD-212');
+  await expect(page.getByRole('cell', { name: /Marktappartement/ })).toContainText(
+    'catalog:DD-223',
+  );
+  await expect(page.getByText('DD-223: bedrooms', { exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Dify functies en afwegingen' })).toContainText(
+    'niet ingericht',
+  );
+});

@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { ComparisonSchema } from '../comparison-contract';
+import { DifyCapabilities } from './DifyCapabilities';
+import { DifyGallery } from './DifyGallery';
 import { DifyFlowGuide } from './DifyFlowGuide';
 import { AssistanceSchema, DocumentReviewSchema } from '../dify-contracts';
 import { z } from 'zod';
@@ -8,11 +11,13 @@ const tools = [
   ['analyse', 'Aanvraaganalyse'],
   ['assist', 'Dossierassistent'],
   ['document', 'Documentcontrole'],
+  ['compare', 'Agent · Pandvergelijker'],
 ] as const;
 function ReadableResult({ value }: { value: Result }) {
   const data = (value.result ?? value) as Result;
   const assistance = AssistanceSchema.safeParse(data.proposal),
-    document = DocumentReviewSchema.safeParse(data.review);
+    document = DocumentReviewSchema.safeParse(data.review),
+    comparison = ComparisonSchema.safeParse(data.comparison);
   const extraction = z
     .object({
       intent: z.enum(['visit', 'valuation', 'search', 'unknown']),
@@ -115,6 +120,58 @@ function ReadableResult({ value }: { value: Result }) {
           </p>
         </>
       ) : null}
+      {comparison.success ? (
+        <>
+          <h4>{comparison.data.suggested_references.length} passende opties voor beoordeling</h4>
+          <p>{comparison.data.summary}</p>
+          <div className="dify-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pand & bron</th>
+                  <th>Prijs</th>
+                  <th>Slaapkamers</th>
+                  <th>Uitkomst</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparison.data.comparisons.map((p) => (
+                  <tr key={p.reference}>
+                    <td>
+                      <strong>{p.title}</strong>
+                      <br />
+                      {p.city} · {p.source_id}
+                    </td>
+                    <td>
+                      {new Intl.NumberFormat('nl-BE', {
+                        style: 'currency',
+                        currency: 'EUR',
+                        maximumFractionDigits: 0,
+                      }).format(p.price)}
+                    </td>
+                    <td>{p.bedrooms}</td>
+                    <td>
+                      {comparison.data.suggested_references.includes(p.reference)
+                        ? 'Optie voor beoordeling'
+                        : 'Voldoet niet'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Uitsluitingscodes: sold = verkocht; city = gemeente; price = prijs; bedrooms =
+            slaapkamers.
+          </p>
+          {comparison.data.excluded.map((p) => (
+            <p key={p.reference}>
+              {p.reference}: {p.reasons.join(', ')}
+            </p>
+          ))}
+          <p>Fictieve snapshot · menselijke controle vereist · geen afspraak of CRM-actie.</p>
+        </>
+      ) : null}
       <details>
         <summary>Technische uitvoer & runmetadata</summary>
         <pre className="dify-result" tabIndex={0}>
@@ -128,6 +185,9 @@ export function DifyWorkbench() {
   const [tool, setTool] = useState<string>('analyse'),
     [token, setToken] = useState(''),
     [text, setText] = useState('Kunt u een waardebepaling van mijn woning in Oudenburg regelen?'),
+    [city, setCity] = useState('Oudenburg'),
+    [maxPrice, setMaxPrice] = useState(390000),
+    [minBedrooms, setMinBedrooms] = useState(3),
     [leadId, setLeadId] = useState(''),
     [cases, setCases] = useState<{ id: string; status: string }[]>([]),
     [result, setResult] = useState<Result | null>(null),
@@ -159,16 +219,18 @@ export function DifyWorkbench() {
     setResult(null);
     try {
       const payload =
-        tool === 'analyse'
-          ? { message: text }
-          : tool === 'assist'
-            ? { leadId, question: text }
-            : { text };
+        tool === 'compare'
+          ? { question: text, city, maxPrice, minBedrooms }
+          : tool === 'analyse'
+            ? { message: text }
+            : tool === 'assist'
+              ? { leadId, question: text }
+              : { text };
       const response = await fetch(`/api/dify/${tool}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(45000),
+        signal: AbortSignal.timeout(tool === 'compare' ? 85000 : 45000),
       });
       const data = await response.json();
       if (!response.ok)
@@ -206,7 +268,7 @@ export function DifyWorkbench() {
           <p className="eyebrow">AI met broncontrole</p>
           <h2>Van aanvraag naar onderbouwd voorstel</h2>
           <p>
-            Drie gespecialiseerde toepassingen. Elke uitkomst vraagt controle door een medewerker.
+            Vier gespecialiseerde toepassingen. Elke uitkomst vraagt controle door een medewerker.
           </p>
         </div>
         <a href="https://github.com/phlppgdfry/real-estate-automation-workbench/blob/main/docs/dify-integration.md">
@@ -225,11 +287,13 @@ export function DifyWorkbench() {
               setResult(null);
               setError('');
               setText(
-                id === 'analyse'
-                  ? 'Kunt u een waardebepaling van mijn woning in Oudenburg regelen?'
-                  : id === 'assist'
-                    ? 'Waarom is deze aanvraag geblokkeerd en wat is de veilige volgende stap?'
-                    : 'Referentie: DD-204\nGemeente: Oudenburg\nVraagprijs: 389000 EUR\nStatus: beschikbaar\nOppervlakte: 145 m²\nEPC: 158 kWh/m²/jaar\nContact: fictief@example.com',
+                id === 'compare'
+                  ? 'Vergelijk beschikbare panden in Oudenburg tot 390000 euro met minstens 3 slaapkamers. Waarom voldoet DD-223 niet?'
+                  : id === 'analyse'
+                    ? 'Kunt u een waardebepaling van mijn woning in Oudenburg regelen?'
+                    : id === 'assist'
+                      ? 'Waarom is deze aanvraag geblokkeerd en wat is de veilige volgende stap?'
+                      : 'Referentie: DD-204\nGemeente: Oudenburg\nVraagprijs: 389000 EUR\nStatus: beschikbaar\nOppervlakte: 145 m²\nEPC: 158 kWh/m²/jaar\nContact: fictief@example.com',
               );
             }}
           >
@@ -241,11 +305,13 @@ export function DifyWorkbench() {
         <div className="dify-card">
           <h3>{tools.find((x) => x[0] === tool)?.[1]}</h3>
           <p>
-            {tool === 'analyse'
-              ? 'Herkent bezoek, waardebepaling of zoekvraag, met letterlijk bewijs uit het bericht.'
-              : tool === 'assist'
-                ? 'Verklaart een bestaand dossier op basis van gecontroleerde statusfeiten. De assistent heeft geen actietools.'
-                : 'Haalt pandgegevens uit tekst en toont de exacte bronpassage. Contactdetails worden vooraf beperkt; controle blijft nodig.'}
+            {tool === 'compare'
+              ? 'Een native Agent gebruikt een lokale Python-skill. Daarna controleert code alle bronvelden en zoekcriteria opnieuw. De Linux-sandbox is geen harde grens voor alleen-lezen toegang.'
+              : tool === 'analyse'
+                ? 'Herkent bezoek, waardebepaling of zoekvraag, met letterlijk bewijs uit het bericht.'
+                : tool === 'assist'
+                  ? 'Verklaart een bestaand dossier op basis van gecontroleerde statusfeiten. De assistent heeft geen actietools.'
+                  : 'Haalt pandgegevens uit tekst en toont de exacte bronpassage. Contactdetails worden vooraf beperkt; controle blijft nodig.'}
           </p>
           {local ? (
             <>
@@ -283,6 +349,35 @@ export function DifyWorkbench() {
                     )}
                   </label>
                 </>
+              ) : null}
+              {tool === 'compare' ? (
+                <div className="comparison-criteria">
+                  <label>
+                    Gemeente
+                    <input value={city} maxLength={80} onChange={(e) => setCity(e.target.value)} />
+                  </label>
+                  <label>
+                    Maximumprijs (€)
+                    <input
+                      type="number"
+                      min={1}
+                      max={10000000}
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    />
+                  </label>
+                  <label>
+                    Minimaal slaapkamers
+                    <input
+                      type="number"
+                      min={0}
+                      max={20}
+                      step={1}
+                      value={minBedrooms}
+                      onChange={(e) => setMinBedrooms(Number(e.target.value))}
+                    />
+                  </label>
+                </div>
               ) : null}
               <label>
                 {tool === 'document'
@@ -370,29 +465,8 @@ export function DifyWorkbench() {
           document.getElementById('dify-input')?.focus();
         }}
       />
-      <div className="dify-gallery">
-        {[
-          ['lead', 'Aanvraaganalyse'],
-          ['assistant', 'Dossierassistent'],
-          ['document', 'Documentcontrole'],
-        ].map(([id, label]) => (
-          <figure key={id}>
-            <a href={`${base}dify/screenshots/${id}.png`} target="_blank" rel="noreferrer">
-              <img
-                loading="lazy"
-                src={`${base}dify/screenshots/${id}.png`}
-                alt={`Dify Studio-canvas met uitleg: ${label}`}
-              />
-            </a>
-            <figcaption>
-              {label} · canvas met uitleg ·{' '}
-              <a href={`${base}dify/screenshots/${id}-run.png`} target="_blank" rel="noreferrer">
-                Echte run bekijken ↗
-              </a>
-            </figcaption>
-          </figure>
-        ))}
-      </div>
+      <DifyGallery />
+      <DifyCapabilities />
     </section>
   );
 }

@@ -15,7 +15,7 @@ Vóór de review: 10/16 challengevoorbeelden volledig correct, met drie aanvrage
 
 De review herstelt generieke fouten: ontkenning vóór én na een bezoekvraag, meerdere unieke referenties over regelgrenzen, en gemengde intenties die niet uitsluitend een bezoek betreffen. Het ontwikkelvoorbeeld met twee panden is expliciet herlabeld naar onbekende intentie + handmatig.
 
-Na herstel: 13/16 volledig correct en nul gemiste handmatige controles **in deze eindige set**. Drie parafrases/Franse waarderingsvragen worden niet herkend en gaan conservatief naar een medewerker. Dit is kwaliteitsinformatie, geen populatienauwkeurigheid of veiligheidsbewijs voor willekeurige input.
+Na het eerste herstel: 13/16 volledig correct en nul gemiste handmatige controles **in deze eindige set**. De latere uitbreiding voor Nederlandse parafrases en Franse intenties brengt de actuele regressiescore op 16/16. Deze voorbeelden zijn gebruikt om de regels te verbeteren en zijn daarmee nadrukkelijk geen ongeziene eindtest. Dit is kwaliteitsinformatie, geen populatienauwkeurigheid of veiligheidsbewijs voor willekeurige input.
 
 Bekijk [het volledige reproduceerbare rapport](../data/evaluation-report.json). De UI toont dezelfde cijfers onder Technisch dossier. CI faalt bij een regressie op de ontwikkelset of gemiste vereiste handmatige controle in deze regressievoorbeelden.
 

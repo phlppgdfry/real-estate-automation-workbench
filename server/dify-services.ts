@@ -1,3 +1,4 @@
+import { validateComparison, type ComparisonInput } from '../src/comparison-contract';
 import { createHash } from 'node:crypto';
 import type { Lead, Listing } from '../src/domain';
 import { validateExtraction, type Intake } from '../src/domain';
@@ -103,6 +104,29 @@ export async function reviewDocumentDify(
     redactedSource: source,
     minimisationApplied: source !== documentText,
     run: runMetadata(response),
+    requires_human: true as const,
+  };
+}
+
+export async function compareDify(
+  input: ComparisonInput,
+  config: DifyConfig,
+  fetcher: typeof fetch = fetch,
+) {
+  const run = await runDifyWorkflow(
+    {
+      question: input.question,
+      city: input.city,
+      max_price: input.maxPrice,
+      min_bedrooms: input.minBedrooms,
+    },
+    { ...config, timeoutMs: 75000 },
+    'blocking',
+    fetcher,
+  );
+  return {
+    comparison: validateComparison(parsedOutput(run.outputs), input),
+    run: runMetadata(run),
     requires_human: true as const,
   };
 }

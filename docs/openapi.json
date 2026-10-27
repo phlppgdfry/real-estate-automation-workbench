@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Duin & Dorp local lab API",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "description": "Fictieve portfolio-case. CRM is een lokale duurzame mock. Geen e-mailtransport.",
     "license": {
       "name": "MIT",
@@ -52,8 +52,8 @@
     "/api/webhooks/leads": {
       "post": {
         "operationId": "ingestLead",
-        "summary": "Duurzaam ontvangen v\u00f3\u00f3r analyse",
-        "description": "HMAC op timestamp + punt + exacte body. Ontvangst is opgeslagen v\u00f3\u00f3r 202. Analyse gebeurt afzonderlijk; 200 bij eerder voltooide analyse. Zelfde ID met andere inhoud geeft 409.",
+        "summary": "Duurzaam ontvangen vóór analyse",
+        "description": "HMAC op timestamp + punt + exacte body. Ontvangst is opgeslagen vóór 202. Analyse gebeurt afzonderlijk; 200 bij eerder voltooide analyse. Zelfde ID met andere inhoud geeft 409.",
         "security": [
           {
             "WebhookSignature": []
@@ -388,7 +388,7 @@
     "/api/outbox/dispatch": {
       "post": {
         "operationId": "dispatchOutbox",
-        "summary": "E\u00e9n batch naar lokale CRM-mock verwerken",
+        "summary": "Eén batch naar lokale CRM-mock verwerken",
         "description": "Labfunctie. Geen externe netwerkactie; simulateFailure injecteert een fout. Actor is door de server bepaald.",
         "security": [
           {
@@ -499,7 +499,7 @@
     "/api/leads/{id}": {
       "get": {
         "operationId": "getLead",
-        "summary": "Lees \u00e9\u00e9n aanvraag",
+        "summary": "Lees één aanvraag",
         "security": [
           {
             "BearerAuth": []
@@ -627,7 +627,7 @@
     "/api/inbox/process": {
       "post": {
         "operationId": "processInbox",
-        "summary": "Operator: analyseer \u00e9\u00e9n begrensde batch",
+        "summary": "Operator: analyseer één begrensde batch",
         "security": [
           {
             "BearerAuth": []
@@ -970,7 +970,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["analysis", "assistant", "document", "requiresHuman"],
+                  "required": ["analysis", "assistant", "document", "requiresHuman", "comparison"],
                   "properties": {
                     "analysis": {
                       "type": "boolean"
@@ -982,6 +982,9 @@
                       "type": "boolean"
                     },
                     "requiresHuman": {
+                      "type": "boolean"
+                    },
+                    "comparison": {
                       "type": "boolean"
                     }
                   }
@@ -1440,6 +1443,137 @@
           }
         }
       }
+    },
+    "/api/dify/compare": {
+      "post": {
+        "operationId": "compareProperties",
+        "summary": "Native Agent vergelijkt fictieve panden; onafhankelijke guards toetsen bronvelden en criteria",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["question", "city", "maxPrice", "minBedrooms"],
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 1000
+                  },
+                  "city": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "maxPrice": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 10000000
+                  },
+                  "minBedrooms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gecontroleerde comparison met bron-ID’s, criteria, uitsluitingscodes, requires_human:true en runmetadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["comparison", "run", "requires_human"],
+                  "properties": {
+                    "comparison": {
+                      "$ref": "#/components/schemas/PropertyComparison"
+                    },
+                    "run": {
+                      "type": "object",
+                      "description": "Safe workflow/task IDs, elapsedTime and totalTokens; no keys."
+                    },
+                    "requires_human": {
+                      "type": "boolean",
+                      "enum": [true]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ontbreekt of ongeldig",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Reviewer-rol vereist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Bericht groter dan 16 KiB",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Providerfout of broncontrole mislukt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "App-sleutel niet geconfigureerd",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1730,6 +1864,116 @@
         },
         "required": ["document_type", "facts", "missing_fields", "risks", "requires_human"],
         "additionalProperties": false
+      },
+      "PropertyComparison": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "summary",
+          "criteria",
+          "comparisons",
+          "suggested_references",
+          "excluded",
+          "questions",
+          "requires_human"
+        ],
+        "properties": {
+          "summary": {
+            "type": "string"
+          },
+          "criteria": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["city", "max_price", "min_bedrooms"],
+            "properties": {
+              "city": {
+                "type": "string"
+              },
+              "max_price": {
+                "type": "number"
+              },
+              "min_bedrooms": {
+                "type": "integer"
+              }
+            }
+          },
+          "comparisons": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "reference",
+                "title",
+                "city",
+                "price",
+                "status",
+                "bedrooms",
+                "source_id"
+              ],
+              "properties": {
+                "reference": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "number"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["available", "sold"]
+                },
+                "bedrooms": {
+                  "type": "integer"
+                },
+                "source_id": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "suggested_references": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "excluded": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["reference", "reasons"],
+              "properties": {
+                "reference": {
+                  "type": "string"
+                },
+                "reasons": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["sold", "city", "price", "bedrooms"]
+                  }
+                }
+              }
+            }
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requires_human": {
+            "type": "boolean",
+            "enum": [true]
+          }
+        }
       }
     }
   }

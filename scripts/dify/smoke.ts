@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { analyseDify, assistDify, reviewDocumentDify } from '../../server/dify-services';
 import { createLead } from '../../src/domain';
@@ -115,6 +115,11 @@ await record(
     return r;
   },
 );
+const preserved = existsSync('public/dify/evidence.json')
+  ? JSON.parse(readFileSync('public/dify/evidence.json', 'utf8')).cases.filter(
+      (entry: { tool: string }) => entry.tool === 'compare',
+    )
+  : [];
 mkdirSync('public/dify', { recursive: true });
 writeFileSync(
   'public/dify/evidence.json',
@@ -122,9 +127,12 @@ writeFileSync(
     {
       recordedAt: now,
       provider: 'Dify Cloud',
-      model: 'gpt-4o-mini',
+      configuredModels: { originalApps: 'gpt-4o-mini', nativeAgent: 'gpt-5.6-luna' },
       scope: 'Small fictional smoke suite; not an accuracy benchmark. No real customer data.',
-      cases,
+      cases: [
+        ...cases.map((entry) => ({ ...(entry as object), configuredModel: 'gpt-4o-mini' })),
+        ...preserved,
+      ],
     },
     null,
     2,

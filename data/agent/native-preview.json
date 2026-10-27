@@ -1,0 +1,62 @@
+{
+  "recordedAt": "2026-10-26T22:50:19.994Z",
+  "mode": "Dify Cloud native Agent Preview",
+  "model": "gpt-5.6-luna",
+  "scope": "Fictional static catalogue; not a live availability or accuracy benchmark.",
+  "cases": [
+    {
+      "id": "criteria-and-exclusion",
+      "question": "Welke beschikbare panden in Oudenburg kosten maximaal 390000 euro en hebben minstens 3 slaapkamers? Vergelijk de opties en leg uit waarom het goedkopere Marktappartement niet matcht.",
+      "elapsedSeconds": 13.93,
+      "reportedTokens": 15235,
+      "result": {
+        "summary": "Volgens de fictieve catalogussnapshot fictional-2026-10-26 zijn twee beschikbare panden in Oudenburg een match: Polderwoning is met €365000 de goedkoopste passende optie; Parkwoning kost €389000 en blijft binnen het maximum. Het goedkopere Marktappartement kost €275000, maar heeft slechts 2 slaapkamers en voldoet daarom niet aan de eis van minstens 3 slaapkamers. Elke uitkomst vereist menselijke controle.",
+        "criteria": {
+          "city": "Oudenburg",
+          "max_price": 390000,
+          "min_bedrooms": 3
+        },
+        "comparisons": [
+          {
+            "reference": "DD-212",
+            "title": "Polderwoning",
+            "city": "Oudenburg",
+            "price": 365000,
+            "status": "available",
+            "bedrooms": 3,
+            "source_id": "catalog:DD-212"
+          },
+          {
+            "reference": "DD-204",
+            "title": "Parkwoning",
+            "city": "Oudenburg",
+            "price": 389000,
+            "status": "available",
+            "bedrooms": 3,
+            "source_id": "catalog:DD-204"
+          },
+          {
+            "reference": "DD-223",
+            "title": "Marktappartement",
+            "city": "Oudenburg",
+            "price": 275000,
+            "status": "available",
+            "bedrooms": 2,
+            "source_id": "catalog:DD-223"
+          }
+        ],
+        "suggested_references": ["DD-212", "DD-204"],
+        "excluded": [
+          {
+            "reference": "DD-223",
+            "reasons": ["bedrooms"]
+          }
+        ],
+        "questions": [],
+        "requires_human": true
+      },
+      "sandboxCommands": [],
+      "observedSuccessfulCommandCount": 3
+    }
+  ]
+}

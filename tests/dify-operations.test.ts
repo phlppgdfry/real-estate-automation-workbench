@@ -226,10 +226,15 @@ test('Dify routes require reviewer role, expose only availability and do not mut
       ['read', 403],
       ['review', 503],
     ] as const) {
-      const res = await fetch(`${base}/api/dify/document`, {
+      const res = await fetch(`${base}/api/dify/compare`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: 'Referentie: DD-204 demo' }),
+        body: JSON.stringify({
+          question: 'Vergelijk fictieve panden',
+          city: 'Oudenburg',
+          maxPrice: 390000,
+          minBedrooms: 3,
+        }),
       });
       assert.equal(res.status, status);
     }
@@ -240,6 +245,7 @@ test('Dify routes require reviewer role, expose only availability and do not mut
       analysis: false,
       assistant: false,
       document: false,
+      comparison: false,
       requiresHuman: true,
     });
     assert.equal(store.all().length, 0);

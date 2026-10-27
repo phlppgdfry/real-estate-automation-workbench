@@ -4,6 +4,7 @@ for (const [name, env] of [
   ['aanvraaganalyse', 'DIFY_WORKFLOW_API_KEY'],
   ['dossierassistent', 'DIFY_AGENT_API_KEY'],
   ['documentcontrole', 'DIFY_DOCUMENT_API_KEY'],
+  ['native Agentvergelijking', 'DIFY_COMPARISON_API_KEY'],
 ]) {
   const present = Boolean(process.env[env]);
   ok &&= present;

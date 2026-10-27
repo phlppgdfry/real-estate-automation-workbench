@@ -1,0 +1,82 @@
+{
+  "recordedAt": "2026-10-27T03:44:05.031Z",
+  "mode": "Dify Cloud Workflow Test Run",
+  "appId": "ce419502-4ea3-40ac-b708-35da45bec95c",
+  "status": "passed",
+  "input": {
+    "question": "Vergelijk de beschikbare panden in Oudenburg tot 390000 euro met minstens 3 slaapkamers. Leg ook uit waarom DD-223 niet matcht.",
+    "city": "Oudenburg",
+    "maxPrice": 390000,
+    "minBedrooms": 3
+  },
+  "result": {
+    "comparison": {
+      "summary": "Volgens de fictieve snapshot fictional-2026-10-26 zijn DD-212 en DD-204 beschikbare panden in Oudenburg die voldoen aan maximaal 390000 euro en minstens 3 slaapkamers. DD-223 is beschikbaar en ligt binnen de stad en het prijsmaximum, maar heeft slechts 2 slaapkamers en voldoet daarom niet aan het verplichte minimum. Elke uitkomst vereist menselijke controle.",
+      "criteria": {
+        "city": "Oudenburg",
+        "max_price": 390000,
+        "min_bedrooms": 3
+      },
+      "comparisons": [
+        {
+          "reference": "DD-212",
+          "title": "Polderwoning",
+          "city": "Oudenburg",
+          "price": 365000,
+          "status": "available",
+          "bedrooms": 3,
+          "source_id": "catalog:DD-212"
+        },
+        {
+          "reference": "DD-204",
+          "title": "Parkwoning",
+          "city": "Oudenburg",
+          "price": 389000,
+          "status": "available",
+          "bedrooms": 3,
+          "source_id": "catalog:DD-204"
+        },
+        {
+          "reference": "DD-223",
+          "title": "Marktappartement",
+          "city": "Oudenburg",
+          "price": 275000,
+          "status": "available",
+          "bedrooms": 2,
+          "source_id": "catalog:DD-223"
+        }
+      ],
+      "suggested_references": ["DD-212", "DD-204"],
+      "excluded": [
+        {
+          "reference": "DD-209",
+          "reasons": ["sold", "city", "bedrooms"]
+        },
+        {
+          "reference": "DD-218",
+          "reasons": ["city", "price"]
+        },
+        {
+          "reference": "DD-223",
+          "reasons": ["bedrooms"]
+        },
+        {
+          "reference": "DD-229",
+          "reasons": ["sold", "city", "bedrooms"]
+        }
+      ],
+      "questions": [],
+      "requires_human": true
+    },
+    "run": {
+      "elapsedTime": 20.335,
+      "totalTokens": 18197,
+      "steps": 4,
+      "source": "Dify Test Run detail UI"
+    }
+  },
+  "regression": {
+    "firstRun": "Rejected COMPARISON_FALSE_EXCLUSION: prose reasons instead of enum codes",
+    "fix": "Explicit reason enum in Agent task; guard unchanged"
+  }
+}

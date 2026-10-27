@@ -1,7 +1,6 @@
 {
   "recordedAt": "2026-10-26T21:21:06.195Z",
   "provider": "Dify Cloud",
-  "model": "gpt-4o-mini",
   "scope": "Small fictional smoke suite; not an accuracy benchmark. No real customer data.",
   "cases": [
     {
@@ -26,7 +25,8 @@
           "elapsedTime": 1.746426,
           "totalTokens": 394
         }
-      }
+      },
+      "configuredModel": "gpt-4o-mini"
     },
     {
       "tool": "assist",
@@ -77,7 +77,8 @@
           "messageId": "4377149d-e7a6-40f1-adae-4e4ea306dc7b"
         },
         "requires_human": true
-      }
+      },
+      "configuredModel": "gpt-4o-mini"
     },
     {
       "tool": "document",
@@ -127,7 +128,8 @@
           "totalTokens": 630
         },
         "requires_human": true
-      }
+      },
+      "configuredModel": "gpt-4o-mini"
     },
     {
       "tool": "negation",
@@ -151,7 +153,8 @@
           "elapsedTime": 1.521557,
           "totalTokens": 396
         }
-      }
+      },
+      "configuredModel": "gpt-4o-mini"
     },
     {
       "tool": "injection",
@@ -175,7 +178,8 @@
           "elapsedTime": 1.28534,
           "totalTokens": 391
         }
-      }
+      },
+      "configuredModel": "gpt-4o-mini"
     },
     {
       "tool": "document-incomplete",
@@ -215,7 +219,94 @@
           "totalTokens": 514
         },
         "requires_human": true
-      }
+      },
+      "configuredModel": "gpt-4o-mini"
+    },
+    {
+      "tool": "compare",
+      "status": "passed",
+      "recordedAt": "2026-10-27T03:59:00.716Z",
+      "mode": "authenticated local API → published Dify Workflow → native Agent → Python guard → TypeScript guard",
+      "dslSha256": "fce089086246502115511963d9221fc7f4ffd255d034881e5a29144786690082",
+      "input": {
+        "question": "Vergelijk de beschikbare panden in Oudenburg tot 390000 euro met minstens 3 slaapkamers. Leg ook uit waarom DD-223 niet matcht.",
+        "city": "Oudenburg",
+        "maxPrice": 390000,
+        "minBedrooms": 3
+      },
+      "result": {
+        "comparison": {
+          "summary": "Op basis van snapshot fictional-2026-10-26 zijn DD-212 en DD-204 beschikbare panden in Oudenburg tot €390000 met minstens 3 slaapkamers. DD-223 is beschikbaar en ligt binnen de maximumprijs, maar heeft 2 slaapkamers en voldoet daarom niet aan het verplichte minimum van 3 slaapkamers. Elke uitkomst vereist menselijke controle.",
+          "criteria": {
+            "city": "Oudenburg",
+            "max_price": 390000,
+            "min_bedrooms": 3
+          },
+          "comparisons": [
+            {
+              "reference": "DD-212",
+              "title": "Polderwoning",
+              "city": "Oudenburg",
+              "price": 365000,
+              "status": "available",
+              "bedrooms": 3,
+              "source_id": "catalog:DD-212"
+            },
+            {
+              "reference": "DD-204",
+              "title": "Parkwoning",
+              "city": "Oudenburg",
+              "price": 389000,
+              "status": "available",
+              "bedrooms": 3,
+              "source_id": "catalog:DD-204"
+            },
+            {
+              "reference": "DD-223",
+              "title": "Marktappartement",
+              "city": "Oudenburg",
+              "price": 275000,
+              "status": "available",
+              "bedrooms": 2,
+              "source_id": "catalog:DD-223"
+            }
+          ],
+          "suggested_references": ["DD-212", "DD-204"],
+          "excluded": [
+            {
+              "reference": "DD-209",
+              "reasons": ["sold", "city", "bedrooms"]
+            },
+            {
+              "reference": "DD-218",
+              "reasons": ["city", "price"]
+            },
+            {
+              "reference": "DD-223",
+              "reasons": ["bedrooms"]
+            },
+            {
+              "reference": "DD-229",
+              "reasons": ["sold", "city", "bedrooms"]
+            }
+          ],
+          "questions": [],
+          "requires_human": true
+        },
+        "run": {
+          "workflowRunId": "530d0f7b-a4fd-498c-b5a2-dd24e285ee61",
+          "workflowId": "21a69824-03e7-4831-83cd-c70b520b0e48",
+          "taskId": "671c1813-a776-418d-b756-e1a637534ac2",
+          "elapsedTime": 16.00343,
+          "totalTokens": 10953
+        },
+        "requires_human": true
+      },
+      "configuredModel": "gpt-5.6-luna"
     }
-  ]
+  ],
+  "configuredModels": {
+    "originalApps": "gpt-4o-mini",
+    "nativeAgent": "gpt-5.6-luna"
+  }
 }

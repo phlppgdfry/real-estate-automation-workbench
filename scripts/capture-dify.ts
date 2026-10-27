@@ -29,6 +29,17 @@ try {
   await page
     .getByRole('region', { name: 'Uitleg van de Dify-flow' })
     .screenshot({ path: 'public/dify/screenshots/guide.png' });
+  await page.getByRole('button', { name: 'Agent · Pandvergelijker', exact: true }).click();
+  await page.getByRole('button', { name: 'Bekijk vastgelegde echte run', exact: true }).click();
+  await page.getByRole('cell', { name: /Polderwoning/ }).waitFor();
+  await page
+    .locator('.dify-grid')
+    .screenshot({ path: 'public/dify/screenshots/comparison-workbench.png' });
+  await page
+    .getByRole('button', { name: 'Vergroot canvas: Dossierassistent', exact: true })
+    .click();
+  await page.getByRole('dialog').screenshot({ path: 'public/dify/screenshots/viewer.png' });
+  await page.keyboard.press('Escape');
   await page.setViewportSize({ width: 375, height: 812 });
   await page.screenshot({ path: 'public/dify/screenshots/mobile.png', fullPage: true });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);

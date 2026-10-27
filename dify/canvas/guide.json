@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
+  "version": "2.3.0",
   "scope": "Fictieve portfolio-case; geen productieclaims.",
   "apps": [
     {
@@ -201,6 +201,67 @@
           "input": "Vervang in de guard-test een prijsbron door niet-bestaande tekst.",
           "expect": "Code weigert het resultaat; geen dossierwijziging.",
           "canvas": "Verzonnen citaat: de opgegeven bronpassage ontbreekt in de tekst. Verwacht: guard weigert; geen dossierwijziging."
+        }
+      ]
+    },
+    {
+      "id": "agent-comparison",
+      "tool": "compare",
+      "title": "Agentvergelijking",
+      "subtitle": "Native Agent, geteste skill en onafhankelijke broncontrole",
+      "value": "De agent kiest scriptopdrachten om fictieve panden te zoeken en uit te leggen. Vaste criteria en brongegevens worden daarna door code opnieuw gecontroleerd.",
+      "boundary": "Zes fictieve panden in een gekoppelde skill; geen klantgegevens, externe bedrijfs-API’s of credentials. De native Linux-sandbox kan code uitvoeren en is geen harde alleen-lezenomgeving.",
+      "owner": "De medewerker beoordeelt pandopties en uitleg. De agent mag geen personen selecteren, bezoeken boeken of CRM-data wijzigen.",
+      "failure": "Een gewijzigde prijs, versoepeld criterium, verkocht voorstel of onvolledige matchset wordt afgewezen. Bij storing blijft het resultaat onbevestigd; er ontstaat geen dossierwijziging.",
+      "steps": [
+        {
+          "id": "start",
+          "title": "1 · Vraag en criteria",
+          "description": "Ontvangt een vraag plus expliciete gemeente, maximumprijs en minimumslaapkamers. De criteria zijn geen vrije modelkeuze.",
+          "input": "question, city, max_price, min_bedrooms",
+          "output": "Gebruikersvraag en begrensde zoekcriteria",
+          "check": "Vraag maximaal 1.000 tekens; deze invoer past binnen de Agent Node-variabelelimiet."
+        },
+        {
+          "id": "analyse",
+          "title": "2 · Native Agent met skill",
+          "description": "Een echte herbruikbare Dify Agent draait de catalog-compare skill in zijn sandbox en kiest lokale zoek- en vergelijkingsopdrachten.",
+          "input": "Vraag + vaste criteria + gebundelde fictieve catalogus",
+          "output": "JSON-voorstel met bron-ID’s, opties, uitsluitingen en vragen",
+          "check": "Geen externe business-tools of secrets. De generieke sandbox blijft aanwezig; instructies zijn geen technische permissiegrens."
+        },
+        {
+          "id": "validate",
+          "title": "3 · Onafhankelijke controle",
+          "description": "Python vergelijkt elke bronwaarde en alle voorgestelde opties opnieuw met de catalogus en de oorspronkelijke criteria. TypeScript controleert nogmaals.",
+          "input": "Agent-JSON + oorspronkelijke criteria + vaste catalogus",
+          "output": "Gecontroleerde matchset of een zichtbare fout",
+          "check": "Verkochte panden en gewijzigde criteria kunnen de controle niet passeren; menselijke review blijft verplicht."
+        },
+        {
+          "id": "end",
+          "title": "4 · Voorstel voor de collega",
+          "description": "Toont opties, brongegevens en uitsluitingen. Geen automatische externe acties of besluiten over mensen.",
+          "input": "Gevalideerde JSON-string",
+          "output": "outputs.result; alleen een voorstel",
+          "check": "Deze statische demo-snapshot is geen actuele beschikbaarheid of waardebepaling."
+        }
+      ],
+      "tests": [
+        {
+          "label": "Zoeken en uitsluiten",
+          "input": "Welke panden in Oudenburg onder 390000 euro hebben minstens 3 slaapkamers?",
+          "expect": "DD-212 en DD-204. DD-223 valt af door 2 slaapkamers."
+        },
+        {
+          "label": "Gewijzigde bron",
+          "input": "Wijzig in de guard-test de prijs of status van een bronrecord.",
+          "expect": "Onafhankelijke code weigert het resultaat."
+        },
+        {
+          "label": "Geen passende optie",
+          "input": "Zoek in Oudenburg onder 390000 euro met minstens 4 slaapkamers.",
+          "expect": "Lege matchset; criteria niet automatisch versoepelen."
         }
       ]
     }

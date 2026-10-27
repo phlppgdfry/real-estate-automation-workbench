@@ -1,6 +1,7 @@
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, extname, sep } from 'node:path';
-import { analyseDify, assistDify, reviewDocumentDify } from './dify-services';
+import { ComparisonInputSchema } from '../src/comparison-contract';
+import { analyseDify, assistDify, reviewDocumentDify, compareDify } from './dify-services';
 import { createHmac } from 'node:crypto';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { z } from 'zod';
@@ -24,6 +25,7 @@ export type Config = {
   difyKey?: string;
   difyAgentKey?: string;
   difyDocumentKey?: string;
+  difyComparisonKey?: string;
   staticRoot?: string;
   difyBaseUrl?: string;
   difyUser?: string;
@@ -144,6 +146,7 @@ export function makeServer(config: Config) {
           analysis: Boolean(config.difyKey),
           assistant: Boolean(config.difyAgentKey),
           document: Boolean(config.difyDocumentKey),
+          comparison: Boolean(config.difyComparisonKey),
           requiresHuman: true,
         });
       }
@@ -156,32 +159,44 @@ export function makeServer(config: Config) {
               ? config.difyAgentKey
               : path === '/api/dify/document'
                 ? config.difyDocumentKey
-                : undefined;
-        if (!['/api/dify/analyse', '/api/dify/assist', '/api/dify/document'].includes(path))
+                : path === '/api/dify/compare'
+                  ? config.difyComparisonKey
+                  : undefined;
+        if (
+          ![
+            '/api/dify/analyse',
+            '/api/dify/assist',
+            '/api/dify/document',
+            '/api/dify/compare',
+          ].includes(path)
+        )
           return send(res, 404, { error: 'NOT_FOUND' });
         if (!key) return send(res, 503, { error: 'DIFY_NOT_CONFIGURED' });
         const raw = JSON.parse(await body(req));
         const options = { apiKey: key, baseUrl: config.difyBaseUrl, user: config.difyUser };
         // Validate requests separately from upstream output: provider contract failures are 502.
         const input =
-          path === '/api/dify/analyse'
-            ? z
-                .object({ message: z.string().trim().min(10).max(4000) })
-                .strict()
-                .parse(raw)
-            : path === '/api/dify/assist'
+          path === '/api/dify/compare'
+            ? ComparisonInputSchema.parse(raw)
+            : path === '/api/dify/analyse'
               ? z
-                  .object({
-                    leadId: z.string().min(1).max(100),
-                    question: z.string().trim().min(10).max(1000),
-                  })
+                  .object({ message: z.string().trim().min(10).max(4000) })
                   .strict()
                   .parse(raw)
-              : z
-                  .object({ text: z.string().trim().min(20).max(12000) })
-                  .strict()
-                  .parse(raw);
+              : path === '/api/dify/assist'
+                ? z
+                    .object({
+                      leadId: z.string().min(1).max(100),
+                      question: z.string().trim().min(10).max(1000),
+                    })
+                    .strict()
+                    .parse(raw)
+                : z
+                    .object({ text: z.string().trim().min(20).max(12000) })
+                    .strict()
+                    .parse(raw);
         try {
+          if ('maxPrice' in input) return send(res, 200, await compareDify(input, options));
           if ('message' in input)
             return send(
               res,
