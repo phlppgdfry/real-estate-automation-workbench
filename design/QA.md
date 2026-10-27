@@ -48,3 +48,24 @@ Browser-plugin niet beschikbaar; de lokale visuele controle gebruikt de bestaand
 [Desktopwerkbank](../public/dify/screenshots/workbench.png) · [interactieve uitleg](../public/dify/screenshots/guide.png) · [canvas-review](../docs/dify-canvas-review.md).
 
 Grens: desktop en één mobiel formaat zijn gecontroleerd met Chromium, geen volledige browsermatrix. De modelcases zijn kleine fictieve acceptatievoorbeelden, geen onafhankelijke kwaliteitsbenchmark. Notities tonen ontwerp en beheer; uitvoering en veiligheid worden door de daadwerkelijke code bepaald.
+
+## v2.3.0 — volledige canvasviewer en native Agent
+
+Flow onder test: `?view=dify` → canvas openen → volledig beeld / zoom / echte run → Escape → focus terug; vierde tab → vastgelegde echte Agent-run → bronvelden en uitsluitingen.
+
+Omgeving: Chromium; desktop 1536×1050 en mobiel 375×812. Browser plugin not available; bestaande Playwright-suite gebruikt. Dify Cloud zelf is via CUA bediend en vastgelegd.
+
+| Controle                                         | Uitkomst | Bewijs                                                                                                                                    |
+| ------------------------------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Pagina-identiteit / niet leeg / frameworkoverlay | Geslaagd | Titel Duin & Dorp, werkbank en resultaten aanwezig; geen overlay.                                                                         |
+| Console / assets / overflow                      | Geslaagd | Geen app-consolefouten; alle canvasbeelden geladen; geen horizontale pagina-overflow.                                                     |
+| Originele fout                                   | Hersteld | Dossiercanvas opnieuw opgenomen; alle 12 nodes inclusief 7 notities binnen het originele viewport. Geen uitsnede of gegenereerde mock.    |
+| Beeldviewer                                      | Geslaagd | Passend beeld, 150% zoom, terug naar passend, runwissel en volgende flow; Escape herstelt focus.                                          |
+| Toetsenbordgrens                                 | Geslaagd | Extra test vond Shift+Tab-randgeval; expliciete grens naar laatste/eerste control toegevoegd en getest.                                   |
+| Favicon / basispath                              | Geslaagd | SVG via Pages-basispath HTTP 200; afbeeldings-URL’s hebben v2.3.0-cacheversie.                                                            |
+| Native Agent                                     | Geslaagd | Echte Build Mode, skill-Preview, vierstaps Workflow en geauthenticeerde lokale API-run. Python en TypeScript bewaken bronnen en matchset. |
+| Regressies                                       | Geslaagd | `npm run check`: 54 unit/integratietests, storingsdrill, DSL-sync, OpenAPI, formattering en links. `npm run test:e2e`: 11 geslaagd.       |
+
+[Screenshot volledige viewer](../public/dify/screenshots/viewer.png) · [Agent-resultaat](../public/dify/screenshots/comparison-workbench.png) · [native canvas](../public/dify/screenshots/comparison.png) · [native run](../public/dify/screenshots/comparison-run.png).
+
+Resterende grenzen: één browserfamilie en één mobiel formaat; geen onafhankelijke live modelbenchmark. Publieke site toont opgenomen bewijs; nieuwe runs vragen lokale serverconfiguratie. Native Agent is beta, gebruikt fictieve data en heeft geen bedrijfssleutels of echte CRM-koppeling. De exacte live export heeft twee overzichtskaarten; de uitgebreide canonieke importvariant zeven.

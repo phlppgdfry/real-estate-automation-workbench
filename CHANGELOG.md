@@ -32,3 +32,12 @@ Eerste portfolio-case met fictieve vastgoedaanvragen, gedeelde domeinregels, men
 - Nieuwe echte canvas- en runscreenshots, uitgebreid live API-bewijs met DSL-fingerprints, senior reviewgids en bijgewerkt importpakket.
 - Begrensde CI-looptijd en een afzonderlijke timeout voor browserinstallatie.
 - Browservalidatie gebruikt de gedocumenteerde Zod jitless-modus, zodat de lokale CSP behouden blijft zonder eval-waarschuwing; regressietest toegevoegd.
+
+## 2.3.0 — Native Agent en volledige bewijsbeelden
+
+- Native Dify Agent met Build Mode, beoordeelde build note en daadwerkelijk geüploade Python-catalogusskill.
+- Vierde Workflow met Agent v2-node, expliciete zoekcriteria, onafhankelijke Python-guard en tweede TypeScript-broncontrole; echte geauthenticeerde API-run vastgelegd.
+- Foutieve redencodes worden afgewezen; taak verduidelijkt zonder guard te versoepelen. Contract-, bron-, beschikbaarheids- en matchsetregressies toegevoegd.
+- Nieuwe vierde werkbanktab, functiematrix, importinstructies met beta-, asset- en app-capaciteitsgrenzen. Oorspronkelijke smoke-suite bewaart het afzonderlijke Agent-bewijs.
+- Afgesneden dossierfoto vervangen door een echte volledige capture. Vier canvasbeelden in een toegankelijke viewer met zoom, runwissel, focusgrens en Escape; versiegebonden asset-URL’s en favicon onder het Pages-basispath.
+- Screenshots, bewijs, API-contracten en handleidingen bijgewerkt; 54 unit/integratietests en 11 browserflows geslaagd. Recente upstream-taalherkenningsfixes behouden; actuele diagnostische regressiescore 16/16.

@@ -42,7 +42,10 @@ def main() -> int:
             target = match.group(1).strip()
             if not target or target.startswith("#") or is_external(target) or "{{" in target:
                 continue
-            path_part = unquote(target.split("#", 1)[0].split("?", 1)[0])
+            path_part = target.split("#", 1)[0].split("?", 1)[0]
+            if file == ROOT / "index.html":
+                path_part = path_part.removeprefix("%BASE_URL%")
+            path_part = unquote(path_part)
             if not path_part:
                 continue
             resolved = (ROOT / path_part.lstrip("/")) if path_part.startswith("/") else (file.parent / path_part)

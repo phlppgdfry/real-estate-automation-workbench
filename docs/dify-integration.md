@@ -1,6 +1,6 @@
-# Dify: drie werkende toepassingen
+# Dify: vier werkende toepassingen
 
-De werkbank bevat drie importeerbare Dify-apps: aanvraaganalyse, een dossierassistent en documentcontrole. Ze zijn met fictieve gegevens in Dify Cloud Studio getest. De broncode, prompts, schema's en echte screenshots staan in deze repository. De publieke website toont opgeslagen runbewijs; nieuwe modelruns lopen via de lokale, geauthenticeerde server.
+De werkbank bevat aanvraaganalyse, een dossierassistent, documentcontrole en een native Agent-pandvergelijker. Voor de vierde toepassing zijn een native Agent, een skillpakket en een Workflow nodig. Ze zijn met fictieve gegevens in Dify Cloud Studio getest. De broncode, prompts, schema's en echte screenshots staan in deze repository. De publieke website toont opgeslagen runbewijs; nieuwe modelruns lopen via de lokale, geauthenticeerde server.
 
 | Toepassing       | Directe waarde                                                                                              | Bron                                                  |
 | ---------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
@@ -8,9 +8,11 @@ De werkbank bevat drie importeerbare Dify-apps: aanvraaganalyse, een dossierassi
 | Dossierassistent | Legt blokkades uit vanuit aangeleverde statusfeiten en stelt een volgende stap voor                         | [Chatflow DSL](../dify/apps/operations-assistant.yml) |
 | Documentcontrole | Zet tekst om in controleerbare pandgegevens met exacte bronpassages en ontbrekende velden                   | [Workflow DSL](../dify/apps/document-review.yml)      |
 
+| Agentvergelijking | Vergelijkt fictieve panden met expliciete criteria en onafhankelijke broncontrole | [Agent-handleiding](dify-agent-review.md) |
+
 ## Leesbare canvassen
 
-Elke app bevat zeven gekleurde notitiepanelen en een beschrijving per uitvoerbare stap. Die uitleg reist mee met de importeerbare DSL. De site biedt dezelfde inhoud als klikbare stappen met invoer, uitvoer, controlepunt, gegevensgrens, eigenaar en testscenario’s. Lees de [canvas-reviewgids](dify-canvas-review.md) voor de ontwerpafwegingen en demonstratievragen.
+Elke canonieke import-DSL bevat zeven gekleurde notitiepanelen en een beschrijving per uitvoerbare stap. Die uitleg reist mee met de importeerbare DSL. De vierde live flow bevat twee handmatig geplaatste overzichtskaarten; de uitgebreidere importvariant bevat zeven kaarten. Een app-limiet blokkeerde herimport in deze workspace; de uitvoerbare code is exact gelijk en getest. De site biedt dezelfde inhoud als klikbare stappen met invoer, uitvoer, controlepunt, gegevensgrens, eigenaar en testscenario’s. Lees de [canvas-reviewgids](dify-canvas-review.md) voor de ontwerpafwegingen en demonstratievragen.
 
 ## Starten
 
@@ -18,7 +20,7 @@ Elke app bevat zeven gekleurde notitiepanelen en een beschrijving per uitvoerbar
 npm ci
 npm run setup:local
 npm run build
-# Vul de drie app-sleutels in .env.local in (nooit committen).
+# Vul de app-sleutels in .env.local in (nooit committen).
 npm run dify:doctor
 npm run dify:smoke
 npm run server
@@ -34,15 +36,18 @@ De server bindt alleen aan localhost. Dit is een lokale portfolio-opstelling, ge
 DIFY_WORKFLOW_API_KEY=app-...
 DIFY_AGENT_API_KEY=app-...
 DIFY_DOCUMENT_API_KEY=app-...
+DIFY_COMPARISON_API_KEY=app-...
 DIFY_API_BASE_URL=https://api.dify.ai
 DIFY_WORKFLOW_USER=duin-dorp-local
 ```
 
-Dit zijn drie **afzonderlijke app-sleutels**, geen workspace- of CLI-token. De provider krijgt uitsluitend de relevante inhoud; app-sleutels gaan nooit naar de browser. Zonder workflow-sleutel gebruikt de bestaande inbox de regelbaseline (of de afzonderlijk geconfigureerde OpenAI-adapter). De expliciete Dify-endpoints geven bij ontbrekende configuratie 503 en vallen niet stilzwijgend terug.
+Dit zijn vier **afzonderlijke app-sleutels**, geen workspace- of CLI-token. De provider krijgt uitsluitend de relevante inhoud; app-sleutels gaan nooit naar de browser. Zonder workflow-sleutel gebruikt de bestaande inbox de regelbaseline (of de afzonderlijk geconfigureerde OpenAI-adapter). De expliciete Dify-endpoints geven bij ontbrekende configuratie 503 en vallen niet stilzwijgend terug.
+
+Voor de native Agent: volg eerst de [afzonderlijke importvolgorde en herstelstappen](dify-agent-review.md). De bestaande smoke-suite test de oorspronkelijke drie apps; de vierde heeft een aparte bewuste betaalde test: `node --import tsx --env-file=.env.local scripts/dify/verify-comparison.ts`. Deze bewaart de andere bewijsgevallen.
 
 ## Reproduceren in je eigen Dify-workspace
 
-1. Importeer de drie YAML-bestanden uit [`dify/apps`](../dify/apps/lead-intake.yml) via Studio → Create → Import DSL. Getest met DSL-versie 0.7.0 en de OpenAI-plugin 1.0.8. Dify kan bij import om installatie van de modelplugin vragen.
+1. Importeer de oorspronkelijke drie YAML-bestanden uit [`dify/apps`](../dify/apps/lead-intake.yml) via Studio → Create → Import DSL. Getest met DSL-versie 0.7.0 en de OpenAI-plugin 1.0.8. Dify kan bij import om installatie van de modelplugin vragen.
 2. Configureer een beschikbare `gpt-4o-mini`-provider of pas het model aan. Cloud-credits of eigen providerbudget zijn nodig. De repo bevat geen providercredentials.
 3. Test de fictieve voorbeelden en publiceer elke app. Schakel de publieke Web App uit; behoud alleen de Backend Service API. MCP en triggers zijn niet nodig.
 4. Maak per app een API-sleutel en plaats die in `.env.local`. Dit bestand is genegeerd; `setup:local` bewaart bestaande waarden en zet rechten op 0600.
@@ -54,12 +59,12 @@ Dit zijn drie **afzonderlijke app-sleutels**, geen workspace- of CLI-token. De p
 
 Alle routes vereisen een Bearer-token; alleen een reviewer mag modelruns aanvragen. Een reader mag configuratiebeschikbaarheid lezen. Deze routes wijzigen geen dossier, outbox of CRM.
 
-| Route                     | Invoer                               | Resultaat                                           |
-| ------------------------- | ------------------------------------ | --------------------------------------------------- |
-| GET `/api/dify/status`    | —                                    | Alleen drie beschikbaarheidsvlaggen, nooit sleutels |
-| POST `/api/dify/analyse`  | `{ "message": "…" }`                 | Intentie, referentie, broncitaat en runmetadata     |
-| POST `/api/dify/assist`   | `{ "leadId": "…", "question": "…" }` | Voorstel met exacte verwijzingen naar serverfeiten  |
-| POST `/api/dify/document` | `{ "text": "…" }`                    | Gegevens met broncitaten en geminimaliseerde bron   |
+| Route                     | Invoer                               | Resultaat                                          |
+| ------------------------- | ------------------------------------ | -------------------------------------------------- |
+| GET `/api/dify/status`    | —                                    | Vier beschikbaarheidsvlaggen, nooit sleutels       |
+| POST `/api/dify/analyse`  | `{ "message": "…" }`                 | Intentie, referentie, broncitaat en runmetadata    |
+| POST `/api/dify/assist`   | `{ "leadId": "…", "question": "…" }` | Voorstel met exacte verwijzingen naar serverfeiten |
+| POST `/api/dify/document` | `{ "text": "…" }`                    | Gegevens met broncitaten en geminimaliseerde bron  |
 
 Documentcontrole ondersteunt geplakte tekst, TXT en Markdown; maximaal 12.000 tekens en voor de browserupload 12 kB. PDF, OCR, URL-fetching, RAG en juridische volledigheidscontrole zijn niet geïmplementeerd. Het document wordt niet als dossier opgeslagen. Dify kan inhoud en logs bewaren volgens de workspace-instellingen: de lokale minimisatie is geen garantie op verwijdering bij de provider. Gebruik fictieve gegevens voor deze demo.
 
@@ -92,3 +97,5 @@ Wijzig prompts/code/schema's in hun bronmappen en voer `npm run dify:sync` uit. 
 ![Documentcanvas met uitleg](../public/dify/screenshots/document.png)
 
 Officiële referenties: [Dify Workflow API](https://docs.dify.ai/en/api-reference/guides/workflow), [Dify Chatflow API](https://docs.dify.ai/en/api-reference/guides/chatflow), [Dify DSL import/export](https://docs.dify.ai/en/use-dify/workspace/app-management).
+
+POST `/api/dify/compare` accepteert `{question, city, maxPrice, minBedrooms}`. Alleen de reviewer mag uitvoeren; er wordt geen dossier gewijzigd. De lokale server gebruikt de vierde app-sleutel, met maximaal 75 seconden providerwachttijd.

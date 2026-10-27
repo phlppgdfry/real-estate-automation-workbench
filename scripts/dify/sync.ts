@@ -3,6 +3,7 @@ import YAML from 'yaml';
 import { annotateCanvas, type CanvasGuide } from './canvas';
 const guide = JSON.parse(readFileSync('dify/canvas/guide.json', 'utf8'));
 const apps = [
+  { file: 'agent-comparison', prompt: null, code: { validate: 'validate_comparison' } },
   { file: 'lead-intake', prompt: 'lead-system', code: { validate: 'validate_lead' } },
   {
     file: 'operations-assistant',

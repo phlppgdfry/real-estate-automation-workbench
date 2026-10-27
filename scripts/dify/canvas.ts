@@ -183,6 +183,14 @@ export function annotateCanvas(doc: any, guide: CanvasGuide) {
       250,
     ),
   );
+  if (guide.id === 'agent-comparison') {
+    for (const node of graph.nodes) {
+      if (node.type === 'custom-note' && node.position.y >= 420) {
+        node.position.y += 100;
+        node.positionAbsolute.y += 100;
+      }
+    }
+  }
   graph.viewport = { x: 75, y: 35, zoom: 0.78 };
   return doc;
 }

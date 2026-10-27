@@ -30,13 +30,13 @@ Open de code en voer de tests uit. Een uitgewerkt project bewijst nog geen zelfs
 
 ## Aanvullend bewijs in v1.1
 
-| Onderwerp                       | Code                                                                      | Verificatie                                         |
-| ------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------- |
-| Ontvangst vóór provider-I/O     | [inbox](server/inbox.ts), [worker](server/analysis-worker.ts)             | restart, outage, stale worker, twee verbindingen    |
-| Functiescheiding                | [auth](server/auth.ts), [API](server/app.ts)                              | reader/reviewer/operator krijgen 403 buiten hun rol |
-| Herstel en bron opnieuw toetsen | [domein](src/domain.ts), [Store](server/store.ts)                         | foutgeschiedenis blijft, verkocht pand blokkeert    |
-| Reproduceerbare afweging        | [senior review](docs/senior-review.md), [drill](scripts/failure-drill.ts) | `npm run drill`, CI-artifact                        |
-| Kritische evaluatie             | [rapport](data/evaluation-report.json)                                    | 13/16 challengecases; drie conservatieve escalaties |
+| Onderwerp                       | Code                                                                      | Verificatie                                                               |
+| ------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Ontvangst vóór provider-I/O     | [inbox](server/inbox.ts), [worker](server/analysis-worker.ts)             | restart, outage, stale worker, twee verbindingen                          |
+| Functiescheiding                | [auth](server/auth.ts), [API](server/app.ts)                              | reader/reviewer/operator krijgen 403 buiten hun rol                       |
+| Herstel en bron opnieuw toetsen | [domein](src/domain.ts), [Store](server/store.ts)                         | foutgeschiedenis blijft, verkocht pand blokkeert                          |
+| Reproduceerbare afweging        | [senior review](docs/senior-review.md), [drill](scripts/failure-drill.ts) | `npm run drill`, CI-artifact                                              |
+| Kritische evaluatie             | [rapport](data/evaluation-report.json)                                    | 16/16 regressiecases na taalherkenningsfix; geen onafhankelijke benchmark |
 
 ## Dify operationeel in v2.1
 
@@ -45,3 +45,9 @@ Drie apps, native schema-output, Python-broncontrole en onafhankelijke TypeScrip
 ## Overdraagbaarheid en controle in v2.2
 
 [Centraal beheerde canvasgids](dify/canvas/guide.json) → [DSL-generator](scripts/dify/canvas.ts) → drie importeerbare apps én [interactieve site-uitleg](src/components/DifyFlowGuide.tsx). De tests controleren de aansluiting op uitvoerbare nodes, geldige notities zonder uitvoeringsverbindingen en het ontbreken van overlappende notitiepanelen. [Senior review met demonstratievragen](docs/dify-canvas-review.md). De onafhankelijke documentguard vult onbevestigde basisvelden aan, ook als het model die niet meldt.
+
+## Native Agent en beeldkwaliteit (v2.3.0)
+
+[Onderzoek en functiematrix](docs/dify-agent-review.md) → [daadwerkelijk geüploade skill](dify/agent/catalog-compare.skill.zip) → [gepubliceerde Agent-workflow](dify/agent/live-workflow-export.yml) → [echte lokale API-run](data/agent/local-api-proof.json). De Python- en TypeScript-guards wijzen gewijzigde prijzen, bronnen, criteria, verkochte voorstellen en ontbrekende matches af. Een eerste contractfout is bewaard als regressiecontext; de guard is niet versoepeld.
+
+54 automatische unit/integratietests en 11 browsertests controleren de huidige versie. De beeldviewer toont het volledige opnieuw opgenomen dossiercanvas, ondersteunt zoom, toetsenbordsluiting en focusterugkeer; de favicon werkt onder het GitHub Pages-basispath. Desktop (1536×1050) en mobiel (375×812) zijn gecontroleerd zonder app-consolefouten of horizontale overflow. De [vierde flow](public/dify/screenshots/comparison.png) heeft apart runbewijs.
