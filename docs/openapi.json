@@ -1574,6 +1574,1432 @@
           }
         }
       }
+    },
+    "/api/workspace": {
+      "get": {
+        "operationId": "workspaceSnapshot",
+        "summary": "Verbonden dossierwerkplek",
+        "description": "Reader, reviewer of operator. Begrensde lijsten van 100 records (50 dossiers); onderhoud herstelt onderbroken runs en laat reviews verlopen. Geen formuliertokens, secrets of documentbrontekst in snapshot.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": ["local-api"]
+                    },
+                    "leads": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Lead"
+                      }
+                    },
+                    "runs": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RunMetadata"
+                      }
+                    },
+                    "budget": {
+                      "$ref": "#/components/schemas/RunBudget"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspace/intake": {
+      "post": {
+        "operationId": "workspaceIntake",
+        "summary": "Aanvraag duurzaam ontvangen",
+        "description": "Reviewer. Zelfde duurzame inbox en idempotentie als webhook; geen HMAC nodig bij deze afzonderlijke bearer-authenticatie.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Intake"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspace/documents": {
+      "post": {
+        "operationId": "uploadCaseDocument",
+        "summary": "Document aan dossier toevoegen",
+        "description": "Reviewer. PDF/DOCX/EML/TXT/MD, max 2 MiB, tekst max 12000 tekens. Hashdeduplicatie per dossier. Native extractie stuurt het oorspronkelijke fictieve bestand naar Dify.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentUpload"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspace/documents/{id}/source": {
+      "get": {
+        "operationId": "documentSource",
+        "summary": "Geminimaliseerde brontekst lezen",
+        "description": "Reader, reviewer of operator. Contactpatronen zijn beperkt; dit is geen volledige anonimisering.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "string",
+                      "maxLength": 12000
+                    }
+                  },
+                  "required": ["id", "source"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/workspace/documents/{id}/analyse": {
+      "post": {
+        "operationId": "analyseCaseDocument",
+        "summary": "Documentinhoud laten voorbereiden",
+        "description": "Reviewer. Broncontrole in Dify en opnieuw lokaal. nativeHuman=true gebruikt SSE en pauzeert voor de bestaande bevoegde lokale reviewer. Formuliertoken blijft uitsluitend op de server.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "nativeHuman": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/workspace/reviews/{id}": {
+      "post": {
+        "operationId": "decideDocumentContent",
+        "summary": "Documentinhoud corrigeren en beoordelen",
+        "description": "Reviewer. Actuele versie en deadline vereist; elke gecorrigeerde waarde moet letterlijk in een geldig broncitaat staan. Native inzending wordt één keer gedaan; onbekende uitkomst blijft geblokkeerd tot afstemming. Wijzigt geen dossiergoedkeuring.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DocumentDecision"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/workspace/reviews/{id}/reconcile": {
+      "post": {
+        "operationId": "reconcileDocumentContent",
+        "summary": "Onbekende Dify-reviewuitkomst afstemmen",
+        "description": "Reviewer. Leest dezelfde provider-run; verzendt het formulier niet opnieuw. Verwachte tak, controleopmerking en inhoudshash moeten overeenkomen.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": ["version"]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/workspace/knowledge": {
+      "post": {
+        "operationId": "searchProcedures",
+        "summary": "Actuele interne procedures zoeken",
+        "description": "Reviewer. Lokale exacte baseline of native Dify keyword retrieval met taal/statusfilters en onafhankelijke bron- en versiecontrole. Geen generatief antwoord zonder bewijs.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  },
+                  "language": {
+                    "type": "string",
+                    "enum": ["nl", "fr"],
+                    "default": "nl"
+                  },
+                  "native": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "required": ["question"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspace/traces": {
+      "get": {
+        "operationId": "exportMetadataTraces",
+        "summary": "Veilige runmetadata exporteren",
+        "description": "Reader, reviewer of operator. Maximaal 100 runs; geen prompts, brontekst, secrets of reviewlinks.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "format": {
+                      "type": "string",
+                      "enum": ["workbench-trace-v1"]
+                    },
+                    "runs": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RunMetadata"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspace/digest": {
+      "get": {
+        "operationId": "dailyDigest",
+        "summary": "Interne dagelijkse opvolglijst",
+        "description": "Reader, reviewer of operator. Berekend overzicht zonder verzending of automatische CRM-mutaties.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspace/digest/trigger": {
+      "post": {
+        "operationId": "recordDigestEvent",
+        "summary": "Opvolgmoment idempotent vastleggen",
+        "description": "Operator. Event-ID is uniek; andere inhoud bij dezelfde sleutel geeft 409. kind beschrijft lokale herkomst en is geen bewijs van een native Dify-trigger.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "pattern": "^[\\w-]{3,100}$"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": ["manual", "schedule", "integration"]
+                  }
+                },
+                "required": ["eventId", "kind"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/workspace/leads/{id}/connector": {
+      "post": {
+        "operationId": "dispatchHttpConnector",
+        "summary": "Overdragen aan afzonderlijke lokale HTTP-testdienst",
+        "description": "Operator. Actuele bron- en versiecontrole; remote idempotentie en hash, voorafgaande reconcile, begrensde retries, rate limits en receipt. Geen echt vastgoed-CRM.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": ["version"]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/workspace/leads/{id}/assist": {
+      "post": {
+        "operationId": "caseAssistance",
+        "summary": "Brongebonden advies bij dossier opslaan",
+        "description": "Reviewer. Context komt uit de serverstore, geen door browser aangeleverde feiten. Run wordt aan dossier gekoppeld.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 1000
+                  }
+                },
+                "required": ["question"]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/workspace/leads/{id}/compare": {
+      "post": {
+        "operationId": "caseComparison",
+        "summary": "Pandvergelijking bij dossier opslaan",
+        "description": "Reviewer. Expliciete criteria en volledige onafhankelijke controle tegen de fictieve snapshot. Geen selectie of rangschikking van personen.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Resultaat; zie status en expliciete foutcode.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ongeldige invoer, identiteit, bevoegdheid, versieconflict of ontbrekende verbinding.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "question": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 1000
+                  },
+                  "city": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "maxPrice": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 10000000
+                  },
+                  "minBedrooms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 20
+                  }
+                },
+                "required": ["question", "city", "maxPrice", "minBedrooms"]
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1974,6 +3400,173 @@
             "enum": [true]
           }
         }
+      },
+      "DocumentUpload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "leadId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "filename": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "base64": {
+            "type": "string",
+            "maxLength": 2800000,
+            "description": "Canonical base64, decoded file max 2 MiB."
+          },
+          "ocr": {
+            "type": "boolean",
+            "default": false,
+            "description": "Explicit local OCR for scans, first 5 pages with eng model."
+          },
+          "nativeExtract": {
+            "type": "boolean",
+            "default": false,
+            "description": "Upload original fictitious file to Dify and independently compare parser output; incompatible with OCR."
+          }
+        },
+        "required": ["leadId", "filename", "base64"]
+      },
+      "DocumentDecision": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": ["approve", "reject"]
+          },
+          "comment": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 500
+          },
+          "corrected": {
+            "$ref": "#/components/schemas/DifyDocumentReview"
+          }
+        },
+        "required": ["version", "action", "comment"]
+      },
+      "RunMetadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tool": {
+            "type": "string"
+          },
+          "lead_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finished_at": {
+            "type": "string",
+            "nullable": true
+          },
+          "elapsed_ms": {
+            "type": "integer",
+            "nullable": true
+          },
+          "model": {
+            "type": "string"
+          },
+          "prompt_version": {
+            "type": "string"
+          },
+          "total_tokens": {
+            "type": "integer",
+            "nullable": true
+          },
+          "estimated_cost_micros": {
+            "type": "integer",
+            "nullable": true
+          },
+          "error_code": {
+            "type": "string",
+            "nullable": true
+          },
+          "provider_run_id": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "tool",
+          "lead_id",
+          "state",
+          "started_at",
+          "finished_at",
+          "elapsed_ms",
+          "model",
+          "prompt_version",
+          "total_tokens",
+          "estimated_cost_micros",
+          "error_code",
+          "provider_run_id"
+        ]
+      },
+      "RunBudget": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "dailyLimit": {
+            "type": "integer"
+          },
+          "chargedTokens": {
+            "type": "integer"
+          },
+          "actualTokens": {
+            "type": "integer"
+          },
+          "unreportedUsageRuns": {
+            "type": "integer"
+          },
+          "runs": {
+            "type": "integer"
+          },
+          "failed": {
+            "type": "integer"
+          },
+          "averageMs": {
+            "type": "integer"
+          },
+          "budgetedCostMicros": {
+            "type": "integer",
+            "nullable": true
+          },
+          "costStatus": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dailyLimit",
+          "chargedTokens",
+          "actualTokens",
+          "unreportedUsageRuns",
+          "runs",
+          "failed",
+          "averageMs",
+          "budgetedCostMicros",
+          "costStatus"
+        ]
       }
     }
   }

@@ -1,19 +1,19 @@
 app:
-  name: Duin & Dorp · Documentcontrole
   description: Fictieve pandfiche → contactgegevens minimaliseren → feiten met exacte broncitaten → menselijke controle. Geen definitieve juridische of financiële conclusies.
   icon: 🏠
-  icon_type: emoji
   icon_background: '#E7F3F0'
+  icon_type: emoji
   mode: workflow
+  name: Duin & Dorp · Documentcontrole
   use_icon_as_answer_icon: false
-kind: app
-version: 0.7.0
 dependencies:
   - current_identifier: null
     type: marketplace
     value:
       marketplace_plugin_unique_identifier: langgenius/openai:1.0.8@5676d8eb5d7df5784610e656f49f5fbdc48b81d106a17d8946d9966c1fe73f1b
       version: null
+kind: app
+version: 0.7.0
 workflow:
   conversation_variables: []
   environment_variables: []
@@ -32,19 +32,6 @@ workflow:
         - local_file
         - remote_url
       enabled: false
-      fileUploadConfig:
-        attachment_image_file_size_limit: 2
-        audio_file_size_limit: 50
-        batch_count_limit: 5
-        file_size_limit: 15
-        file_upload_limit: 50
-        image_file_batch_limit: 10
-        image_file_size_limit: 10
-        knowledge_file_size_limit: 15
-        single_chunk_attachment_limit: 10
-        skill_file_size_limit: 50
-        video_file_size_limit: 100
-        workflow_file_upload_limit: 10
       image:
         enabled: false
         number_limits: 3
@@ -67,51 +54,250 @@ workflow:
       language: ''
       voice: ''
   graph:
-    nodes:
-      - id: start
+    edges:
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: start
+          targetType: if-else
+        id: start-source-has-file
+        source: start
+        sourceHandle: source
+        target: has-file
+        targetHandle: target
         type: custom
-        position:
-          x: 0
-          y: 235
-        positionAbsolute:
-          x: 0
-          y: 235
-        sourcePosition: right
-        targetPosition: left
-        width: 242
-        height: 140
-        selected: false
-        data:
-          type: start
-          title: Documenttekst · fictieve fiche
-          desc: Ontvangt geplakte tekst of inhoud uit TXT/Markdown. Gebruik de fictieve pandfiche uit de repository.
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: if-else
+          targetType: document-extractor
+        id: has-file-true-doc-extractor
+        source: has-file
+        sourceHandle: 'true'
+        target: doc-extractor
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: if-else
+          targetType: variable-aggregator
+        id: has-file-false-source
+        source: has-file
+        sourceHandle: 'false'
+        target: source
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: document-extractor
+          targetType: variable-aggregator
+        id: doc-extractor-source-source
+        source: doc-extractor
+        sourceHandle: source
+        target: source
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: variable-aggregator
+          targetType: code
+        id: source-source-redact
+        source: source
+        sourceHandle: source
+        target: redact
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: code
+          targetType: if-else
+        id: redact-source-extract-only
+        source: redact
+        sourceHandle: source
+        target: extract-only
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: if-else
+          targetType: end
+        id: extract-only-true-source-end
+        source: extract-only
+        sourceHandle: 'true'
+        target: source-end
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: if-else
+          targetType: llm
+        id: extract-only-false-extract
+        source: extract-only
+        sourceHandle: 'false'
+        target: extract
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: llm
+          targetType: code
+        id: extract-source-validate
+        source: extract
+        sourceHandle: source
+        target: validate
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: llm
+          targetType: end
+        id: extract-fail-branch-failure-end
+        source: extract
+        sourceHandle: fail-branch
+        target: failure-end
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: code
+          targetType: if-else
+        id: validate-source-needs-review
+        source: validate
+        sourceHandle: source
+        target: needs-review
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: if-else
+          targetType: human-input
+        id: needs-review-true-human
+        source: needs-review
+        sourceHandle: 'true'
+        target: human
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: if-else
+          targetType: end
+        id: needs-review-false-end
+        source: needs-review
+        sourceHandle: 'false'
+        target: end
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: human-input
+          targetType: end
+        id: human-approve-approved-end
+        source: human
+        sourceHandle: approve
+        target: approved-end
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: human-input
+          targetType: end
+        id: human-reject-rejected-end
+        source: human
+        sourceHandle: reject
+        target: rejected-end
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: human-input
+          targetType: end
+        id: human-__timeout-timeout-end
+        source: human
+        sourceHandle: __timeout
+        target: timeout-end
+        targetHandle: target
+        type: custom
+        zIndex: 0
+    nodes:
+      - data:
+          desc: Optioneel bestand, tekst en modus review/extract/human. Gebruik uitsluitend fictieve gegevens.
           selected: false
+          title: Documenttekst · fictieve fiche
+          type: start
           variables:
-            - variable: document_text
-              label: Documenttekst (TXT/Markdown of geplakte tekst)
-              type: paragraph
-              required: true
+            - label: Documenttekst (TXT/Markdown of geplakte tekst)
               max_length: 12000
               options: []
-      - id: redact
-        type: custom
+              required: false
+              type: paragraph
+              variable: document_text
+            - allowed_file_extensions: []
+              allowed_file_types:
+                - document
+              allowed_file_upload_methods:
+                - local_file
+              default: ''
+              hide: false
+              hint: ''
+              label: Fictief documentbestand
+              options: []
+              placeholder: ''
+              required: false
+              type: file
+              variable: document_file
+            - default: review
+              label: 'Modus: review, extract of human'
+              options:
+                - review
+                - extract
+                - human
+              required: false
+              type: select
+              variable: operation
+        height: 140
+        id: start
         position:
-          x: 285
-          y: 235
+          x: 0
+          y: 240
         positionAbsolute:
-          x: 285
-          y: 235
+          x: 0
+          y: 240
+        selected: false
         sourcePosition: right
         targetPosition: left
+        type: custom
         width: 242
-        height: 140
-        selected: false
-        data:
-          type: code
-          title: Contactgegevens minimaliseren
-          desc: Vervangt e-mail en telefoonachtige patronen door markers. De lokale server doet dit ook vóór overdracht naar Dify.
-          selected: false
-          code_language: python3
+        zIndex: 0
+      - data:
           code: |
             import re
 
@@ -122,46 +308,50 @@ workflow:
                 text = re.sub(r'[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}', '[EMAIL]', document_text, flags=re.I)
                 text = re.sub(r'(?<!\w)(?:\+?\d[\d ()/-]{7,}\d)(?!\w)', '[PHONE_OR_ID]', text)
                 return {'text': text, 'redactions': int(text != document_text)}
-          variables:
-            - variable: document_text
-              value_selector:
-                - start
-                - document_text
+          code_language: python3
+          desc: Vervangt e-mail en telefoonachtige patronen door markers. Dit is geen volledige anonimisering.
           outputs:
-            text:
-              type: string
-              children: null
             redactions:
-              type: number
               children: null
-      - id: extract
-        type: custom
+              type: number
+            text:
+              children: null
+              type: string
+          selected: false
+          title: Contactgegevens minimaliseren
+          type: code
+          variables:
+            - value_selector:
+                - source
+                - output
+              variable: document_text
+        height: 140
+        id: redact
         position:
-          x: 570
-          y: 235
+          x: 1200
+          y: 240
         positionAbsolute:
-          x: 570
-          y: 235
+          x: 1200
+          y: 240
+        selected: false
         sourcePosition: right
         targetPosition: left
+        type: custom
         width: 242
-        height: 140
-        selected: false
-        data:
-          type: llm
-          title: Feiten met broncitaten
-          desc: Extraheert referentie, prijs, gemeente en status; EPC en oppervlakte kunnen aanvullend worden gevonden. Waarden blijven letterlijk.
-          selected: false
+        zIndex: 0
+      - data:
           context:
             enabled: false
             variable_selector: []
+          desc: Extraheert observeerbare velden en exacte broncitaten. Geen taxatie, juridisch oordeel of automatische publicatie.
+          error_strategy: fail-branch
           model:
-            provider: langgenius/openai/openai
-            name: gpt-4o-mini
-            mode: chat
             completion_params:
-              temperature: 0
               max_tokens: 1100
+              temperature: 0
+            mode: chat
+            name: gpt-4o-mini
+            provider: langgenius/openai/openai
           prompt_template:
             - id: extract-system
               role: system
@@ -177,10 +367,7 @@ workflow:
             - id: extract-user
               role: user
               text: '{{#redact.text#}}'
-          variables: []
-          vision:
-            enabled: false
-          structured_output_enabled: true
+          selected: false
           structured_output:
             schema:
               type: object
@@ -228,25 +415,27 @@ workflow:
                 - missing_fields
                 - risks
               additionalProperties: false
-      - id: validate
-        type: custom
+          structured_output_enabled: true
+          title: Feiten met broncitaten
+          type: llm
+          variables: []
+          vision:
+            enabled: false
+        height: 140
+        id: extract
         position:
-          x: 855
-          y: 235
+          x: 1800
+          y: 400
         positionAbsolute:
-          x: 855
-          y: 235
+          x: 1800
+          y: 400
+        selected: false
         sourcePosition: right
         targetPosition: left
+        type: custom
         width: 242
-        height: 140
-        selected: false
-        data:
-          type: code
-          title: Elk citaat terugvinden
-          desc: Controleert dat elke waarde in een exact broncitaat staat. Niet bevestigde basisvelden worden door code aangevuld in missing_fields.
-          selected: false
-          code_language: python3
+        zIndex: 0
+      - data:
           code: |
             import json
 
@@ -277,53 +466,386 @@ workflow:
                 value['missing_fields'] = sorted(set(value['missing_fields']) | (required - seen))
                 value['requires_human'] = True
                 return {'result': json.dumps(value, ensure_ascii=False)}
-          variables:
-            - variable: model_text
-              value_selector:
-                - extract
-                - text
-            - variable: source
-              value_selector:
-                - redact
-                - text
+          code_language: python3
+          desc: Controleert elke waarde in een exact broncitaat. Niet bevestigde basisvelden worden aangevuld in missing_fields.
           outputs:
             result:
-              type: string
               children: null
-      - id: end
-        type: custom
+              type: string
+          selected: false
+          title: Elk citaat terugvinden
+          type: code
+          variables:
+            - value_selector:
+                - extract
+                - text
+              variable: model_text
+            - value_selector:
+                - redact
+                - text
+              variable: source
+        height: 140
+        id: validate
         position:
-          x: 1140
-          y: 235
+          x: 2100
+          y: 400
         positionAbsolute:
-          x: 1140
-          y: 235
+          x: 2100
+          y: 400
+        selected: false
         sourcePosition: right
         targetPosition: left
+        type: custom
         width: 242
-        height: 140
-        selected: false
-        data:
-          type: end
-          title: Documentvoorstel voor controle
-          desc: De werkbank toont een tabel met bronpassages en open punten. De bron en veilige runmetadata blijven controleerbaar.
-          selected: false
+        zIndex: 0
+      - data:
+          desc: Modus review geeft het brongecontroleerde voorstel terug; de lokale medewerker beslist over gebruik.
           outputs:
-            - variable: result
-              value_selector:
+            - value_selector:
                 - validate
                 - result
               value_type: string
+              variable: result
+          selected: false
+          title: Documentvoorstel voor controle
+          type: end
+        height: 140
+        id: end
+        position:
+          x: 2700
+          y: 650
+        positionAbsolute:
+          x: 2700
+          y: 650
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          cases:
+            - case_id: 'true'
+              conditions:
+                - comparison_operator: not empty
+                  id: has-file-condition
+                  value: ''
+                  varType: file
+                  variable_selector:
+                    - start
+                    - document_file
+              logical_operator: and
+          desc: Routeert bestandsinvoer naar Document Extractor; tekst gaat rechtstreeks naar de bronaggregator.
+          selected: false
+          title: Bestand of tekst?
+          type: if-else
+        height: 140
+        id: has-file
+        position:
+          x: 300
+          y: 240
+        positionAbsolute:
+          x: 300
+          y: 240
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          desc: Dify Document Extractor leest een geüpload tekstbestand, PDF, DOCX of EML uit. Dit knooppunt voert geen OCR uit.
+          is_array_file: false
+          selected: false
+          title: Bestand naar tekst
+          type: document-extractor
+          variable_selector:
+            - start
+            - document_file
+        height: 140
+        id: doc-extractor
+        position:
+          x: 600
+          y: 120
+        positionAbsolute:
+          x: 600
+          y: 120
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          advanced_settings:
+            group_enabled: false
+            groups: []
+          desc: Voegt de exclusieve bestands- en teksttak samen tot één bron voor minimalisering en broncitaten.
+          output_type: string
+          selected: false
+          title: Eén brontekst
+          type: variable-aggregator
+          variables:
+            - - doc-extractor
+              - text
+            - - start
+              - document_text
+        height: 140
+        id: source
+        position:
+          x: 900
+          y: 240
+        positionAbsolute:
+          x: 900
+          y: 240
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          cases:
+            - case_id: 'true'
+              conditions:
+                - comparison_operator: is
+                  id: extract-only-condition
+                  value: extract
+                  varType: string
+                  variable_selector:
+                    - start
+                    - operation
+              logical_operator: and
+          desc: Modus extract eindigt zonder LLM-aanroep; review en human analyseren de tekst.
+          selected: false
+          title: Alleen tekstextractie?
+          type: if-else
+        height: 140
+        id: extract-only
+        position:
+          x: 1500
+          y: 240
+        positionAbsolute:
+          x: 1500
+          y: 240
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          desc: Geeft uitgelezen, geminimaliseerde tekst terug voor vergelijking met de lokale parser.
+          outputs:
+            - value_selector:
+                - redact
+                - text
+              value_type: string
+              variable: source
+          selected: false
+          title: Tekst voor lokale broncontrole
+          type: end
+        height: 140
+        id: source-end
+        position:
+          x: 1800
+          y: 70
+        positionAbsolute:
+          x: 1800
+          y: 70
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          cases:
+            - case_id: 'true'
+              conditions:
+                - comparison_operator: is
+                  id: needs-review-condition
+                  value: human
+                  varType: string
+                  variable_selector:
+                    - start
+                    - operation
+              logical_operator: and
+          desc: Modus human pauzeert voor inhoudelijke beoordeling. Modus review retourneert een voorstel voor lokale controle.
+          selected: false
+          title: Native menselijke controle?
+          type: if-else
+        height: 140
+        id: needs-review
+        position:
+          x: 2400
+          y: 400
+        positionAbsolute:
+          x: 2400
+          y: 400
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          delivery_methods:
+            - enabled: true
+              id: f0aa2341-9d6b-4d04-90d0-b4636b5ccacc
+              type: webapp
+          desc: Pauzeert maximaal één uur. De lokale server bewaart het formuliertoken en controleert reviewerrechten vóór inzending.
+          form_content: |-
+            # Documentinhoud controleren
+
+            {{#validate.result#}}
+
+            Deze inhoudelijke controle wijzigt geen dossiergoedkeuring of CRM.
+
+            Controleopmerking: {{#$output.comment#}}
+          inputs:
+            - default:
+                selector: []
+                type: constant
+                value: ''
+              output_variable_name: comment
+              type: paragraph
+          selected: false
+          timeout: 1
+          timeout_unit: hour
+          title: Menselijke inhoudscontrole
+          type: human-input
+          user_actions:
+            - button_style: default
+              id: approve
+              title: Inhoud bevestigen
+            - button_style: default
+              id: reject
+              title: Afwijzen
+        height: 140
+        id: human
+        position:
+          x: 2700
+          y: 300
+        positionAbsolute:
+          x: 2700
+          y: 300
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          desc: Retourneert de bevestigde controleopmerking. De server controleert de verwachte tak en de hash van de gecorrigeerde inhoud.
+          outputs:
+            - value_selector:
+                - human
+                - comment
+              value_type: string
+              variable: approved_comment
+          selected: false
+          title: Inhoud bevestigd · dossier blijft apart
+          type: end
+        height: 140
+        id: approved-end
+        position:
+          x: 3000
+          y: 180
+        positionAbsolute:
+          x: 3000
+          y: 180
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          desc: Retourneert de afwijzingsopmerking. De lokale inhoudscontrole wordt afgewezen na bevestiging van de provideruitkomst.
+          outputs:
+            - value_selector:
+                - human
+                - comment
+              value_type: string
+              variable: review_comment
+          selected: false
+          title: Afgewezen · medewerker herwerkt
+          type: end
+        height: 140
+        id: rejected-end
+        position:
+          x: 3000
+          y: 400
+        positionAbsolute:
+          x: 3000
+          y: 400
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          desc: Een verlopen formulier levert geen goedgekeurde inhoud op. De lokale deadline blokkeert ook een te laat antwoord.
+          outputs:
+            - value_selector:
+                - start
+                - operation
+              value_type: string
+              variable: timeout
+          selected: false
+          title: Verlopen · handmatig overnemen
+          type: end
+        height: 140
+        id: timeout-end
+        position:
+          x: 3000
+          y: 620
+        positionAbsolute:
+          x: 3000
+          y: 620
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
+      - data:
+          desc: Vangt de LLM-fouttak op met een foutcode; er wordt geen result-voorstel teruggegeven.
+          outputs:
+            - value_selector:
+                - extract
+                - error_type
+              value_type: string
+              variable: error
+          selected: false
+          title: Modelstoring · geen documentvoorstel
+          type: end
+        height: 140
+        id: failure-end
+        position:
+          x: 2100
+          y: 760
+        positionAbsolute:
+          x: 2100
+          y: 760
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 242
+        zIndex: 0
       - id: note-overview
         type: custom-note
         position:
           x: 0
-          y: 0
+          y: -330
         positionAbsolute:
           x: 0
-          y: 0
-        width: 900
-        height: 180
+          y: -330
+        width: 790
+        height: 300
         selected: false
         zIndex: 0
         data:
@@ -333,20 +855,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Documentcontrole · Pandgegevens voorbereiden met zichtbare bronpassages","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een collega hoeft de basisgegevens niet over te typen en ziet per gevonden veld het bewijs. Niet bevestigde basisvelden blijven zichtbaar voor opvolging.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Leesrichting: invoer → modelvoorstel → onafhankelijke controle → menselijke beoordeling.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Documentcontrole · Bestand → broncontrole → inhoudelijke review","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een collega leest een document uit en beoordeelt citeerbare velden. Een native Human Input-pauze kan de controle verbinden met de lokale reviewerrechten.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Leesrichting: invoer → modelvoorstel → onafhankelijke controle → menselijke beoordeling.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: blue
-          width: 900
-          height: 180
+          width: 790
+          height: 300
       - id: note-boundary
         type: custom-note
         position:
-          x: 930
-          y: 0
+          x: 820
+          y: -330
         positionAbsolute:
-          x: 930
-          y: 0
-        width: 450
-        height: 180
+          x: 820
+          y: -330
+        width: 790
+        height: 300
         selected: false
         zIndex: 0
         data:
@@ -356,20 +878,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Gegevensgrens & verantwoordelijkheid","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Tekst, TXT of Markdown; geen PDF/OCR. E-mail en telefoonachtige patronen worden vóór de modelcall beperkt. Dit is geen volledige anonimisering; Dify kan invoer en logs bewaren.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Gegevensgrens & verantwoordelijkheid","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Alleen fictieve documenten. Tekst-PDF, DOCX, EML of tekst via Document Extractor; gescande PDF via expliciete lokale OCR. Het oorspronkelijke bestand gaat bij native extractie naar Dify. Geen volledige anonimisering.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: violet
-          width: 450
-          height: 180
+          width: 790
+          height: 300
       - id: note-input
         type: custom-note
         position:
-          x: 0
-          y: 420
+          x: 1640
+          y: -330
         positionAbsolute:
-          x: 0
-          y: 420
-        width: 440
-        height: 245
+          x: 1640
+          y: -330
+        width: 790
+        height: 300
         selected: false
         zIndex: 0
         data:
@@ -379,20 +901,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"01 · Invoer & voorbereiding","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Ontvangt geplakte tekst of inhoud uit TXT/Markdown. Gebruik de fictieve pandfiche uit de repository.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"In: document_text · 20–12.000 tekens","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Vervangt e-mail en telefoonachtige patronen door markers. De lokale server doet dit ook vóór overdracht naar Dify.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"01 · Invoer & voorbereiding","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Optioneel bestand, tekst en modus review/extract/human. Gebruik uitsluitend fictieve gegevens.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"In: document_file of document_text; operation","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Kies een tekstbestand of plak tekst. Scans vragen lokale OCR.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: yellow
-          width: 440
-          height: 245
+          width: 790
+          height: 300
       - id: note-model
         type: custom-note
         position:
-          x: 470
-          y: 420
+          x: 2460
+          y: -330
         positionAbsolute:
-          x: 470
-          y: 420
-        width: 440
-        height: 245
+          x: 2460
+          y: -330
+        width: 790
+        height: 300
         selected: false
         zIndex: 0
         data:
@@ -402,20 +924,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"02 · Begrensde modeltaak","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Extraheert referentie, prijs, gemeente en status; EPC en oppervlakte kunnen aanvullend worden gevonden. Waarden blijven letterlijk.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Uit: Gevonden velden, bronpassages, ontbrekende velden en risico’s","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Geen taxatie, juridische conclusie of garantie over EPC of beschikbaarheid.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"02 · Begrensde modeltaak","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Extraheert observeerbare velden en exacte broncitaten. Geen taxatie, juridisch oordeel of automatische publicatie.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Uit: Voorgestelde feiten, ontbrekende velden en risico’s","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"De onafhankelijke guard moet elk citaat terugvinden.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: yellow
-          width: 440
-          height: 245
+          width: 790
+          height: 300
       - id: note-guard
         type: custom-note
         position:
-          x: 940
-          y: 420
+          x: 0
+          y: 1100
         positionAbsolute:
-          x: 940
-          y: 420
-        width: 440
-        height: 245
+          x: 0
+          y: 1100
+        width: 790
+        height: 300
         selected: false
         zIndex: 0
         data:
@@ -425,20 +947,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"03 · Controle & overdracht","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Controleert dat elke waarde in een exact broncitaat staat. Niet bevestigde basisvelden worden door code aangevuld in missing_fields.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"De medewerker controleert volledigheid, tegenstrijdigheden en interpretatie vóór gegevens in een dossier worden gebruikt.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Geen PDF/OCR, automatische publicatie of echte CRM-write.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"03 · Controle & overdracht","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Controleert elke waarde in een exact broncitaat. Niet bevestigde basisvelden worden aangevuld in missing_fields.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"De lokale reviewer corrigeert of weigert inhoud. Een Dify-formulierantwoord bevestigt uitsluitend deze inhoudscontrole; dossiergoedkeuring en CRM-overdracht blijven afzonderlijke bevoegdheden.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Geen automatische publicatie of echte CRM-write.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: violet
-          width: 440
-          height: 245
+          width: 790
+          height: 300
       - id: note-tests
         type: custom-note
         position:
-          x: 0
-          y: 705
+          x: 820
+          y: 1100
         positionAbsolute:
-          x: 0
-          y: 705
-        width: 675
-        height: 250
+          x: 820
+          y: 1100
+        width: 790
+        height: 300
         selected: false
         zIndex: 0
         data:
@@ -450,18 +972,18 @@ workflow:
           showAuthor: false
           text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Test het gedrag zelf","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Fictieve pandfiche: gebruik data/dify/fictieve-pandfiche.txt. Verwacht: vier basisvelden met bronpassages en een contactmarker.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Onvolledige fiche: alleen referentie en gemeente aanwezig. Verwacht: prijs en status blijven onbevestigd, ook als het model dit niet meldt.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Verzonnen citaat: de opgegeven bronpassage ontbreekt in de tekst. Verwacht: guard weigert; geen dossierwijziging.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: blue
-          width: 675
-          height: 250
+          width: 790
+          height: 300
       - id: note-operations
         type: custom-note
         position:
-          x: 705
-          y: 705
+          x: 1640
+          y: 1100
         positionAbsolute:
-          x: 705
-          y: 705
-        width: 675
-        height: 250
+          x: 1640
+          y: 1100
+        width: 790
+        height: 300
         selected: false
         zIndex: 0
         data:
@@ -471,60 +993,12 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Als het misgaat","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een verzonnen waarde of bronpassage wordt geweigerd. Niet geciteerde basisvelden komen in missing_fields. Geen documentopslag of automatische cataloguswijziging.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Beheer: sleutels alleen op de server; Web App uit; geen actietools. Wijzig broncode/prompts → dify:sync → tests → importeer → publiceer → live smoke.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Als het misgaat","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een onjuist broncitaat stopt de run. Een modelstoring gaat naar een foutuitvoer zonder documentvoorstel. Een verlopen formulier vereist menselijke overname; een onbekende inzenduitkomst wordt afgestemd zonder opnieuw te verzenden.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Beheer: sleutels alleen op de server; Web App uit; geen actietools. Wijzig broncode/prompts → dify:sync → tests → importeer → publiceer → live smoke.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: violet
-          width: 675
-          height: 250
-    edges:
-      - id: start-source-redact-target
-        source: start
-        sourceHandle: source
-        target: redact
-        targetHandle: target
-        type: custom
-        zIndex: 0
-        data:
-          isInIteration: false
-          isInLoop: false
-          sourceType: start
-          targetType: code
-      - id: redact-source-extract-target
-        source: redact
-        sourceHandle: source
-        target: extract
-        targetHandle: target
-        type: custom
-        zIndex: 0
-        data:
-          isInIteration: false
-          isInLoop: false
-          sourceType: code
-          targetType: llm
-      - id: extract-source-validate-target
-        source: extract
-        sourceHandle: source
-        target: validate
-        targetHandle: target
-        type: custom
-        zIndex: 0
-        data:
-          isInIteration: false
-          isInLoop: false
-          sourceType: llm
-          targetType: code
-      - id: validate-source-end-target
-        source: validate
-        sourceHandle: source
-        target: end
-        targetHandle: target
-        type: custom
-        zIndex: 0
-        data:
-          isInIteration: false
-          isInLoop: false
-          sourceType: code
-          targetType: end
+          width: 790
+          height: 300
     viewport:
-      x: 75
-      y: 35
-      zoom: 0.78
+      x: 50
+      y: 180
+      zoom: 0.45
+  rag_pipeline_variables: []

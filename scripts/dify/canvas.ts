@@ -86,11 +86,14 @@ function note(
 }
 export function annotateCanvas(doc: any, guide: CanvasGuide) {
   const graph = doc.workflow.graph;
+  const documentBranches =
+    guide.id === 'document-review' && graph.nodes.some((n: any) => n.id === 'has-file');
   graph.nodes = graph.nodes.filter((n: any) => n.type !== 'custom-note');
   guide.steps.forEach((step, i) => {
     const node = graph.nodes.find((n: any) => n.id === step.id);
     if (!node) throw new Error(`Missing executable node ${guide.id}/${step.id}`);
-    node.position = { x: Math.round((i * 1140) / (guide.steps.length - 1)), y: 235 };
+    if (!documentBranches)
+      node.position = { x: Math.round((i * 1140) / (guide.steps.length - 1)), y: 235 };
     node.positionAbsolute = { ...node.position };
     node.selected = false;
     node.data.desc = step.description;
@@ -190,6 +193,18 @@ export function annotateCanvas(doc: any, guide: CanvasGuide) {
         node.positionAbsolute.y += 100;
       }
     }
+  }
+  if (documentBranches) {
+    graph.nodes
+      .filter((n: any) => n.type === 'custom-note')
+      .forEach((n: any, i: number) => {
+        n.position = { x: (i % 4) * 820, y: i < 4 ? -330 : 1100 };
+        n.positionAbsolute = { ...n.position };
+        n.width = n.data.width = 790;
+        n.height = n.data.height = 300;
+      });
+    graph.viewport = { x: 50, y: 180, zoom: 0.45 };
+    return doc;
   }
   graph.viewport = { x: 75, y: 35, zoom: 0.78 };
   return doc;

@@ -34,10 +34,11 @@ for (const app of apps) {
       };
     }
   }
-  annotateCanvas(
-    doc,
-    guide.apps.find((g: CanvasGuide) => g.id === app.file),
-  );
+  if (app.file !== 'agent-comparison')
+    annotateCanvas(
+      doc,
+      guide.apps.find((g: CanvasGuide) => g.id === app.file),
+    );
   const next = YAML.stringify(doc, { lineWidth: 0 });
   if (process.argv.includes('--check')) {
     if (YAML.stringify(YAML.parse(readFileSync(path, 'utf8')), { lineWidth: 0 }) !== next)

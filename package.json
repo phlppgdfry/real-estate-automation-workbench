@@ -25,7 +25,10 @@
     "drill": "tsx scripts/failure-drill.ts",
     "dify:sync": "node --import tsx scripts/dify/sync.ts",
     "dify:smoke": "node --import tsx --env-file-if-exists=.env.local scripts/dify/smoke.ts",
-    "dify:verify-local": "node --import tsx --env-file-if-exists=.env.local scripts/dify/verify-local.ts"
+    "dify:verify-local": "node --import tsx --env-file-if-exists=.env.local scripts/dify/verify-local.ts",
+    "install:check": "node --import tsx scripts/install-check.ts",
+    "worker": "node --import tsx --env-file-if-exists=.env.local scripts/worker.ts",
+    "crm:test": "node --import tsx scripts/start-crm-test.ts"
   },
   "dependencies": {
     "react": "^19.2.0",

@@ -94,7 +94,7 @@ test('flow guide explains ownership, resets steps per tool and loads a partial d
   await expect(guide).toContainText('De TypeScript-server valideert opnieuw');
   await page.getByRole('button', { name: 'Documentcontrole', exact: true }).click();
   await expect(
-    guide.getByRole('button', { name: '1 · Documenttekst', exact: true }),
+    guide.getByRole('button', { name: 'Document of tekst ontvangen', exact: true }),
   ).toHaveAttribute('aria-pressed', 'true');
   await guide.getByText('Testscenario’s & verwachte uitkomst', { exact: true }).click();
   await guide.getByRole('button', { name: 'Gebruik dit voorbeeld hierboven' }).click();

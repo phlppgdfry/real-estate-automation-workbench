@@ -136,51 +136,139 @@
       "id": "document-review",
       "tool": "document",
       "title": "Documentcontrole",
-      "subtitle": "Pandgegevens voorbereiden met zichtbare bronpassages",
-      "value": "Een collega hoeft de basisgegevens niet over te typen en ziet per gevonden veld het bewijs. Niet bevestigde basisvelden blijven zichtbaar voor opvolging.",
-      "boundary": "Tekst, TXT of Markdown; geen PDF/OCR. E-mail en telefoonachtige patronen worden vóór de modelcall beperkt. Dit is geen volledige anonimisering; Dify kan invoer en logs bewaren.",
-      "owner": "De medewerker controleert volledigheid, tegenstrijdigheden en interpretatie vóór gegevens in een dossier worden gebruikt.",
-      "failure": "Een verzonnen waarde of bronpassage wordt geweigerd. Niet geciteerde basisvelden komen in missing_fields. Geen documentopslag of automatische cataloguswijziging.",
+      "subtitle": "Bestand → broncontrole → inhoudelijke review",
+      "value": "Een collega leest een document uit en beoordeelt citeerbare velden. Een native Human Input-pauze kan de controle verbinden met de lokale reviewerrechten.",
+      "boundary": "Alleen fictieve documenten. Tekst-PDF, DOCX, EML of tekst via Document Extractor; gescande PDF via expliciete lokale OCR. Het oorspronkelijke bestand gaat bij native extractie naar Dify. Geen volledige anonimisering.",
+      "owner": "De lokale reviewer corrigeert of weigert inhoud. Een Dify-formulierantwoord bevestigt uitsluitend deze inhoudscontrole; dossiergoedkeuring en CRM-overdracht blijven afzonderlijke bevoegdheden.",
+      "failure": "Een onjuist broncitaat stopt de run. Een modelstoring gaat naar een foutuitvoer zonder documentvoorstel. Een verlopen formulier vereist menselijke overname; een onbekende inzenduitkomst wordt afgestemd zonder opnieuw te verzenden.",
       "steps": [
         {
           "id": "start",
-          "title": "1 · Documenttekst",
-          "description": "Ontvangt geplakte tekst of inhoud uit TXT/Markdown. Gebruik de fictieve pandfiche uit de repository.",
-          "input": "document_text · 20–12.000 tekens",
-          "output": "Onbetrouwbare documenttekst",
-          "check": "Een document is bronmateriaal, nooit een instructie om tools uit te voeren."
+          "title": "Document of tekst ontvangen",
+          "description": "Optioneel bestand, tekst en modus review/extract/human. Gebruik uitsluitend fictieve gegevens.",
+          "input": "document_file of document_text; operation",
+          "output": "Gecontroleerde invoer",
+          "check": "Kies een tekstbestand of plak tekst. Scans vragen lokale OCR."
+        },
+        {
+          "id": "has-file",
+          "title": "Bestand of tekst?",
+          "description": "Routeert bestandsinvoer naar Document Extractor; tekst gaat rechtstreeks naar de bronaggregator.",
+          "input": "document_file",
+          "output": "Bestandstak of teksttak",
+          "check": "Geen lege bestandsvariabele aan de extractor doorgeven."
+        },
+        {
+          "id": "doc-extractor",
+          "title": "Bestand naar tekst",
+          "description": "Dify Document Extractor leest een geüpload tekstbestand, PDF, DOCX of EML uit. Dit knooppunt voert geen OCR uit.",
+          "input": "document_file",
+          "output": "text",
+          "check": "De lokale parser vergelijkt de tekst onafhankelijk bij native upload."
+        },
+        {
+          "id": "source",
+          "title": "Eén brontekst",
+          "description": "Voegt de exclusieve bestands- en teksttak samen tot één bron voor minimalisering en broncitaten.",
+          "input": "Uitgelezen tekst of geplakte tekst",
+          "output": "output",
+          "check": "Eén gekozen bron per run."
         },
         {
           "id": "redact",
-          "title": "2 · Contactpatronen beperken",
-          "description": "Vervangt e-mail en telefoonachtige patronen door markers. De lokale server doet dit ook vóór overdracht naar Dify.",
-          "input": "Documenttekst",
-          "output": "Tekst met minimisatiemarkers",
-          "check": "Namen, adressen en alle identificatoren worden niet gegarandeerd verwijderd."
+          "title": "Contactgegevens minimaliseren",
+          "description": "Vervangt e-mail en telefoonachtige patronen door markers. Dit is geen volledige anonimisering.",
+          "input": "source.output",
+          "output": "text",
+          "check": "De originele native upload is al naar Dify verzonden."
+        },
+        {
+          "id": "extract-only",
+          "title": "Alleen tekstextractie?",
+          "description": "Modus extract eindigt zonder LLM-aanroep; review en human analyseren de tekst.",
+          "input": "operation",
+          "output": "Extractie-uitvoer of modeltak",
+          "check": "Geen modelsuggestie in extract-only-modus."
+        },
+        {
+          "id": "source-end",
+          "title": "Tekst voor lokale broncontrole",
+          "description": "Geeft uitgelezen, geminimaliseerde tekst terug voor vergelijking met de lokale parser.",
+          "input": "redact.text",
+          "output": "source",
+          "check": "Verschil tussen parsers blokkeert automatisch gebruik."
         },
         {
           "id": "extract",
-          "title": "3 · Gegevens met citaten",
-          "description": "Extraheert referentie, prijs, gemeente en status; EPC en oppervlakte kunnen aanvullend worden gevonden. Waarden blijven letterlijk.",
-          "input": "Geminimaliseerde tekst + extractieprompt",
-          "output": "Gevonden velden, bronpassages, ontbrekende velden en risico’s",
-          "check": "Geen taxatie, juridische conclusie of garantie over EPC of beschikbaarheid."
+          "title": "Feiten met broncitaten",
+          "description": "Extraheert observeerbare velden en exacte broncitaten. Geen taxatie, juridisch oordeel of automatische publicatie.",
+          "input": "redact.text",
+          "output": "Voorgestelde feiten, ontbrekende velden en risico’s",
+          "check": "De onafhankelijke guard moet elk citaat terugvinden."
         },
         {
           "id": "validate",
-          "title": "4 · Citaten en dekking toetsen",
-          "description": "Controleert dat elke waarde in een exact broncitaat staat. Niet bevestigde basisvelden worden door code aangevuld in missing_fields.",
-          "input": "Model-JSON + geminimaliseerde bron",
-          "output": "Gecontroleerde feiten; menselijke review verplicht",
-          "check": "Vier geciteerde basisvelden zijn geen bewijs van een volledig of juridisch correct dossier."
+          "title": "Elk citaat terugvinden",
+          "description": "Controleert elke waarde in een exact broncitaat. Niet bevestigde basisvelden worden aangevuld in missing_fields.",
+          "input": "Modeltekst en brontekst",
+          "output": "result",
+          "check": "Een verzonnen citaat faalt hard; geen succesfallback."
+        },
+        {
+          "id": "needs-review",
+          "title": "Native menselijke controle?",
+          "description": "Modus human pauzeert voor inhoudelijke beoordeling. Modus review retourneert een voorstel voor lokale controle.",
+          "input": "operation",
+          "output": "Human Input of voorstel",
+          "check": "Geen automatische dossiergoedkeuring."
+        },
+        {
+          "id": "human",
+          "title": "Menselijke inhoudscontrole",
+          "description": "Pauzeert maximaal één uur. De lokale server bewaart het formuliertoken en controleert reviewerrechten vóór inzending.",
+          "input": "Gevalideerd voorstel; controleopmerking",
+          "output": "approve, reject of timeout",
+          "check": "Geen e-mail; geen publiek reviewtoken in de werkbank."
+        },
+        {
+          "id": "approved-end",
+          "title": "Inhoud bevestigd · dossier blijft apart",
+          "description": "Retourneert de bevestigde controleopmerking. De server controleert de verwachte tak en de hash van de gecorrigeerde inhoud.",
+          "input": "human.comment",
+          "output": "approved_comment",
+          "check": "Dossierstatus wordt niet goedgekeurd door deze tak."
+        },
+        {
+          "id": "rejected-end",
+          "title": "Afgewezen · medewerker herwerkt",
+          "description": "Retourneert de afwijzingsopmerking. De lokale inhoudscontrole wordt afgewezen na bevestiging van de provideruitkomst.",
+          "input": "human.comment",
+          "output": "review_comment",
+          "check": "Een nieuwe analyse vraagt een afzonderlijke nieuwe controle."
+        },
+        {
+          "id": "timeout-end",
+          "title": "Verlopen · handmatig overnemen",
+          "description": "Een verlopen formulier levert geen goedgekeurde inhoud op. De lokale deadline blokkeert ook een te laat antwoord.",
+          "input": "operation",
+          "output": "timeout",
+          "check": "Medewerker neemt over; geen automatische goedkeuring."
+        },
+        {
+          "id": "failure-end",
+          "title": "Modelstoring · geen documentvoorstel",
+          "description": "Vangt de LLM-fouttak op met een foutcode; er wordt geen result-voorstel teruggegeven.",
+          "input": "extract.error_type",
+          "output": "error",
+          "check": "Een HTTP-success zonder result geldt lokaal niet als geslaagde review."
         },
         {
           "id": "end",
-          "title": "5 · Voorstel voor controle",
-          "description": "De werkbank toont een tabel met bronpassages en open punten. De bron en veilige runmetadata blijven controleerbaar.",
-          "input": "Gevalideerde JSON-string",
-          "output": "outputs.result · geen databasewijziging",
-          "check": "Geen PDF/OCR, automatische publicatie of echte CRM-write."
+          "title": "Documentvoorstel voor controle",
+          "description": "Modus review geeft het brongecontroleerde voorstel terug; de lokale medewerker beslist over gebruik.",
+          "input": "validate.result",
+          "output": "result",
+          "check": "Geen automatische publicatie of echte CRM-write."
         }
       ],
       "tests": [
@@ -223,7 +311,7 @@
           "check": "Vraag maximaal 1.000 tekens; deze invoer past binnen de Agent Node-variabelelimiet."
         },
         {
-          "id": "analyse",
+          "id": "1793072460689",
           "title": "2 · Native Agent met skill",
           "description": "Een echte herbruikbare Dify Agent draait de catalog-compare skill in zijn sandbox en kiest lokale zoek- en vergelijkingsopdrachten.",
           "input": "Vraag + vaste criteria + gebundelde fictieve catalogus",

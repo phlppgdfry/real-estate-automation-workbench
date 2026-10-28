@@ -1,0 +1,99 @@
+[
+  {
+    "id": "SOP-VISIT-NL-2",
+    "language": "nl",
+    "version": 2,
+    "valid_from": "2026-10-01",
+    "state": "current",
+    "title": "Bezoekaanvraag opvolgen",
+    "text": "Controleer eerst de actuele pandstatus en de referentie. Een verkocht pand mag niet voor een bezoek worden bevestigd. Een medewerker beslist over de volgende stap. Een voorgestelde tekst is geen afspraakbevestiging.",
+    "keywords": [
+      "bezoek",
+      "bezoeken",
+      "bezoekaanvraag",
+      "verkocht",
+      "beschikbaar",
+      "pandstatus",
+      "afspraak",
+      "referentie",
+      "opvolging",
+      "bevestigen"
+    ]
+  },
+  {
+    "id": "SOP-DOC-NL-1",
+    "language": "nl",
+    "version": 1,
+    "valid_from": "2026-10-01",
+    "state": "current",
+    "title": "Onvolledige pandfiche",
+    "text": "Controleer referentie, gemeente, vraagprijs en status met de bron. Ontbreekt een basisveld, markeer het als onbevestigd en vraag de ontbrekende informatie op. Raad geen prijs, EPC of beschikbaarheid.",
+    "keywords": [
+      "document",
+      "documenten",
+      "fiche",
+      "pandfiche",
+      "ontbreekt",
+      "onvolledig",
+      "basisveld",
+      "vraagprijs",
+      "gemeente",
+      "epc",
+      "bron",
+      "status"
+    ]
+  },
+  {
+    "id": "SOP-RECOVERY-NL-1",
+    "language": "nl",
+    "version": 1,
+    "valid_from": "2026-10-01",
+    "state": "current",
+    "title": "Mislukte CRM-overdracht herstellen",
+    "text": "Na drie mislukte CRM-pogingen stopt automatische verwerking. Alleen een operator mag met een concrete herstelreden opnieuw klaarzetten. Controleer eerst pandstatus, prijs en versie. Bewaar eerdere fouten en goedkeuring.",
+    "keywords": [
+      "crm",
+      "overdracht",
+      "herstel",
+      "herstellen",
+      "mislukt",
+      "pogingen",
+      "operator",
+      "retry",
+      "fouten",
+      "prijs",
+      "versie"
+    ]
+  },
+  {
+    "id": "SOP-VISIT-FR-1",
+    "language": "fr",
+    "version": 1,
+    "valid_from": "2026-10-01",
+    "state": "current",
+    "title": "Demande de visite",
+    "text": "Vérifiez la référence et la disponibilité actuelle du bien. Ne confirmez pas de visite pour un bien vendu. Un collaborateur contrôle la proposition avant toute communication.",
+    "keywords": [
+      "visite",
+      "visiter",
+      "vendu",
+      "disponible",
+      "disponibilité",
+      "bien",
+      "référence",
+      "collaborateur",
+      "proposition",
+      "communication"
+    ]
+  },
+  {
+    "id": "SOP-VISIT-NL-1",
+    "language": "nl",
+    "version": 1,
+    "valid_from": "2025-01-01",
+    "state": "superseded",
+    "title": "Oud bezoekproces",
+    "text": "Historische procedure. Dit document is vervallen en mag niet als actuele werkinstructie worden gebruikt.",
+    "keywords": ["historisch", "historische", "oud", "vervallen", "procedure", "bezoek", "verkocht"]
+  }
+]

@@ -16,6 +16,7 @@ import { catalog, seed } from './seed';
 import { LeadList } from './components/LeadList';
 import { LeadDetail } from './components/LeadDetail';
 import { IntakeForm, Tour } from './components/Dialogs';
+import { ConnectedWorkspace } from './components/ConnectedWorkspace';
 import { DifyWorkbench } from './components/DifyWorkbench';
 import { Impact, Technical } from './components/CaseViews';
 const storageKey = 'duin-dorp-demo-v1';
@@ -44,7 +45,9 @@ export function App() {
   const [session, setSession] = useState(load);
   const [selected, setSelected] = useState(session.leads[0].id);
   const [view, setView] = useState(
-    new URLSearchParams(location.search).get('view') === 'dify' ? 'dify' : 'leads',
+    ['dify', 'connected'].includes(new URLSearchParams(location.search).get('view') ?? '')
+      ? new URLSearchParams(location.search).get('view')!
+      : 'leads',
   );
   const [form, setForm] = useState(false);
   const [tour, setTour] = useState(new URLSearchParams(location.search).has('tour'));
@@ -126,6 +129,7 @@ export function App() {
         <nav aria-label="Werkplek">
           {[
             ['leads', 'Aanvragen'],
+            ['connected', 'Verbonden werkplek'],
             ['dify', 'Dify werkbank'],
             ['impact', 'Proces & impact'],
             ['technical', 'Technisch dossier'],
@@ -176,7 +180,9 @@ export function App() {
             </button>
           </div>
         ) : null}
-        {view === 'leads' ? (
+        {view === 'connected' ? (
+          <ConnectedWorkspace />
+        ) : view === 'leads' ? (
           <>
             <ol className="pipeline">
               {['Ontvangen', 'Geanalyseerd', 'Gecontroleerd', 'CRM-overdracht'].map((s, i) => (

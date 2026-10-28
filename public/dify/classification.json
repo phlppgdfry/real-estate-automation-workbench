@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-28",
+  "purpose": "Navigatie en overdracht; tags verlenen geen rechten en vervangen geen metadatafilters.",
+  "apps": [
+    {
+      "name": "Aanvraaganalyse",
+      "tags": ["Duin & Dorp", "Workflow", "Leads", "Broncontrole"]
+    },
+    {
+      "name": "Dossierassistent",
+      "tags": ["Duin & Dorp", "Dossieradvies", "Broncontrole", "Chatflow"]
+    },
+    {
+      "name": "Documentcontrole",
+      "tags": ["Duin & Dorp", "Workflow", "Documenten", "Human Input"]
+    },
+    {
+      "name": "Agentvergelijking",
+      "tags": ["Duin & Dorp", "Pandvergelijking", "Broncontrole", "Agent"]
+    }
+  ],
+  "appVerification": "Alle vier na herladen zichtbaar in Studio.",
+  "knowledge": {
+    "name": "Duin & Dorp · Interne procedures",
+    "intendedTags": ["Duin & Dorp", "Procedures", "NL / FR", "Fictieve data"],
+    "status": "definitions-created-binding-unconfirmed",
+    "verification": "UI-selectie navigeert naar Documents zonder koppeling; beperkte GET /datasets/{id}/tags bevestigt nul gekoppelde tags. Geen ruimere API-sleutel aangemaakt."
+  },
+  "nativeAgent": {
+    "name": "Duin & Dorp · Pandvergelijker",
+    "tagsAvailable": false,
+    "checked": "Agentlijst en Info bewerken gecontroleerd; geen tagoptie. Vastgoedpictogram, rol en beschrijving consistent."
+  }
+}

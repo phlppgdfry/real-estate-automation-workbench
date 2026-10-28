@@ -192,7 +192,22 @@ test('importable DSL has no tools/secrets and embedded code equals tested source
         );
         continue;
       }
-      assert.ok(['start', 'code', 'llm', 'end', 'answer'].includes(node.data.type));
+      const allowed = ['start', 'code', 'llm', 'end', 'answer'];
+      if (file === 'document-review')
+        allowed.push('if-else', 'document-extractor', 'variable-aggregator', 'human-input');
+      assert.ok(allowed.includes(node.data.type), `Unexpected executable node: ${node.data.type}`);
+      if (node.data.type === 'human-input') {
+        assert.ok(node.data.delivery_methods.length > 0);
+        assert.ok(
+          node.data.delivery_methods.every((method: { type: string }) => method.type === 'webapp'),
+        );
+        assert.deepEqual(node.data.user_actions.map((action: { id: string }) => action.id).sort(), [
+          'approve',
+          'reject',
+        ]);
+        assert.equal(node.data.timeout, 1);
+        assert.equal(node.data.timeout_unit, 'hour');
+      }
       if (node.data.type === 'llm') assert.equal(node.data.structured_output_enabled, true);
       if (node.data.type === 'code') {
         const files: Record<string, string> =

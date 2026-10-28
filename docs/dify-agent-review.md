@@ -37,7 +37,7 @@ Niet alle beschikbare functies gebruiken is een bewuste ontwerpkeuze. Voor een e
 7. Controleer Start → Agent → Code → Output. Test Oudenburg / 390000 / 3: opties DD-212 en DD-204; DD-223 uitsluiting `bedrooms`. Test ook een lege matchset en ongeldige uitvoer. Publiceer de Workflow, schakel de publieke Web App uit en behoud alleen de benodigde Backend Service API.
 8. Maak één Workflow-appsleutel en bewaar hem lokaal als `DIFY_COMPARISON_API_KEY` in de genegeerde `.env.local`. `setup:local` zet bestandsrechten 0600. Start de gebouwde site via `npm run server` en gebruik de reviewer-token in de vierde tab.
 
-De [ongewijzigde live export](../dify/agent/live-workflow-export.yml) bewaart de werkelijke node-ID’s en twee live overzichtskaarten. De canonieke importvariant normaliseert de Agent-node naar `analyse` en voegt zeven uitgebreide kaarten toe. Python-code, taak en criteria zijn gelijk; tests bewaken dit. Geen claim dat de zeven kaarten ook in de live vierde flow staan.
+De [live export](../dify/agent/live-workflow-export.yml) en de canonieke importvariant bewaren dezelfde werkelijke node-ID’s, zeven live uitlegkaarten en dezelfde canvasgeometrie. De vijf ontbrekende kaarten zijn op 27 oktober 2026 toegevoegd en gepubliceerd. Tests controleren broncode, beschrijvingen en kaartoverlap. De [bijgewerkte screenshot](../public/dify/screenshots/comparison.png) toont het volledige canvas. De uitvoeringstaak en criteria zijn behouden.
 
 ## Onafhankelijke controle en resterende risico’s
 

@@ -1813,3 +1813,65 @@ dialog.canvas-viewer:not([open]) {
     grid-template-columns: 1fr;
   }
 }
+
+.connected-workspace {
+  display: grid;
+  gap: 24px;
+}
+.connection-bar {
+  display: flex;
+  align-items: end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.connection-bar label {
+  min-width: 240px;
+  flex: 1;
+}
+.connected-workspace label {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+.connected-workspace label.checkbox {
+  display: flex;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.connected-workspace label.checkbox input {
+  width: auto;
+  flex: 0 0 auto;
+  margin-top: 3px;
+}
+.connected-workspace input,
+.connected-workspace select,
+.connected-workspace textarea {
+  max-width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #b9c9c1;
+  border-radius: 6px;
+  background: white;
+}
+.connected-workspace button {
+  margin: 4px;
+}
+.connected-workspace article {
+  border-top: 1px solid #dce5df;
+  padding-top: 12px;
+}
+.connected-workspace .dify-card {
+  min-width: 0;
+}
+.connected-workspace time {
+  font-size: 12px;
+  color: var(--muted);
+}
+.connected-workspace td {
+  overflow-wrap: anywhere;
+}
+.connection-bar small {
+  width: 100%;
+  color: var(--muted);
+}

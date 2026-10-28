@@ -209,47 +209,47 @@ workflow:
       voice: ''
   graph:
     edges:
-      - id: start-to-analyse
-        source: start
-        sourceHandle: source
-        target: analyse
-        targetHandle: target
-        type: custom
-        zIndex: 0
-        data:
-          sourceType: start
-          targetType: agent
+      - data:
           isInIteration: false
           isInLoop: false
-      - id: analyse-to-validate
-        source: analyse
-        sourceHandle: source
-        target: validate
-        targetHandle: target
-        type: custom
-        zIndex: 0
-        data:
-          sourceType: agent
-          targetType: code
-          isInIteration: false
-          isInLoop: false
-      - id: validate-to-end
+          sourceType: code
+          targetType: end
+        id: validate-to-end
         source: validate
         sourceHandle: source
         target: end
         targetHandle: target
         type: custom
         zIndex: 0
-        data:
-          sourceType: code
-          targetType: end
+      - data:
           isInIteration: false
           isInLoop: false
+          sourceType: start
+          targetType: agent
+        id: start-source-1793072460689-target
+        source: start
+        sourceHandle: source
+        target: '1793072460689'
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: agent
+          targetType: code
+        id: 1793072460689-source-validate-target
+        source: '1793072460689'
+        sourceHandle: source
+        target: validate
+        targetHandle: target
+        type: custom
+        zIndex: 0
     nodes:
       - data:
           desc: Ontvangt een vraag plus expliciete gemeente, maximumprijs en minimumslaapkamers. De criteria zijn geen vrije modelkeuze.
           selected: false
-          title: Vraag en expliciete criteria
+          title: Aanvraag ontvangen
           type: start
           variables:
             - label: Vraag aan de pandvergelijker
@@ -274,14 +274,14 @@ workflow:
               required: true
               type: number
               variable: min_bedrooms
-        height: 140
+        height: 263
         id: start
         position:
           x: 0
-          y: 235
+          y: 300
         positionAbsolute:
           x: 0
-          y: 235
+          y: 300
         selected: false
         sourcePosition: right
         targetPosition: left
@@ -363,34 +363,34 @@ workflow:
           title: Onafhankelijke cataloguscontrole
           type: code
           variables:
-            - variable: model_text
-              value_selector:
-                - analyse
+            - value_selector:
+                - '1793072460689'
                 - text
               value_type: string
-            - variable: city
-              value_selector:
+              variable: model_text
+            - value_selector:
                 - start
                 - city
               value_type: string
-            - variable: max_price
-              value_selector:
+              variable: city
+            - value_selector:
                 - start
                 - max_price
               value_type: number
-            - variable: min_bedrooms
-              value_selector:
+              variable: max_price
+            - value_selector:
                 - start
                 - min_bedrooms
               value_type: number
-        height: 140
+              variable: min_bedrooms
+        height: 144
         id: validate
         position:
-          x: 760
-          y: 235
+          x: 720
+          y: 300
         positionAbsolute:
-          x: 760
-          y: 235
+          x: 720
+          y: 300
         selected: false
         sourcePosition: right
         targetPosition: left
@@ -406,16 +406,16 @@ workflow:
               value_type: string
               variable: result
           selected: false
-          title: Vergelijking voor menselijke controle
+          title: Gevalideerde extractie
           type: end
-        height: 140
+        height: 164
         id: end
         position:
           x: 1140
-          y: 235
+          y: 300
         positionAbsolute:
           x: 1140
-          y: 235
+          y: 300
         selected: false
         sourcePosition: right
         targetPosition: left
@@ -479,187 +479,202 @@ workflow:
             workflow_prompt: 'Use catalog-compare and return ONLY its exact JSON contract. User question: {{#start.question#}}. Mandatory criteria, which must not be relaxed: city={{#start.city#}}, max_price={{#start.max_price#}}, min_bedrooms={{#start.min_bedrooms#}}. Include EVERY available matching property in suggested_references. Each excluded.reasons must contain ONLY exact machine codes from this enum: sold, city, price, bedrooms. Never use sentences in reasons. Put Dutch explanations in summary, including snapshot fictional-2026-10-26. No business-system actions; requires_human must be true.'
           agent_node_kind: dify_agent
           agent_task: 'Use catalog-compare and return ONLY its exact JSON contract. User question: {{#start.question#}}. Mandatory criteria, which must not be relaxed: city={{#start.city#}}, max_price={{#start.max_price#}}, min_bedrooms={{#start.min_bedrooms#}}. Include EVERY available matching property in suggested_references. Each excluded.reasons must contain ONLY exact machine codes from this enum: sold, city, price, bedrooms. Never use sentences in reasons. Put Dutch explanations in summary, including snapshot fictional-2026-10-26. No business-system actions; requires_human must be true.'
+          desc: Een echte herbruikbare Dify Agent draait de catalog-compare skill in zijn sandbox en kiest lokale zoek- en vergelijkingsopdrachten.
           selected: false
           title: Catalogus vergelijken · native Agent
           type: agent
           version: '2'
-          desc: Een echte herbruikbare Dify Agent draait de catalog-compare skill in zijn sandbox en kiest lokale zoek- en vergelijkingsopdrachten.
-        height: 140
-        id: analyse
+        height: 194
+        id: '1793072460689'
         position:
-          x: 380
-          y: 235
+          x: 420
+          y: 300
         positionAbsolute:
-          x: 380
-          y: 235
+          x: 420
+          y: 300
         selected: false
         sourcePosition: right
         targetPosition: left
         type: custom
         width: 242
-      - id: note-overview
-        type: custom-note
-        position:
-          x: 0
-          y: 0
-        positionAbsolute:
-          x: 0
-          y: 0
-        width: 900
-        height: 180
-        selected: false
         zIndex: 0
-        data:
-          author: Duin & Dorp portfolio
+      - data:
+          author: PHILIPPE 
           desc: ''
-          title: ''
-          type: ''
+          height: 184
           selected: false
-          showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Agentvergelijking · Native Agent, geteste skill en onafhankelijke broncontrole","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"De agent kiest scriptopdrachten om fictieve panden te zoeken en uit te leggen. Vaste criteria en brongegevens worden daarna door code opnieuw gecontroleerd.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Leesrichting: invoer → modelvoorstel → onafhankelijke controle → menselijke beoordeling.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          showAuthor: true
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Agentvergelijking · Native Agent, geteste skill en onafhankelijke broncontrole","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"De agent kiest scriptopdrachten om fictieve panden te zoeken en uit te leggen. Vaste criteria en brongegevens worden daarna door code opnieuw gecontroleerd.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Leesrichting: invoer → modelvoorstel → onafhankelijke controle → menselijke beoordeling.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
           theme: blue
-          width: 900
-          height: 180
-      - id: note-boundary
-        type: custom-note
-        position:
-          x: 930
-          y: 0
-        positionAbsolute:
-          x: 930
-          y: 0
-        width: 450
-        height: 180
-        selected: false
-        zIndex: 0
-        data:
-          author: Duin & Dorp portfolio
-          desc: ''
           title: ''
           type: ''
-          selected: false
-          showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Gegevensgrens & verantwoordelijkheid","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Zes fictieve panden in een gekoppelde skill; geen klantgegevens, externe bedrijfs-API’s of credentials. De native Linux-sandbox kan code uitvoeren en is geen harde alleen-lezenomgeving.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
-          theme: violet
-          width: 450
-          height: 180
-      - id: note-input
-        type: custom-note
+          width: 912
+        height: 184
+        id: '1793072699744'
         position:
-          x: 0
-          y: 520
+          x: 6.064473684210384
+          y: -5.761842105263156
         positionAbsolute:
-          x: 0
-          y: 520
-        width: 440
-        height: 245
+          x: 6.064473684210384
+          y: -5.761842105263156
         selected: false
-        zIndex: 0
-        data:
-          author: Duin & Dorp portfolio
-          desc: ''
-          title: ''
-          type: ''
-          selected: false
-          showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"01 · Invoer & voorbereiding","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Ontvangt een vraag plus expliciete gemeente, maximumprijs en minimumslaapkamers. De criteria zijn geen vrije modelkeuze.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"In: question, city, max_price, min_bedrooms","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Vraag maximaal 1.000 tekens; deze invoer past binnen de Agent Node-variabelelimiet.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
-          theme: yellow
-          width: 440
-          height: 245
-      - id: note-model
+        sourcePosition: right
+        targetPosition: left
         type: custom-note
-        position:
-          x: 470
-          y: 520
-        positionAbsolute:
-          x: 470
-          y: 520
-        width: 440
-        height: 245
-        selected: false
+        width: 912
         zIndex: 0
-        data:
-          author: Duin & Dorp portfolio
+      - data:
+          author: PHILIPPE 
           desc: ''
-          title: ''
-          type: ''
+          height: 184
           selected: false
-          showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"02 · Begrensde modeltaak","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een echte herbruikbare Dify Agent draait de catalog-compare skill in zijn sandbox en kiest lokale zoek- en vergelijkingsopdrachten.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Uit: JSON-voorstel met bron-ID’s, opties, uitsluitingen en vragen","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Geen externe business-tools of secrets. De generieke sandbox blijft aanwezig; instructies zijn geen technische permissiegrens.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
-          theme: yellow
-          width: 440
-          height: 245
-      - id: note-guard
-        type: custom-note
-        position:
-          x: 940
-          y: 520
-        positionAbsolute:
-          x: 940
-          y: 520
-        width: 440
-        height: 245
-        selected: false
-        zIndex: 0
-        data:
-          author: Duin & Dorp portfolio
-          desc: ''
-          title: ''
-          type: ''
-          selected: false
-          showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"03 · Controle & overdracht","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Python vergelijkt elke bronwaarde en alle voorgestelde opties opnieuw met de catalogus en de oorspronkelijke criteria. TypeScript controleert nogmaals.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"De medewerker beoordeelt pandopties en uitleg. De agent mag geen personen selecteren, bezoeken boeken of CRM-data wijzigen.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Deze statische demo-snapshot is geen actuele beschikbaarheid of waardebepaling.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
-          theme: violet
-          width: 440
-          height: 245
-      - id: note-tests
-        type: custom-note
-        position:
-          x: 0
-          y: 805
-        positionAbsolute:
-          x: 0
-          y: 805
-        width: 675
-        height: 250
-        selected: false
-        zIndex: 0
-        data:
-          author: Duin & Dorp portfolio
-          desc: ''
-          title: ''
-          type: ''
-          selected: false
-          showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Test het gedrag zelf","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Zoeken en uitsluiten: Welke panden in Oudenburg onder 390000 euro hebben minstens 3 slaapkamers?\nVerwacht: DD-212 en DD-204. DD-223 valt af door 2 slaapkamers.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Gewijzigde bron: Wijzig in de guard-test de prijs of status van een bronrecord.\nVerwacht: Onafhankelijke code weigert het resultaat.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Geen passende optie: Zoek in Oudenburg onder 390000 euro met minstens 4 slaapkamers.\nVerwacht: Lege matchset; criteria niet automatisch versoepelen.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          showAuthor: true
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Gegevensgrens & verantwoordelijkheid","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Zes fictieve panden in een gekoppelde skill; geen klantgegevens, externe bedrijfs-API’s of credentials. De native Linux-sandbox kan code uitvoeren en is geen harde alleen-lezenomgeving.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
           theme: blue
-          width: 675
-          height: 250
-      - id: note-operations
-        type: custom-note
-        position:
-          x: 705
-          y: 805
-        positionAbsolute:
-          x: 705
-          y: 805
-        width: 675
-        height: 250
-        selected: false
-        zIndex: 0
-        data:
-          author: Duin & Dorp portfolio
-          desc: ''
           title: ''
           type: ''
+          width: 432
+        height: 184
+        id: '1793072732226'
+        position:
+          x: 946.0644736842104
+          y: -5.761842105263156
+        positionAbsolute:
+          x: 946.0644736842104
+          y: -5.761842105263156
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom-note
+        width: 432
+        zIndex: 0
+      - data:
+          author: PHILIPPE 
+          desc: ''
+          height: 248
           selected: false
-          showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Als het misgaat","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een gewijzigde prijs, versoepeld criterium, verkocht voorstel of onvolledige matchset wordt afgewezen. Bij storing blijft het resultaat onbevestigd; er ontstaat geen dossierwijziging.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Beheer: sleutels alleen op de server; Web App uit; geen actietools. Wijzig broncode/prompts → dify:sync → tests → importeer → publiceer → live smoke.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
-          theme: violet
-          width: 675
-          height: 250
+          showAuthor: true
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"01 · Invoer & voorbereiding","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Ontvangt een vraag plus expliciete gemeente, maximumprijs en minimumslaapkamers. De criteria zijn geen vrije modelkeuze.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"In: question, city, max_price, min_bedrooms","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Vraag maximaal 1.000 tekens; deze invoer past binnen de Agent Node-variabelelimiet.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
+          theme: blue
+          title: ''
+          type: ''
+          width: 464
+        height: 248
+        id: '1793120403916'
+        position:
+          x: -6.369736842105269
+          y: 655.1598684210527
+        positionAbsolute:
+          x: -6.369736842105269
+          y: 655.1598684210527
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom-note
+        width: 464
+        zIndex: 0
+      - data:
+          author: PHILIPPE 
+          desc: ''
+          height: 248
+          selected: false
+          showAuthor: true
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"02 · Begrensde modeltaak","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Een echte herbruikbare Dify Agent draait de catalog-compare skill in zijn sandbox en kiest lokale zoek- en vergelijkingsopdrachten.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Uit: JSON-voorstel met bron-ID’s, opties, uitsluitingen en vragen","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Geen externe business-tools of secrets. De generieke sandbox blijft aanwezig; instructies zijn geen technische permissiegrens.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
+          theme: blue
+          title: ''
+          type: ''
+          width: 464
+        height: 248
+        id: '1793120429119'
+        position:
+          x: 473.6302631578947
+          y: 655.1598684210527
+        positionAbsolute:
+          x: 473.6302631578947
+          y: 655.1598684210527
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom-note
+        width: 464
+        zIndex: 0
+      - data:
+          author: PHILIPPE 
+          desc: ''
+          height: 248
+          selected: false
+          showAuthor: true
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"03 · Controle & overdracht","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Python vergelijkt elke bronwaarde en alle voorgestelde opties opnieuw met de catalogus en de oorspronkelijke criteria. TypeScript controleert nogmaals.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"De medewerker beoordeelt pandopties en uitleg. De agent mag geen personen selecteren, bezoeken boeken of CRM-data wijzigen.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Deze statische demo-snapshot is geen actuele beschikbaarheid of waardebepaling.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
+          theme: blue
+          title: ''
+          type: ''
+          width: 464
+        height: 248
+        id: '1793120466755'
+        position:
+          x: 953.6302631578947
+          y: 655.1598684210527
+        positionAbsolute:
+          x: 953.6302631578947
+          y: 655.1598684210527
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom-note
+        width: 464
+        zIndex: 0
+      - data:
+          author: PHILIPPE 
+          desc: ''
+          height: 248
+          selected: false
+          showAuthor: true
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Test het gedrag zelf","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Zoeken en uitsluiten: Welke panden in Oudenburg onder 390000 euro hebben minstens 3 slaapkamers?","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Verwacht: DD-212 en DD-204. DD-223 valt af door 2 slaapkamers.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Gewijzigde bron: Wijzig in de guard-test de prijs of status van een bronrecord.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Verwacht: Onafhankelijke code weigert het resultaat.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Geen passende optie: Zoek in Oudenburg onder 390000 euro met minstens 4 slaapkamers.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Verwacht: Lege matchset; criteria niet automatisch versoepelen.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
+          theme: blue
+          title: ''
+          type: ''
+          width: 688
+        height: 248
+        id: '1793120552118'
+        position:
+          x: -6.369736842105269
+          y: 955.1598684210527
+        positionAbsolute:
+          x: -6.369736842105269
+          y: 955.1598684210527
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom-note
+        width: 688
+        zIndex: 0
+      - data:
+          author: PHILIPPE 
+          desc: ''
+          height: 248
+          selected: false
+          showAuthor: true
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Als het misgaat","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Een gewijzigde prijs, versoepeld criterium, verkocht voorstel of onvolledige matchset wordt afgewezen. Bij storing blijft het resultaat onbevestigd; er ontstaat geen dossierwijziging.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Beheer: sleutels alleen op de server; Web App uit; geen actietools. Wijzig broncode/prompts → dify:sync → tests → importeer → publiceer → live smoke.","type":"text","version":1}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}'
+          theme: blue
+          title: ''
+          type: ''
+          width: 688
+        height: 248
+        id: '1793120598484'
+        position:
+          x: 713.6302631578947
+          y: 955.1598684210527
+        positionAbsolute:
+          x: 713.6302631578947
+          y: 955.1598684210527
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom-note
+        width: 688
+        zIndex: 0
     viewport:
-      x: 75
-      y: 35
-      zoom: 0.78
+      x: 352.0715278171842
+      y: 45.40607587003541
+      zoom: 0.6858102570843535
   rag_pipeline_variables: []
