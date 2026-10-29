@@ -69,3 +69,11 @@ Omgeving: Chromium; desktop 1536×1050 en mobiel 375×812. Browser plugin not av
 [Screenshot volledige viewer](../public/dify/screenshots/viewer.png) · [Agent-resultaat](../public/dify/screenshots/comparison-workbench.png) · [native canvas](../public/dify/screenshots/comparison.png) · [native run](../public/dify/screenshots/comparison-run.png).
 
 Resterende grenzen: één browserfamilie en één mobiel formaat; geen onafhankelijke live modelbenchmark. Publieke site toont opgenomen bewijs; nieuwe runs vragen lokale serverconfiguratie. Native Agent is beta, gebruikt fictieve data en heeft geen bedrijfssleutels of echte CRM-koppeling. De exacte live export heeft twee overzichtskaarten; de uitgebreide canonieke importvariant zeven.
+
+## Showcase-afronding v3 · 29 oktober 2026
+
+De functiematrix is gelijkgetrokken met de gepubliceerde native Knowledge/Human Input/triggerstatus. Het technische dossier toont per bewijs de uitvoeringsmodus. De nieuwe mobiele deep-linktest controleert dat dit overzicht geen API-aanvragen start en binnen 375 px blijft. De volledige suite heeft 14 browsergevallen; 76 unit-/integratietests controleren de onderliggende regels.
+
+De verbonden werkplek toont procedures en broncitaten leesbaar; technische JSON is uitklapbaar. Documentcorrectie, geweigerde verzonnen waarde, verlopen beoordeling en gewiste gegevens na sessiewisseling zijn via de echte lokale API getest. De Dify-werkbank wist oude resultaten en dossiers bij een nieuwe sessietoken.
+
+Native Schedule Trigger: echte timer-run, 3 stappen, 0,483 s en 0 tokens. Gepubliceerd, normale werkdagplanning hersteld en toegangspuntschakelaar gecontroleerd uitgezet. Dit bewijs komt uit de echte Kippieg-Chrome-sessie, niet uit een gereconstrueerde screenshot. De oudere v2.3-uitspraken hierboven zijn historische controles; de actuele canvasvergelijking en releasegrenzen staan in de gekoppelde bewijsbestanden.

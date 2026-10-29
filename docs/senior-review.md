@@ -31,7 +31,7 @@ De actuele [Node.js 24 SQLite-documentatie](https://nodejs.org/docs/latest-v24.x
 1. **Echte CRM-adapter en stagingbewijs.** OAuth/scopes, remote unieke sleutel, rate limits, timeout met onbekende uitkomst, reconcile, contracttest tegen leverancier. Geen fictieve succesclaim.
 2. **Identiteit en gegevensbescherming.** SSO, organisatie- en objectrechten, rotatie, TLS, requestlimieten, retentie/verwijdering en hersteltests. Labtokens zijn geen vervanging.
 3. **Onafhankelijke AI-evaluatie.** Menselijk gelabelde meertalige testset, live modelkosten/latentie en foutanalyse. De huidige regelset is aantoonbaar beperkt.
-4. **Operationele dienst.** Scheduler/workerproces, alerts, dienstverantwoordelijke, herstelprocedure en back-ups met RPO/RTO. Nu handmatige labtrigger.
+4. **Operationele dienst.** Scheduler/workerproces, alerts, dienstverantwoordelijke, herstelprocedure en back-ups met RPO/RTO. De lokale worker en native Dify-timer zijn inmiddels gebouwd en afzonderlijk getest; productiealerts en beheer blijven vereist.
 5. **Werkelijke pilot.** Nulmeting en twee weken schaduwmodus; meet actieve behandeltijd inclusief correcties. Geen businessresultaat claimen op basis van de calculator.
 
 Dit zijn de volgende betekenisvolle stappen. Kubernetes, extra agentframeworks, een tweede dashboard of meer certificaten leveren voorlopig minder bewijswaarde op.
@@ -39,3 +39,7 @@ Dit zijn de volgende betekenisvolle stappen. Kubernetes, extra agentframeworks, 
 ## Overdracht en documentdekking in v2.2
 
 De [Dify-canvasreview](dify-canvas-review.md) voegt zichtbaar eigenaarschap, gegevensgrenzen en concrete beoordelingsvragen toe. De toelichting zit in de importeerbare flow en in de site, vanuit dezelfde bron. De documentguard vult niet bevestigde basisvelden onafhankelijk aan; de Python- en TypeScript-tests verifiëren hetzelfde gedrag. Notities zijn geen uitvoerbare guards en worden niet als beveiligingsbewijs gepresenteerd.
+
+## Showcase-review v3
+
+De nieuwe meertalige set vond ongewenste voorstellen bij ontkende schattings- en zoekvragen; de stopregel omvat nu alle ondersteunde taken en NL/FR/EN-negatie. Dagbudgetten volgen de Brussels kalenderdag inclusief DST. Sessiewisseling wist geladen dossierdata; bronresultaten staan leesbaar voor technische JSON. De native timer is echt op de klok uitgevoerd en daarna uitgezet. Een schone-installatie-CLI, expliciete lokale/Cloud-benchmark en [releasecontrole](release-readiness.md) maken de overdracht controleerbaar zonder betaalde provider.

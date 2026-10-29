@@ -49,6 +49,7 @@ test('connected UI uses real API: durable intake, role switch, analysis, source 
   await page
     .getByRole('textbox', { name: 'Persoonlijke sessietoken', exact: true })
     .fill('connected-operator');
+  await page.getByRole('button', { name: 'Verbinden / vernieuwen', exact: true }).click();
   await page
     .getByRole('button', { name: 'Analysebatch uitvoeren · operator', exact: true })
     .click();
@@ -58,6 +59,7 @@ test('connected UI uses real API: durable intake, role switch, analysis, source 
   await page
     .getByRole('textbox', { name: 'Persoonlijke sessietoken', exact: true })
     .fill('connected-reviewer');
+  await page.getByRole('button', { name: 'Verbinden / vernieuwen', exact: true }).click();
   await page.getByLabel('PDF, DOCX, EML, TXT of Markdown').setInputFiles({
     name: 'fictieve-fiche.txt',
     mimeType: 'text/plain',
@@ -95,4 +97,93 @@ test('connected UI uses real API: durable intake, role switch, analysis, source 
   );
   await page.setViewportSize({ width: 375, height: 812 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('reviewer corrects cited content, rejects fabricated edits, and expired reviews recover without approving a case', async ({
+  page,
+}) => {
+  const now = new Date().toISOString();
+  const lead = store.ingest(
+    {
+      eventId: 'review-browser-case',
+      name: 'Robin Demo',
+      email: 'demo@example.com',
+      channel: 'website',
+      message: 'Ik wil DD-204 bezoeken.',
+    },
+    catalog(now),
+    now,
+  ).lead;
+  const proposal = {
+    document_type: 'property-sheet',
+    facts: [{ field: 'reference', value: 'DD-204', quote: 'Referentie: DD-204' }],
+    missing_fields: ['city', 'price', 'status'],
+    risks: [],
+    requires_human: true,
+  };
+  for (const id of ['reviewable', 'expired']) {
+    store.db
+      .prepare(
+        'INSERT INTO workspace_documents(id,lead_id,filename,media_type,sha256,source,state,created_at) VALUES(?,?,?,?,?,?,?,?)',
+      )
+      .run(
+        id,
+        lead.id,
+        id + '.txt',
+        'txt',
+        id,
+        'Referentie: DD-204\nGemeente: Oudenburg\nVraagprijs: 389000 EUR',
+        'awaiting_review',
+        now,
+      );
+    store.db
+      .prepare(
+        'INSERT INTO content_reviews(id,document_id,state,proposed,created_at,expires_at) VALUES(?,?,?,?,?,?)',
+      )
+      .run(
+        'browser-' + id,
+        id,
+        'pending',
+        JSON.stringify(proposal),
+        now,
+        id === 'expired' ? '2000-01-01T00:00:00.000Z' : '2099-01-01T00:00:00.000Z',
+      );
+  }
+  await page.route('**/api/**', async (route) => {
+    const url = new URL(route.request().url());
+    await route.fulfill({ response: await route.fetch({ url: base + url.pathname + url.search }) });
+  });
+  await page.goto('./?view=connected');
+  await page.getByLabel('Persoonlijke sessietoken', { exact: true }).fill('connected-reviewer');
+  await page.getByRole('button', { name: 'Verbinden / vernieuwen', exact: true }).click();
+  await page.getByRole('combobox', { name: 'Lokale aanvraag', exact: true }).selectOption(lead.id);
+  const article = page.getByRole('heading', { name: 'reviewable.txt', exact: true }).locator('..');
+  const review = article.getByRole('region', { name: 'Documentinhoud beoordelen' });
+  await review.getByLabel('Waarde', { exact: true }).fill('DD-999');
+  await review
+    .getByRole('button', { name: 'Documentinhoud bevestigen · reviewer', exact: true })
+    .click();
+  await expect(page.getByRole('alert')).toContainText('niet bevestigd');
+  await review.getByLabel('Waarde', { exact: true }).fill('DD-204');
+  await review
+    .getByLabel('Controleopmerking', { exact: true })
+    .fill('Referentie letterlijk vergeleken met bron.');
+  await review
+    .getByRole('button', { name: 'Documentinhoud bevestigen · reviewer', exact: true })
+    .click();
+  await expect(article).toContainText('approved');
+  await expect(
+    article.getByRole('button', { name: 'Documentinhoud bevestigen · reviewer', exact: true }),
+  ).toBeDisabled();
+  const expired = page.getByRole('heading', { name: 'expired.txt', exact: true }).locator('..');
+  await expect(expired).toContainText('expired');
+  expect(store.get(lead.id).status).toBe(lead.status);
+  await page.getByLabel('Persoonlijke sessietoken', { exact: true }).fill('invalid-session');
+  await expect(page.getByRole('heading', { name: 'reviewable.txt', exact: true })).toHaveCount(0);
+  await expect(
+    page.getByRole('region', { name: 'Resultaat en brongegevens', exact: true }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: 'Verbinden / vernieuwen', exact: true }).click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  expect(await page.evaluate(() => JSON.stringify(localStorage))).not.toContain('invalid-session');
 });

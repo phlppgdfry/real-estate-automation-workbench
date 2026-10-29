@@ -22,3 +22,9 @@ Bekijk [het volledige reproduceerbare rapport](../data/evaluation-report.json). 
 ## Voor live AI
 
 Laat een domeinmedewerker een nieuwe meertalige set labelen vóór promptafstelling. Scheid ontwikkeling en eindbeoordeling; documenteer meningsverschillen. Meet intentie, referentie, routing, onterechte belofte, antwoordkwaliteit, refusal, kosten en P50/P95-latentie per model/provider. Test met echte foutresponsen en timeouts, zonder echte klantdata. Een valide schema of exact citaat bewijst geen correcte interpretatie.
+
+## Aanvullende meertalige regressies in v3
+
+[data/multilingual.json](../data/multilingual.json) bevat twaalf NL/FR/EN-gevallen met dezelfde beleidsgrenzen: ontkenningen bij bezoek, schatting en zoeken, een verkocht pand, meerdere intenties en een onbekende referentie. De set vond echte gaten in Franse ontkenning en ontkende schattings-/zoekvragen. Die gaan nu handmatig. De twaalf gevallen slagen en blijven ontwikkelregressies; zij zijn geen ongeziene, menselijk gelabelde eindtest. Het rapport bevat de gebruikte taal per geval.
+
+De afzonderlijke [catalogusbenchmark](benchmark.md) meet expliciete criteria en dezelfde matchset; die taak is niet hetzelfde als intentie-extractie. Menselijke kandidaatlabels blijven onbevestigd in [het reviewbestand](evaluation-human-review.md).

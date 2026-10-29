@@ -1,4 +1,4 @@
-# Dify: vier werkende toepassingen
+# Dify: vier werkbankapps en een native opvolgtrigger
 
 De werkbank bevat aanvraaganalyse, een dossierassistent, documentcontrole en een native Agent-pandvergelijker. Voor de vierde toepassing zijn een native Agent, een skillpakket en een Workflow nodig. Ze zijn met fictieve gegevens in Dify Cloud Studio getest. De broncode, prompts, schema's en echte screenshots staan in deze repository. De publieke website toont opgeslagen runbewijs; nieuwe modelruns lopen via de lokale, geauthenticeerde server.
 
@@ -49,7 +49,7 @@ Voor de native Agent: volg eerst de [afzonderlijke importvolgorde en herstelstap
 
 1. Importeer de oorspronkelijke drie YAML-bestanden uit [`dify/apps`](../dify/apps/lead-intake.yml) via Studio → Create → Import DSL. Getest met DSL-versie 0.7.0 en de OpenAI-plugin 1.0.8. Dify kan bij import om installatie van de modelplugin vragen.
 2. Configureer een beschikbare `gpt-4o-mini`-provider of pas het model aan. Cloud-credits of eigen providerbudget zijn nodig. De repo bevat geen providercredentials.
-3. Test de fictieve voorbeelden en publiceer elke app. Schakel de publieke Web App uit; behoud alleen de Backend Service API. MCP en triggers zijn niet nodig.
+3. Test de fictieve voorbeelden en publiceer elke app. Schakel de publieke Web App uit; behoud alleen de Backend Service API. MCP is niet nodig. De afzonderlijke triggerflow heeft een eigen import- en testprocedure; houd die na de test uitgeschakeld.
 4. Maak per app een API-sleutel en plaats die in `.env.local`. Dit bestand is genegeerd; `setup:local` bewaart bestaande waarden en zet rechten op 0600.
 5. Voer de doctor en smoke-suite hierboven uit. De smoke-suite maakt echte, betaalde modelrequests en vervangt [`public/dify/evidence.json`](../public/dify/evidence.json) met alleen de ingebouwde fictieve fixtures en veilige metadata.
 
@@ -99,3 +99,11 @@ Wijzig prompts/code/schema's in hun bronmappen en voer `npm run dify:sync` uit. 
 Officiële referenties: [Dify Workflow API](https://docs.dify.ai/en/api-reference/guides/workflow), [Dify Chatflow API](https://docs.dify.ai/en/api-reference/guides/chatflow), [Dify DSL import/export](https://docs.dify.ai/en/use-dify/workspace/app-management).
 
 POST `/api/dify/compare` accepteert `{question, city, maxPrice, minBedrooms}`. Alleen de reviewer mag uitvoeren; er wordt geen dossier gewijzigd. De lokale server gebruikt de vierde app-sleutel, met maximaal 75 seconden providerwachttijd.
+
+## Vijfde app: native opvolgtrigger
+
+Importeer [follow-up-trigger.yml](../dify/apps/follow-up-trigger.yml) afzonderlijk. Deze modelvrije app is werkelijk op een gepland moment getest, gepubliceerd en daarna uitgeschakeld. [Testwijze, bewijs en lokale replay](native-trigger.md). De actuele workspace gebruikt daarmee alle vijf appslots. De [vaste catalogusbenchmark](../dify/benchmarks/fixed-comparison.yml) is een extra referentietemplate voor een eigen workspace; de standaardbenchmark voert alleen de echte Code-nodes lokaal uit.
+
+## Controle na import in een lege workspace
+
+De volledige import in een onafhankelijke lege workspace is niet als geslaagd geclaimd. Controleer per app: model/plugin beschikbaar; native Agent opnieuw gebonden; skill-zip en pilot-review-bestand werkelijk geüpload; kennisbank aangemaakt met vijf fictieve documenten en metadata; versleutelde datasetverwijzing via de UI opnieuw gekoppeld; filters state/current en language gecontroleerd; publieke Web App uit; trigger uit na test. Beoordeel uitvoer en broncontrole vóór publicatie. De [releasecontrole](release-readiness.md) houdt dit gescheiden van de bewezen schone lokale installatie.

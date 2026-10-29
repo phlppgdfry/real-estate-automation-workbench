@@ -1,0 +1,15 @@
+{
+  "recordedAt": "2026-10-29T08:33:10.091Z",
+  "version": "3.0.0",
+  "status": "passed",
+  "checks": [
+    "source copied without .env, database, node_modules or git metadata",
+    "npm ci --offline",
+    "fresh local credentials and catalogue",
+    "TypeScript and production build",
+    "restart and recovery drill",
+    "signed receipt → rule analysis → human approval → durable mock receipt over real HTTP",
+    "production frontend served by local API"
+  ],
+  "limitation": "Automated clean local installation. No new Dify workspace, provider request or independent human installation."
+}

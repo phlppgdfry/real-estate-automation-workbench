@@ -1,74 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DocumentReviewPanel } from './DocumentReviewPanel';
-import { z } from 'zod';
-import { LeadSchema, ListingSchema, statusLabels } from '../domain';
-const Snapshot = z.object({
-  mode: z.literal('local-api'),
-  leads: z.array(LeadSchema),
-  listings: z.array(ListingSchema),
-  inbox: z.array(z.object({ id: z.string(), state: z.string(), attempts: z.number() })),
-  runs: z.array(
-    z.object({
-      id: z.string(),
-      tool: z.string(),
-      lead_id: z.string().nullable(),
-      state: z.string(),
-      started_at: z.string(),
-      elapsed_ms: z.number().nullable(),
-      total_tokens: z.number().nullable(),
-      error_code: z.string().nullable(),
-      model: z.string(),
-    }),
-  ),
-  budget: z.object({
-    dailyLimit: z.number(),
-    chargedTokens: z.number(),
-    actualTokens: z.number(),
-    unreportedUsageRuns: z.number(),
-    runs: z.number(),
-    failed: z.number(),
-    averageMs: z.number(),
-    costStatus: z.string(),
-    budgetedCostMicros: z.number().nullable(),
-  }),
-  documents: z.array(
-    z.object({
-      id: z.string(),
-      lead_id: z.string(),
-      filename: z.string(),
-      media_type: z.string(),
-      state: z.string(),
-    }),
-  ),
-  reviews: z.array(
-    z.object({
-      id: z.string(),
-      document_id: z.string(),
-      version: z.number(),
-      state: z.string(),
-      proposed: z.string(),
-      expires_at: z.string(),
-      native_human: z.number(),
-    }),
-  ),
-  connectorJobs: z.array(
-    z.object({
-      id: z.string(),
-      lead_id: z.string(),
-      state: z.string(),
-      attempts: z.number(),
-      error_code: z.string().nullable(),
-    }),
-  ),
-  digest: z.object({
-    generatedAt: z.string(),
-    items: z.array(
-      z.object({ id: z.string(), status: z.string(), ageHours: z.number(), action: z.string() }),
-    ),
-  }),
-});
-type SnapshotData = z.infer<typeof Snapshot>;
+import { statusLabels } from '../domain';
+import { Snapshot, type SnapshotData } from '../connected-contract';
+import { WorkspaceResult } from './WorkspaceResult';
 export function ConnectedWorkspace() {
+  const resultTarget = useRef<HTMLDivElement>(null);
   const local = ['127.0.0.1', 'localhost', '[::1]'].includes(location.hostname);
   const [token, setToken] = useState(''),
     [snapshot, setSnapshot] = useState<SnapshotData | null>(null),
@@ -84,6 +20,9 @@ export function ConnectedWorkspace() {
     [nativeExtract, setNativeExtract] = useState(false),
     [nativeHuman, setNativeHuman] = useState(false),
     [file, setFile] = useState<File | null>(null);
+  useEffect(() => {
+    if (answer) resultTarget.current?.focus();
+  }, [answer]);
   async function request(path: string, body?: unknown) {
     const response = await fetch(path, {
       method: body === undefined ? 'GET' : 'POST',
@@ -213,7 +152,15 @@ export function ConnectedWorkspace() {
                 value={token}
                 autoComplete="off"
                 placeholder="Reader, reviewer of operator"
-                onChange={(e) => setToken(e.target.value)}
+                disabled={busy}
+                onChange={(e) => {
+                  setToken(e.target.value);
+                  setSnapshot(null);
+                  setSelected('');
+                  setAnswer(null);
+                  setError('');
+                  setNotice('');
+                }}
               />
             </label>
             <button
@@ -261,7 +208,7 @@ export function ConnectedWorkspace() {
               <p className="muted">
                 {snapshot.budget.budgetedCostMicros === null
                   ? 'Kosten: geen prijsplafond geconfigureerd.'
-                  : `Kostenbovengrens: ${(snapshot.budget.budgetedCostMicros / 1000000).toFixed(4)} in de geconfigureerde rekeneenheid; geen providerfactuur.`}{' '}
+                  : `Gepland kostenbedrag (verbruik + reserveringen): ${(snapshot.budget.budgetedCostMicros / 1000000).toFixed(4)} in de geconfigureerde rekeneenheid; geen providerfactuur.`}{' '}
                 Onbekend verbruik blijft gereserveerd.
               </p>
               <div className="dify-grid">
@@ -316,6 +263,7 @@ export function ConnectedWorkspace() {
                   <label>
                     Lokale aanvraag
                     <select
+                      disabled={busy}
                       value={selected}
                       onChange={(e) => {
                         setSelected(e.target.value);
@@ -609,6 +557,11 @@ export function ConnectedWorkspace() {
                   </div>
                 </div>
               ) : null}
+              {answer ? (
+                <div ref={resultTarget} tabIndex={-1}>
+                  <WorkspaceResult value={answer} />
+                </div>
+              ) : null}
               <div className="dify-card">
                 <h3>Runhistoriek en herkomst</h3>
                 <button
@@ -689,12 +642,6 @@ export function ConnectedWorkspace() {
                   </p>
                 ))}
               </div>
-              {answer ? (
-                <details open className="dify-card">
-                  <summary>Resultaat en brongegevens</summary>
-                  <pre className="dify-result">{JSON.stringify(answer, null, 2)}</pre>
-                </details>
-              ) : null}
             </>
           ) : null}
         </>

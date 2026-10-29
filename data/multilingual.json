@@ -1,0 +1,110 @@
+[
+  {
+    "id": "nl-visit",
+    "language": "nl",
+    "message": "Ik wil DD-204 bezoeken.",
+    "intent": "visit",
+    "status": "review",
+    "mustBlock": false,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "fr-visit",
+    "language": "fr",
+    "message": "Je souhaite visiter DD-204.",
+    "intent": "visit",
+    "status": "review",
+    "mustBlock": false,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "en-visit",
+    "language": "en",
+    "message": "I would like a viewing of DD-204.",
+    "intent": "visit",
+    "status": "review",
+    "mustBlock": false,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "nl-denied-valuation",
+    "language": "nl",
+    "message": "Ik wil geen schatting van mijn woning.",
+    "intent": "unknown",
+    "status": "manual",
+    "mustBlock": true,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "fr-denied-visit",
+    "language": "fr",
+    "message": "Je ne souhaite pas visiter DD-204.",
+    "intent": "unknown",
+    "status": "manual",
+    "mustBlock": true,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "fr-denied-after",
+    "language": "fr",
+    "message": "La visite de DD-204, jamais.",
+    "intent": "unknown",
+    "status": "manual",
+    "mustBlock": true,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "en-denied-valuation",
+    "language": "en",
+    "message": "I do not want a valuation of my house.",
+    "intent": "unknown",
+    "status": "manual",
+    "mustBlock": true,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "fr-search",
+    "language": "fr",
+    "message": "Je cherche une maison à Oudenburg.",
+    "intent": "search",
+    "status": "review",
+    "mustBlock": false,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "nl-denied-search",
+    "language": "nl",
+    "message": "Ik zoek geen woning.",
+    "intent": "unknown",
+    "status": "manual",
+    "mustBlock": true,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "en-sold",
+    "language": "en",
+    "message": "Please arrange a viewing of DD-209.",
+    "intent": "visit",
+    "status": "manual",
+    "mustBlock": true,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "fr-mixed",
+    "language": "fr",
+    "message": "Je souhaite visiter DD-204 et une estimation.",
+    "intent": "unknown",
+    "status": "manual",
+    "mustBlock": true,
+    "category": "multilingual-regression"
+  },
+  {
+    "id": "fr-unknown-reference",
+    "language": "fr",
+    "message": "Je souhaite visiter DD-999.",
+    "intent": "visit",
+    "status": "manual",
+    "mustBlock": true,
+    "category": "multilingual-regression"
+  }
+]

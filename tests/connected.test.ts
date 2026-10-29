@@ -175,11 +175,20 @@ test('document parsing redacts contact details, rejects unsupported files and ex
 });
 test('knowledge lookup filters language and superseded procedures; unknown questions abstain', () => {
   const result = retrieveProcedures('Wat doen we bij een verkocht pand en een bezoek?', 'nl');
-  assert.ok(result.sources.length);
+  assert.deepEqual(
+    result.sources.map((s) => s.source_id),
+    ['SOP-VISIT-NL-2'],
+  );
   assert.ok(
     result.sources.every((s) => s.source_id !== 'SOP-VISIT-NL-1' && !s.source_id.includes('-FR-')),
   );
   assert.equal(retrieveProcedures('astronomie zwarte gaten', 'nl').sources.length, 0);
+  assert.match(retrieveProcedures('astronomie trous noirs', 'fr').answer, /Aucune/);
+  assert.equal(retrieveProcedures('Waarom kan dit niet worden gedaan?', 'nl').sources.length, 0);
+  assert.deepEqual(
+    retrieveProcedures('CRM herstel', 'nl').sources.map((s) => s.source_id),
+    ['SOP-RECOVERY-NL-1'],
+  );
 });
 test('connected API separates read/review/operate, persists intake and deduplicates scheduled events', async () => {
   const store = new Store();

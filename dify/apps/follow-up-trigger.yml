@@ -1,0 +1,262 @@
+app:
+  description: Modelvrije native Schedule Trigger. Maakt een gecontroleerd fictief opvolgevent; geen CRM, mail of externe netwerkacties.
+  icon: ⏰
+  icon_background: '#E0F2F1'
+  icon_type: emoji
+  mode: workflow
+  name: Duin & Dorp · Opvolgtrigger
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+site:
+  chat_color_theme: null
+  chat_color_theme_inverted: false
+  copyright: null
+  custom_disclaimer: ''
+  default_language: nl-NL
+  description: null
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  icon_type: emoji
+  input_placeholder: null
+  privacy_policy: null
+  show_workflow_steps: true
+  title: Duin & Dorp · Opvolgtrigger
+  use_icon_as_answer_icon: false
+version: 0.7.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+        - .JPG
+        - .JPEG
+        - .PNG
+        - .GIF
+        - .WEBP
+        - .SVG
+      allowed_file_types:
+        - image
+      allowed_file_upload_methods:
+        - local_file
+        - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 50
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        knowledge_file_size_limit: 15
+        single_chunk_attachment_limit: 10
+        skill_file_size_limit: 50
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+          - local_file
+          - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: trigger-schedule
+          targetType: code
+        id: schedule-event
+        source: schedule
+        sourceHandle: source
+        target: event
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: code
+          targetType: end
+        id: event-end
+        source: event
+        sourceHandle: ''
+        target: end
+        targetHandle: target
+        type: custom
+        zIndex: 0
+    nodes:
+      - data:
+          config:
+            frequency: daily
+            mode: visual
+            timezone: UTC
+            visual_config:
+              monthly_days:
+                - 1
+              on_minute: 0
+              time: 12:00 AM
+              weekdays:
+                - sun
+          cron_expression: 0 9 * * 1-5
+          desc: Native Schedule Trigger. Maakt alleen een fictief opvolgevent. Planning na demonstratie uitgeschakeld.
+          mode: cron
+          selected: false
+          timezone: Europe/Brussels
+          title: Werkdagen 09:00 · Brussels
+          type: trigger-schedule
+        height: 140
+        id: schedule
+        position: &a1
+          x: 0
+          y: 300
+        positionAbsolute: *a1
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 300
+        zIndex: 0
+      - data:
+          code: |
+            import json
+            import math
+            from datetime import datetime, timezone
+
+
+            def main(timestamp: float) -> dict:
+                if isinstance(timestamp, bool) or not isinstance(timestamp, (int, float)) or not math.isfinite(timestamp) or timestamp <= 0:
+                    raise ValueError("TRIGGER_TIMESTAMP")
+                # At 09:00 Europe/Brussels the UTC and local calendar date always match.
+                day = datetime.fromtimestamp(timestamp, timezone.utc).strftime("%Y-%m-%d")
+                return {"result": json.dumps({"eventId": "native-schedule-" + day, "kind": "schedule"})}
+          code_language: python3
+          outputs:
+            result:
+              children: null
+              type: string
+          selected: false
+          title: Fictief opvolgevent voorbereiden
+          type: code
+          variables:
+            - value_selector:
+                - sys
+                - timestamp
+              value_type: number
+              variable: timestamp
+          desc: Dagelijkse idempotentiesleutel op basis van sys.timestamp. Geen LLM, HTTP, mail of CRM.
+        height: 140
+        id: event
+        position: &a2
+          x: 360
+          y: 300
+        positionAbsolute: *a2
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 300
+      - data:
+          outputs:
+            - value_selector:
+                - event
+                - result
+              value_type: string
+              variable: event
+          selected: false
+          title: Opvolgevent voor gecontroleerde replay
+          type: end
+          desc: Alleen eventId en kind. Een aparte lokale operatorreplay bewijst ontvangst; geen Cloud-naar-localhost verbinding.
+        height: 140
+        id: end
+        position: &a3
+          x: 720
+          y: 300
+        positionAbsolute: *a3
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 300
+      - id: note-purpose
+        type: custom-note
+        position:
+          x: 0
+          y: 0
+        positionAbsolute:
+          x: 0
+          y: 0
+        width: 330
+        height: 240
+        data:
+          type: ''
+          title: ''
+          desc: ''
+          selected: false
+          width: 330
+          height: 240
+          theme: blue
+          showAuthor: false
+          text: '{"root":{"type":"root","version":1,"direction":"ltr","format":"","indent":0,"children":[{"type":"paragraph","version":1,"direction":"ltr","format":"","indent":0,"textFormat":0,"textStyle":"","children":[{"type":"text","version":1,"text":"Van kloksignaal naar controleerbaar event","format":0,"mode":"normal","style":"","detail":0}]},{"type":"paragraph","version":1,"direction":"ltr","format":"","indent":0,"textFormat":0,"textStyle":"","children":[{"type":"text","version":1,"text":"Een echte geplande Dify-uitvoering, zonder generatief model. Werkdagen 09:00 Europe/Brussels. Test met tijdelijk minuutinterval; daarna planning uitschakelen.","format":0,"mode":"normal","style":"","detail":0}]}]}}'
+      - id: note-boundary
+        type: custom-note
+        position:
+          x: 360
+          y: 0
+        positionAbsolute:
+          x: 360
+          y: 0
+        width: 330
+        height: 240
+        data:
+          type: ''
+          title: ''
+          desc: ''
+          selected: false
+          width: 330
+          height: 240
+          theme: violet
+          showAuthor: false
+          text: '{"root":{"type":"root","version":1,"direction":"ltr","format":"","indent":0,"children":[{"type":"paragraph","version":1,"direction":"ltr","format":"","indent":0,"textFormat":0,"textStyle":"","children":[{"type":"text","version":1,"text":"Gegevens en verantwoordelijkheid","format":0,"mode":"normal","style":"","detail":0}]},{"type":"paragraph","version":1,"direction":"ltr","format":"","indent":0,"textFormat":0,"textStyle":"","children":[{"type":"text","version":1,"text":"Uitsluitend fictief eventId + kind. Geen dossiers, toegangssleutels, HTTP-calls of schrijvende tools. De lokale API is niet vanuit Dify Cloud bereikbaar.","format":0,"mode":"normal","style":"","detail":0}]}]}}'
+      - id: note-replay
+        type: custom-note
+        position:
+          x: 720
+          y: 0
+        positionAbsolute:
+          x: 720
+          y: 0
+        width: 330
+        height: 240
+        data:
+          type: ''
+          title: ''
+          desc: ''
+          selected: false
+          width: 330
+          height: 240
+          theme: blue
+          showAuthor: false
+          text: '{"root":{"type":"root","version":1,"direction":"ltr","format":"","indent":0,"children":[{"type":"paragraph","version":1,"direction":"ltr","format":"","indent":0,"textFormat":0,"textStyle":"","children":[{"type":"text","version":1,"text":"Controleer ontvangst en duplicaten","format":0,"mode":"normal","style":"","detail":0}]},{"type":"paragraph","version":1,"direction":"ltr","format":"","indent":0,"textFormat":0,"textStyle":"","children":[{"type":"text","version":1,"text":"Exporteer de output, voer trigger:replay lokaal uit met operatorrechten en bied hetzelfde event opnieuw aan. Verwacht één duurzaam workflow-event; changed-payload geeft conflict.","format":0,"mode":"normal","style":"","detail":0}]}]}}'
+    viewport:
+      x: 50
+      y: 80
+      zoom: 0.7
+  rag_pipeline_variables: []

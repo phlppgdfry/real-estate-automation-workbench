@@ -111,7 +111,9 @@ export async function retrieveDifyProcedures(
     sources,
     answer: sources.length
       ? sources.map((s) => s.quote).join('\n\n')
-      : 'Geen geverifieerde actuele procedure gevonden. Vraag een medewerker om verduidelijking.',
+      : language === 'fr'
+        ? 'Aucune procédure actuelle vérifiée. Demandez une clarification à un collaborateur.'
+        : 'Geen geverifieerde actuele procedure gevonden. Vraag een medewerker om verduidelijking.',
     requires_human: true,
   };
 }

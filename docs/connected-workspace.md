@@ -1,6 +1,6 @@
-# Verbonden dossierwerkplek — implementatie in uitvoering
+# Verbonden dossierwerkplek
 
-Deze uitbreiding staat op `feature/connected-operations` en wordt pas als volledige release gepubliceerd na de Dify-integraties, schone installatietest en browseracceptatie.
+De lokale werkplek verbindt intake, documenten, review en overdracht. De vier Dify-werkbankapps en aparte native trigger hebben afzonderlijk bewijs. De [releasecontrole](release-readiness.md) onderscheidt lokale werking van nog extern te verifiëren modelruns.
 
 ## Lokaal starten
 
@@ -16,7 +16,7 @@ node --import tsx scripts/start-crm-test.ts
 node --import tsx --env-file=.env.local scripts/worker.ts
 ```
 
-Open `http://127.0.0.1:4318/?view=connected` of kies **Verbonden werkplek**. Gebruik een reader-token voor bekijken, een reviewer-token voor intake/documentcontrole/goedkeuring, en een operator-token voor analysebatches en overdracht. Tokens blijven in het tabbladgeheugen. Deze labrollen zijn geen productie-SSO.
+Open `http://127.0.0.1:4318/real-estate-automation-workbench/?view=connected` of kies **Verbonden werkplek**. Gebruik een reader-token voor bekijken, een reviewer-token voor intake/documentcontrole/goedkeuring, en een operator-token voor analysebatches en overdracht. Tokens blijven in het tabbladgeheugen. Deze labrollen zijn geen productie-SSO.
 
 PDF-extractie gebruikt Poppler (`pdftotext`); scan-OCR gebruikt `pdftoppm` en Tesseract. DOCX en EML gebruiken Python 3 met de standaardbibliotheek. Ontbreekt een dependency, dan meldt de installatiecontrole dat; het systeem doet niet alsof een document is uitgelezen. Uploads zijn maximaal 2 MB; tekst maximaal 12.000 tekens. OCR is expliciet en beperkt tot vijf pagina’s met het Engelse OCR-model. Geen echte klantgegevens gebruiken.
 
@@ -32,21 +32,14 @@ PDF-extractie gebruikt Poppler (`pdftotext`); scan-OCR gebruikt `pdftoppm` en Te
 
 Kies Nederlands of Frans en gebruik **Zoek in actuele procedures** voor de lokale canonieke bron. **Zoek via Dify Knowledge** gebruikt de beperkte Knowledge API-sleutel, metadatafilters en onafhankelijke broncontrole. Die route verbruikt geen LLM-tokens. Ontbrekende configuratie of een onzekere providerrespons wordt als fout getoond, zonder ongemerkt naar de lokale route te wisselen.
 
-**Runmetadata downloaden** exporteert uitsluitend operationele metadata. Prompts, documentinhoud, reviewlinks en credentials zijn uitgesloten. Het configureerbare kostenplafond is een conservatieve bovengrens, geen factuur.
+**Runmetadata downloaden** exporteert uitsluitend operationele metadata. Prompts, documentinhoud, reviewlinks en credentials zijn uitgesloten. Het configureerbare kostenbudget gebruikt gerapporteerde tokens en reserveringen. De prijs per token is een zelf ingestelde bovengrens; onbekend verbruik blijft een reservering, geen bewezen maximum. Een model kan meer tokens gebruiken dan vooraf gereserveerd. Dit is geen harde providerlimiet of factuur. Het dagvenster volgt Europe/Brussels, inclusief zomer- en wintertijd.
 
 De [opname](../public/dify/connected-local-demo.webm) toont duurzame intake, analyse, upload en lokale procedures met de echte lokale API. [Screenshot](../public/dify/screenshots/connected-workspace.png). Dit is geen live Dify-modelbewijs.
 
-## Nog af te werken vóór volledige release
+## Gecontroleerde overdracht
 
-- [ ] Native Dify Document Extractor in de bestandsroute en end-to-end bewijs.
-- [ ] Native Human Input koppelen met hervatten, revieweridentiteit en timeout.
-- [ ] Dify Knowledge Retrieval met metadatafilters en broncontrole.
-- [ ] Dify Schedule/Integration Trigger met een echte toegestane externe aansluiting.
-- [ ] Vergelijking directe query / vaste Dify-workflow / native Agent.
-- [ ] Externe providertracing alleen indien nodig; metadata-only traces en configureerbare kostenbovengrens zijn gebouwd.
-- [ ] Extra browseracceptatie, opname en screenshots.
-- [ ] Schone installatie inclusief verse Dify-import testen.
-- [ ] Handleidingen, OpenAPI en releasebewijs volledig gelijk trekken.
-- [ ] Menselijke review van de evaluatievoorbeelden. De gebruiker doet dit later; nog geen menselijke validatie claimen.
+`npm run verify:install` maakt een geïsoleerde kopie zonder bestaande credentials, database of node_modules. Offline npm-installatie, setup, build, storingsdrill en de echte HTTP-demoketen worden uitgevoerd. Het rapport staat in `var/install-verification.json` en als CI-artifact.
 
-Dify User Input en Trigger-startnodes zijn volgens de huidige documentatie wederzijds exclusief op één canvas. Een afzonderlijke triggerflow vraagt daarom een extra appslot of een uitdrukkelijk gekozen bestaande template. Een lokaal schema is niet hetzelfde als een Dify Schedule Trigger. Na een gecontroleerde backup en expliciete toestemming is uitsluitend de originele standaardtemplate verwijderd. Er is één appslot beschikbaar. Modelruns zijn momenteel door het opgebruikte gratis modelquotum geblokkeerd; geen upgrade of betaling is uitgevoerd. De vijf economische kennisbankdocumenten en NL/FR-filtertests zijn wel via de beperkte Knowledge API-sleutel geverifieerd.
+De native Document Extractor en Human Input-client zijn gebouwd. De volledige nieuwe Cloud-bestandsrun en hervatting blijven door het opgebruikte gratis modelquotum geblokkeerd. Lokale protocoltests dekken approve/reject/timeout en onbekende uitkomst; het scherm test ook inhoudelijke correcties en verlopen reviews.
+
+De aparte [native timer](native-trigger.md) heeft werkelijk op een gepland moment uitgevoerd met 0 modeltokens en staat na de test uit. De [vergelijkingsrunner](benchmark.md) werkt standaard zonder netwerk of model. De drie [externe verificatievoorwaarden](release-readiness.md) — modelbudget, menselijke labels en volledig verse Dify-workspace — worden niet stilzwijgend als geslaagd behandeld.

@@ -3,6 +3,7 @@ import YAML from 'yaml';
 import { annotateCanvas, type CanvasGuide } from './canvas';
 const guide = JSON.parse(readFileSync('dify/canvas/guide.json', 'utf8'));
 const apps = [
+  { file: 'follow-up-trigger', prompt: null, code: { event: 'prepare_followup' } },
   { file: 'agent-comparison', prompt: null, code: { validate: 'validate_comparison' } },
   { file: 'lead-intake', prompt: 'lead-system', code: { validate: 'validate_lead' } },
   {
@@ -42,7 +43,7 @@ for (const app of apps) {
       };
     }
   }
-  if (app.file !== 'agent-comparison')
+  if (!['agent-comparison', 'follow-up-trigger'].includes(app.file))
     annotateCanvas(
       doc,
       guide.apps.find((g: CanvasGuide) => g.id === app.file),
@@ -53,4 +54,23 @@ for (const app of apps) {
       throw new Error(`DSL out of sync: ${path}`);
   } else writeFileSync(path, next);
 }
+const fixedPath = 'dify/benchmarks/fixed-comparison.yml';
+const fixed = YAML.parse(readFileSync(fixedPath, 'utf8'));
+for (const [id, source] of [
+  ['fixed', 'fixed_comparison'],
+  ['validate', 'validate_comparison'],
+]) {
+  const code = readFileSync(`dify/code/${source}.py`, 'utf8').replace(
+    '__CATALOG_JSON__',
+    JSON.stringify(
+      JSON.parse(readFileSync('dify/agent/skills/catalog-compare/references/catalog.json', 'utf8')),
+    ),
+  );
+  const node = fixed.workflow.graph.nodes.find((n: { id: string }) => n.id === id);
+  if (process.argv.includes('--check')) {
+    if (node.data.code !== code) throw Error(`Benchmark DSL out of sync: ${id}`);
+  } else node.data.code = code;
+}
+if (!process.argv.includes('--check'))
+  writeFileSync(fixedPath, YAML.stringify(fixed, { lineWidth: 0 }));
 console.log('Dify DSL code, prompts and schemas are in sync.');

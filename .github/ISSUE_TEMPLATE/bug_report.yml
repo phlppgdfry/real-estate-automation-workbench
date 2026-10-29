@@ -1,0 +1,24 @@
+name: Reproduceerbare fout
+description: Meld een fout met fictieve gegevens en de gebruikte uitvoeringsmodus.
+body:
+  - type: markdown
+    attributes:
+      value: Deel geen echte dossiers, sleutels, sessietokens of providerformulierlinks. Gebruik SECURITY.md voor een kwetsbaarheid.
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Waar treedt de fout op?
+      options:
+        - Publieke browsersimulatie
+        - Lokale API of verbonden werkplek
+        - Dify-import of Cloud-uitvoering
+        - Installatie of tests
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Stappen, verwacht resultaat en werkelijk resultaat
+      description: Voeg versie, Node/Python-versie en een minimaal fictief voorbeeld toe.
+    validations:
+      required: true

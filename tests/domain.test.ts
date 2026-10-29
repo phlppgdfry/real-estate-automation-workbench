@@ -155,3 +155,28 @@ test('model kan een expliciete ontkenning niet omzeilen', () => {
   });
   assert.equal(l.status, 'manual');
 });
+
+test('NL/FR/EN negation never prepares an unwanted valuation, search or visit', () => {
+  const cases = [
+    'Ik wil geen schatting van mijn woning.',
+    'Je ne souhaite pas visiter DD-204.',
+    'La visite de DD-204, jamais.',
+    'I do not want a valuation of my house.',
+    'Ik zoek geen woning.',
+  ];
+  for (const message of cases) {
+    const now = new Date().toISOString();
+    const lead = createLead(
+      {
+        eventId: 'negation-' + cases.indexOf(message),
+        name: 'Demo Test',
+        email: 'demo@example.com',
+        channel: 'website',
+        message,
+      },
+      catalog(now),
+      now,
+    );
+    assert.equal(lead.status, 'manual');
+  }
+});

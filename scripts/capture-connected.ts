@@ -52,14 +52,14 @@ try {
   await page.getByRole('heading', { name: 'fictieve-pandfiche.txt', exact: true }).waitFor();
   await page.getByRole('button', { name: 'Zoek in actuele procedures', exact: true }).click();
   await page.getByText('Actuele procedures met bronnen opgehaald.', { exact: true }).waitFor();
-  // Clear the session field before publishing captures, including this disposable token.
-  await page.getByRole('textbox', { name: 'Persoonlijke sessietoken', exact: true }).fill('');
+  // The password input masks this disposable, isolated test-only credential.
+  // Real credentials are never loaded into this capture process.
   await page.screenshot({
     path: 'public/dify/screenshots/connected-workspace.png',
     fullPage: true,
   });
   await page
-    .getByRole('heading', { name: 'Interne procedures', exact: true })
+    .getByRole('region', { name: 'Resultaat en brongegevens', exact: true })
     .scrollIntoViewIfNeeded();
   await page.screenshot({ path: 'public/dify/screenshots/procedures.png' });
   await page.setViewportSize({ width: 375, height: 812 });

@@ -44,26 +44,26 @@ export function DifyCapabilities() {
             </tr>
             <tr>
               <td>Menselijke goedkeuring</td>
-              <td>In de eigen applicatie</td>
+              <td>Lokale reviewer én native Human Input</td>
               <td>
-                Reviewerrol en transactionele outbox. De Dify Human Input-node is hier niet
-                ingericht.
+                Reviewerrol, inhoudelijke controle en native formulierpauze zijn gebouwd. Hervatting
+                in Cloud wacht op modelbudget; lokale protocoltests slagen.
               </td>
             </tr>
             <tr>
               <td>Knowledge / RAG</td>
-              <td>Bewust nog niet</td>
+              <td>Actuele interne NL/FR-procedures</td>
               <td>
-                Zes catalogusrecords zijn beter exact opvraagbaar. RAG past later bij een beheerde
-                documentencollectie met actualisatie en bronrechten.
+                Economische trefwoordretrieval met taal- en statusfilters. Broncontrole is
+                onafhankelijk; pandprijzen blijven exacte catalogusfeiten.
               </td>
             </tr>
             <tr>
-              <td>MCP, triggers & schrijvende tools</td>
-              <td>Niet ingeschakeld</td>
+              <td>Native Schedule Trigger</td>
+              <td>Echte geplande modelvrije testrun</td>
               <td>
-                Eerst echte systeemcontracten, toegangsrechten en beheerafspraken vastleggen. Geen
-                automatisch CRM- of e-mailverkeer.
+                Drie stappen in 0,483 seconde met 0 modeltokens. Gepubliceerd en na de test
+                uitgeschakeld. Lokale eventreplay bewijst geen automatische Cloud-verbinding.
               </td>
             </tr>
           </tbody>
@@ -73,15 +73,15 @@ export function DifyCapabilities() {
         <summary>Import, kosten en resterende beperkingen</summary>
         <p>
           Een native Agent-export bevat niet de skillbestanden zelf. De repo levert daarom de
-          daadwerkelijk gebruikte skill-zip, de bronbestanden en een importhandleiding. Op het
-          huidige Dify-plan blokkeerde ook herimport op de app-limiet; de bestaande live flow is
-          rechtstreeks afgewerkt.
+          daadwerkelijk gebruikte skill-zip, de bronbestanden en een importhandleiding. De vijf
+          beschikbare appslots bevatten vier werkbankapps en de modelvrije opvolgtrigger. De losse
+          benchmarkworkflow kan in een eigen workspace worden geïmporteerd.
         </p>
         <p>
-          De geslaagde workflowtest duurde 20,335 seconden en rapporteerde 18.197 tokens. Dit is één
-          waarneming, geen prestatiebenchmark. De Linux-sandbox kan commando’s uitvoeren en is geen
-          harde grens voor alleen-lezen toegang. Gebruik uitsluitend fictieve data en geen
-          bedrijfssleutels in deze pilot.
+          De eerder vastgelegde Agent-workflowtest duurde 20,335 seconden en rapporteerde 18.197
+          tokens. Dit is één waarneming, geen prestatiebenchmark. De Linux-sandbox kan commando’s
+          uitvoeren en is geen harde grens voor alleen-lezen toegang. Gebruik uitsluitend fictieve
+          data en geen bedrijfssleutels in deze pilot.
         </p>
         <a href="https://github.com/phlppgdfry/real-estate-automation-workbench/blob/main/docs/dify-agent-review.md">
           Bronnen, reproduceerbaarheid en verbeterpad ↗

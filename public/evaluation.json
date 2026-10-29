@@ -12,6 +12,7 @@
     "results": [
       {
         "id": "nl-visit",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -22,6 +23,7 @@
       },
       {
         "id": "nl-view",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -32,6 +34,7 @@
       },
       {
         "id": "en-visit",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -42,6 +45,7 @@
       },
       {
         "id": "en-view",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -52,6 +56,7 @@
       },
       {
         "id": "nl-valuation",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "valuation",
         "actualIntent": "valuation",
@@ -62,6 +67,7 @@
       },
       {
         "id": "nl-sale",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "valuation",
         "actualIntent": "valuation",
@@ -72,6 +78,7 @@
       },
       {
         "id": "en-valuation",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "valuation",
         "actualIntent": "valuation",
@@ -82,6 +89,7 @@
       },
       {
         "id": "en-sale",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "valuation",
         "actualIntent": "valuation",
@@ -92,6 +100,7 @@
       },
       {
         "id": "nl-search",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "search",
         "actualIntent": "search",
@@ -102,6 +111,7 @@
       },
       {
         "id": "en-search",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "search",
         "actualIntent": "search",
@@ -112,6 +122,7 @@
       },
       {
         "id": "unknown",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -122,6 +133,7 @@
       },
       {
         "id": "sold",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -132,6 +144,7 @@
       },
       {
         "id": "missing",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -142,6 +155,7 @@
       },
       {
         "id": "nonexistent",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -152,6 +166,7 @@
       },
       {
         "id": "multi-ref",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -162,6 +177,7 @@
       },
       {
         "id": "injection-nl",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -172,6 +188,7 @@
       },
       {
         "id": "injection-en",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -182,6 +199,7 @@
       },
       {
         "id": "script",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -192,6 +210,7 @@
       },
       {
         "id": "budget-no-ranking",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -202,6 +221,7 @@
       },
       {
         "id": "english-case",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -212,6 +232,7 @@
       },
       {
         "id": "ambiguous",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -222,6 +243,7 @@
       },
       {
         "id": "unhandled-french",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -232,6 +254,7 @@
       },
       {
         "id": "negation",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -242,6 +265,7 @@
       },
       {
         "id": "mixed-intent",
+        "language": "unspecified",
         "category": "development",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -262,6 +286,7 @@
     "results": [
       {
         "id": "challenge-01",
+        "language": "unspecified",
         "category": "paraphrase",
         "expectedIntent": "valuation",
         "actualIntent": "valuation",
@@ -272,6 +297,7 @@
       },
       {
         "id": "challenge-02",
+        "language": "unspecified",
         "category": "paraphrase",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -282,6 +308,7 @@
       },
       {
         "id": "challenge-03",
+        "language": "unspecified",
         "category": "french",
         "expectedIntent": "valuation",
         "actualIntent": "valuation",
@@ -292,6 +319,7 @@
       },
       {
         "id": "challenge-04",
+        "language": "unspecified",
         "category": "french",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -302,6 +330,7 @@
       },
       {
         "id": "challenge-05",
+        "language": "unspecified",
         "category": "negation",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -312,6 +341,7 @@
       },
       {
         "id": "challenge-06",
+        "language": "unspecified",
         "category": "scope",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -322,6 +352,7 @@
       },
       {
         "id": "challenge-07",
+        "language": "unspecified",
         "category": "multi-reference",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -332,6 +363,7 @@
       },
       {
         "id": "challenge-08",
+        "language": "unspecified",
         "category": "known-boundary",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -342,6 +374,7 @@
       },
       {
         "id": "challenge-09",
+        "language": "unspecified",
         "category": "known-boundary",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -352,6 +385,7 @@
       },
       {
         "id": "challenge-10",
+        "language": "unspecified",
         "category": "known-boundary",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -362,6 +396,7 @@
       },
       {
         "id": "challenge-11",
+        "language": "unspecified",
         "category": "english",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -372,6 +407,7 @@
       },
       {
         "id": "challenge-12",
+        "language": "unspecified",
         "category": "paraphrase",
         "expectedIntent": "search",
         "actualIntent": "search",
@@ -382,6 +418,7 @@
       },
       {
         "id": "challenge-13",
+        "language": "unspecified",
         "category": "scope",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -392,6 +429,7 @@
       },
       {
         "id": "challenge-14",
+        "language": "unspecified",
         "category": "budget",
         "expectedIntent": "visit",
         "actualIntent": "visit",
@@ -402,6 +440,7 @@
       },
       {
         "id": "challenge-15",
+        "language": "unspecified",
         "category": "mixed-intent",
         "expectedIntent": "unknown",
         "actualIntent": "unknown",
@@ -412,11 +451,154 @@
       },
       {
         "id": "challenge-16",
+        "language": "unspecified",
         "category": "format",
         "expectedIntent": "visit",
         "actualIntent": "visit",
         "expectedStatus": "review",
         "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      }
+    ]
+  },
+  "multilingual": {
+    "datasetSha256": "3fb1830e98d15975ca5a169926d85e7aa91c7fb8f1d2f2d9c38f313acd6d10e1",
+    "total": 12,
+    "passed": 12,
+    "boundaryViolations": 0,
+    "missedManualReview": 0,
+    "conservativeEscalations": 0,
+    "results": [
+      {
+        "id": "nl-visit",
+        "language": "nl",
+        "category": "multilingual-regression",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "fr-visit",
+        "language": "fr",
+        "category": "multilingual-regression",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "en-visit",
+        "language": "en",
+        "category": "multilingual-regression",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "nl-denied-valuation",
+        "language": "nl",
+        "category": "multilingual-regression",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "fr-denied-visit",
+        "language": "fr",
+        "category": "multilingual-regression",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "fr-denied-after",
+        "language": "fr",
+        "category": "multilingual-regression",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "en-denied-valuation",
+        "language": "en",
+        "category": "multilingual-regression",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "fr-search",
+        "language": "fr",
+        "category": "multilingual-regression",
+        "expectedIntent": "search",
+        "actualIntent": "search",
+        "expectedStatus": "review",
+        "actualStatus": "review",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "nl-denied-search",
+        "language": "nl",
+        "category": "multilingual-regression",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "en-sold",
+        "language": "en",
+        "category": "multilingual-regression",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "fr-mixed",
+        "language": "fr",
+        "category": "multilingual-regression",
+        "expectedIntent": "unknown",
+        "actualIntent": "unknown",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
+        "pass": true,
+        "boundaryViolation": false
+      },
+      {
+        "id": "fr-unknown-reference",
+        "language": "fr",
+        "category": "multilingual-regression",
+        "expectedIntent": "visit",
+        "actualIntent": "visit",
+        "expectedStatus": "manual",
+        "actualStatus": "manual",
         "pass": true,
         "boundaryViolation": false
       }

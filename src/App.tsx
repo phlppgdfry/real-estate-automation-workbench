@@ -45,7 +45,9 @@ export function App() {
   const [session, setSession] = useState(load);
   const [selected, setSelected] = useState(session.leads[0].id);
   const [view, setView] = useState(
-    ['dify', 'connected'].includes(new URLSearchParams(location.search).get('view') ?? '')
+    ['dify', 'connected', 'technical', 'impact'].includes(
+      new URLSearchParams(location.search).get('view') ?? '',
+    )
       ? new URLSearchParams(location.search).get('view')!
       : 'leads',
   );
