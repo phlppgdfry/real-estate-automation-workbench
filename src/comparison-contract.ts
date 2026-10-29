@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import catalog from '../dify/agent/skills/catalog-compare/references/catalog.json';
+import catalog from '../dify/agent/skills/catalog-compare/references/catalog.json' with { type: 'json' };
 export const ComparisonInputSchema = z
   .object({
     question: z.string().trim().min(10).max(1000),

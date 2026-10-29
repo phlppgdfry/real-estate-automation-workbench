@@ -1,3 +1,5 @@
+import { RunLedger, type RunBudget } from './run-ledger';
+import { workspaceRoute } from './workspace';
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { resolve, extname, sep } from 'node:path';
 import { ComparisonInputSchema } from '../src/comparison-contract';
@@ -26,6 +28,10 @@ export type Config = {
   difyAgentKey?: string;
   difyDocumentKey?: string;
   difyComparisonKey?: string;
+  difyKnowledgeKey?: string;
+  difyKnowledgeDatasetId?: string;
+  runBudget?: RunBudget;
+  crmTestUrl?: string;
   staticRoot?: string;
   difyBaseUrl?: string;
   difyUser?: string;
@@ -33,13 +39,13 @@ export type Config = {
 export function signature(secret: string, timestamp: string, raw: string) {
   return createHmac('sha256', secret).update(`${timestamp}.${raw}`).digest('hex');
 }
-async function body(req: IncomingMessage) {
+async function body(req: IncomingMessage, maximum = 16384) {
   const chunks: Buffer[] = [];
   let size = 0;
   for await (const chunk of req) {
     const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
     size += bytes.length;
-    if (size > 16384) throw new DomainError('SIZE', 'Bericht te groot.');
+    if (size > maximum) throw new DomainError('SIZE', 'Bericht te groot.');
     chunks.push(bytes);
   }
   return Buffer.concat(chunks).toString('utf8');
@@ -64,16 +70,27 @@ export function makeServer(config: Config) {
   if (new Set(config.credentials.map((c) => c.token)).size !== config.credentials.length)
     throw new Error('TOKENS_MUST_BE_DISTINCT');
   const inbox = new Inbox(config.store);
+  const ledger = new RunLedger(config.store, config.runBudget);
   const clock = config.now ?? (() => new Date().toISOString());
   const extract: Extractor | undefined =
     config.extract ??
     (config.difyKey
-      ? (input) =>
-          extractDify(input, {
-            apiKey: config.difyKey!,
-            baseUrl: config.difyBaseUrl,
-            user: config.difyUser,
-          })
+      ? async (input) => {
+          const id = ledger.start('intake', 'system-worker', input.eventId, 'gpt-4o-mini', clock());
+          try {
+            const result = await analyseDify(input, {
+              apiKey: config.difyKey!,
+              baseUrl: config.difyBaseUrl,
+              user: config.difyUser,
+              timeoutMs: 20000,
+            });
+            ledger.finish(id, 'succeeded', clock(), result);
+            return result.extraction;
+          } catch (error) {
+            ledger.finish(id, 'failed', clock(), undefined, 'INTAKE_PROVIDER_REJECTED');
+            throw error;
+          }
+        }
       : config.aiKey
         ? (input) => extractOpenAI(input, config.aiKey!, config.aiModel ?? 'gpt-4.1-mini')
         : undefined);
@@ -140,6 +157,22 @@ export function makeServer(config: Config) {
         send(res, 403, { error: 'FORBIDDEN' });
         return false;
       };
+      if (path.startsWith('/api/workspace')) {
+        const raw =
+          req.method === 'POST'
+            ? JSON.parse(await body(req, path === '/api/workspace/documents' ? 2900000 : 16384))
+            : undefined;
+        const result = await workspaceRoute(
+          path,
+          req.method ?? 'GET',
+          raw,
+          principal,
+          config,
+          clock,
+          ledger,
+        );
+        if (result) return send(res, result.status, result.data);
+      }
       if (path === '/api/dify/status' && req.method === 'GET') {
         if (!permit('read')) return;
         return send(res, 200, {
@@ -195,21 +228,36 @@ export function makeServer(config: Config) {
                     .object({ text: z.string().trim().min(20).max(12000) })
                     .strict()
                     .parse(raw);
+        const localRunId = ledger.start(
+          path.split('/').at(-1)!,
+          principal.subject,
+          'leadId' in input ? input.leadId : null,
+          path.endsWith('/compare') ? 'gpt-5.6-luna' : 'gpt-4o-mini',
+          clock(),
+        );
+        async function tracked<T>(work: Promise<T>) {
+          const result = await work;
+          ledger.finish(localRunId, 'succeeded', clock(), result);
+          return { ...result, localRunId };
+        }
         try {
-          if ('maxPrice' in input) return send(res, 200, await compareDify(input, options));
+          if ('maxPrice' in input)
+            return send(res, 200, await tracked(compareDify(input, options)));
           if ('message' in input)
             return send(
               res,
               200,
-              await analyseDify(
-                {
-                  message: input.message,
-                  eventId: 'preview',
-                  name: 'Demo',
-                  email: 'demo@example.com',
-                  channel: 'website',
-                },
-                options,
+              await tracked(
+                analyseDify(
+                  {
+                    message: input.message,
+                    eventId: 'preview',
+                    name: 'Demo',
+                    email: 'demo@example.com',
+                    channel: 'website',
+                  },
+                  options,
+                ),
               ),
             );
           if ('question' in input) {
@@ -217,11 +265,14 @@ export function makeServer(config: Config) {
             return send(
               res,
               200,
-              await assistDify(lead, config.listings, input.question, options, principal.subject),
+              await tracked(
+                assistDify(lead, config.listings, input.question, options, principal.subject),
+              ),
             );
           }
-          return send(res, 200, await reviewDocumentDify(input.text, options));
+          return send(res, 200, await tracked(reviewDocumentDify(input.text, options)));
         } catch (error) {
+          ledger.finish(localRunId, 'failed', clock(), undefined, 'PROVIDER_OR_SOURCE_REJECTED');
           if (error instanceof DomainError && error.code === 'NOT_FOUND')
             return send(res, 404, { error: 'NOT_FOUND' });
           return send(res, 502, {

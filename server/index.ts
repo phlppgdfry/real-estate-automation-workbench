@@ -32,7 +32,20 @@ const server = makeServer({
   difyAgentKey: process.env.DIFY_AGENT_API_KEY,
   difyDocumentKey: process.env.DIFY_DOCUMENT_API_KEY,
   difyComparisonKey: process.env.DIFY_COMPARISON_API_KEY,
+  difyKnowledgeKey: process.env.DIFY_KNOWLEDGE_API_KEY,
+  difyKnowledgeDatasetId: process.env.DIFY_KNOWLEDGE_DATASET_ID,
   staticRoot: 'dist',
+  crmTestUrl: process.env.CRM_TEST_URL,
+  runBudget: {
+    dailyTokens: Number(process.env.DAILY_TOKEN_BUDGET ?? 150000),
+    reservationTokens: 25000,
+    totalTokenPriceCapMicrosPerMillion: process.env.TOKEN_PRICE_CAP_MICROS_PER_MILLION
+      ? Number(process.env.TOKEN_PRICE_CAP_MICROS_PER_MILLION)
+      : undefined,
+    dailyCostCapMicros: process.env.DAILY_COST_CAP_MICROS
+      ? Number(process.env.DAILY_COST_CAP_MICROS)
+      : undefined,
+  },
   difyBaseUrl: process.env.DIFY_API_BASE_URL,
   difyUser: process.env.DIFY_WORKFLOW_USER,
 });

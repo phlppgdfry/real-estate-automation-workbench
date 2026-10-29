@@ -1,0 +1,68 @@
+{
+  "recordedAt": "2026-10-29T03:05:33.243Z",
+  "mode": "Dify Cloud Economical Knowledge API; no generative model",
+  "datasetId": "293e6f00-77fc-4ca5-8ace-72d9567b816d",
+  "corpusSha256": "b5465dff972741c4528e6163ed0375ffb45b5d448489476482d9ef027ef284b1",
+  "documents": [
+    {
+      "name": "SOP-VISIT-NL-1.md",
+      "indexing_status": "completed",
+      "enabled": true
+    },
+    {
+      "name": "SOP-VISIT-FR-1.md",
+      "indexing_status": "completed",
+      "enabled": true
+    },
+    {
+      "name": "SOP-RECOVERY-NL-1.md",
+      "indexing_status": "completed",
+      "enabled": true
+    },
+    {
+      "name": "SOP-DOC-NL-1.md",
+      "indexing_status": "completed",
+      "enabled": true
+    },
+    {
+      "name": "SOP-VISIT-NL-2.md",
+      "indexing_status": "completed",
+      "enabled": true
+    }
+  ],
+  "checks": [
+    {
+      "query": "verkocht",
+      "language": "nl",
+      "sources": [
+        {
+          "source_id": "SOP-VISIT-NL-2",
+          "title": "Bezoekaanvraag opvolgen",
+          "version": 2,
+          "quote": "Controleer eerst de actuele pandstatus en de referentie. Een verkocht pand mag niet voor een bezoek worden bevestigd. Een medewerker beslist over de volgende stap. Een voorgestelde tekst is geen afspraakbevestiging.",
+          "documentId": "6dff9778-8b82-4c88-a4e5-4e7adb709e14"
+        }
+      ]
+    },
+    {
+      "query": "vendu",
+      "language": "fr",
+      "sources": [
+        {
+          "source_id": "SOP-VISIT-FR-1",
+          "title": "Demande de visite",
+          "version": 1,
+          "quote": "Vérifiez la référence et la disponibilité actuelle du bien. Ne confirmez pas de visite pour un bien vendu. Un collaborateur contrôle la proposition avant toute communication.",
+          "documentId": "d870ee25-437a-4aa3-b12d-46dda9ebd003"
+        }
+      ]
+    },
+    {
+      "query": "historische",
+      "state": "superseded",
+      "controlDocuments": ["SOP-VISIT-NL-1.md"]
+    }
+  ],
+  "status": "passed",
+  "limitation": "Keyword retrieval on five fictitious curated procedures. No independent relevance benchmark and no evidence for the separate workflow Knowledge Retrieval node."
+}

@@ -8,7 +8,12 @@ const apps = [
   {
     file: 'operations-assistant',
     prompt: 'assistant-system',
-    code: { prepare: 'prepare_context', validate: 'validate_assistant' },
+    code: {
+      prepare: 'prepare_context',
+      validate: 'validate_assistant',
+      'knowledge-guard': 'validate_knowledge',
+      'procedure-language': 'select_procedure_language',
+    },
   },
   {
     file: 'document-review',
@@ -23,7 +28,10 @@ for (const app of apps) {
     if (node.data.type === 'code') {
       const file = app.code[node.id as keyof typeof app.code];
       if (!file) throw new Error(`Unknown code node ${node.id}`);
-      node.data.code = readFileSync(`dify/code/${file}.py`, 'utf8');
+      node.data.code = readFileSync(`dify/code/${file}.py`, 'utf8').replace(
+        '__PROCEDURES_JSON__',
+        JSON.stringify(JSON.parse(readFileSync('data/knowledge/procedures.json', 'utf8'))),
+      );
     }
     if (node.data.type === 'llm') {
       node.data.prompt_template.find((p: { role: string }) => p.role === 'system').text =
@@ -34,10 +42,11 @@ for (const app of apps) {
       };
     }
   }
-  annotateCanvas(
-    doc,
-    guide.apps.find((g: CanvasGuide) => g.id === app.file),
-  );
+  if (app.file !== 'agent-comparison')
+    annotateCanvas(
+      doc,
+      guide.apps.find((g: CanvasGuide) => g.id === app.file),
+    );
   const next = YAML.stringify(doc, { lineWidth: 0 });
   if (process.argv.includes('--check')) {
     if (YAML.stringify(YAML.parse(readFileSync(path, 'utf8')), { lineWidth: 0 }) !== next)

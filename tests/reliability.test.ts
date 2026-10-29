@@ -207,7 +207,7 @@ test('legacy database migrates without data loss; future schema fails closed', (
     assert.equal(migrated.get('legacy').id, 'legacy');
     assert.equal(
       (migrated.db.prepare('PRAGMA user_version').get() as { user_version: number }).user_version,
-      3,
+      5,
     );
     migrated.db.exec('PRAGMA user_version=99');
     migrated.close();

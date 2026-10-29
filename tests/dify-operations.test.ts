@@ -192,16 +192,43 @@ test('importable DSL has no tools/secrets and embedded code equals tested source
         );
         continue;
       }
-      assert.ok(['start', 'code', 'llm', 'end', 'answer'].includes(node.data.type));
+      const allowed = ['start', 'code', 'llm', 'end', 'answer'];
+      if (file === 'document-review')
+        allowed.push('if-else', 'document-extractor', 'variable-aggregator', 'human-input');
+      if (file === 'operations-assistant') allowed.push('if-else', 'knowledge-retrieval');
+      assert.ok(allowed.includes(node.data.type), `Unexpected executable node: ${node.data.type}`);
+      if (node.data.type === 'human-input') {
+        assert.ok(node.data.delivery_methods.length > 0);
+        assert.ok(
+          node.data.delivery_methods.every((method: { type: string }) => method.type === 'webapp'),
+        );
+        assert.deepEqual(node.data.user_actions.map((action: { id: string }) => action.id).sort(), [
+          'approve',
+          'reject',
+        ]);
+        assert.equal(node.data.timeout, 1);
+        assert.equal(node.data.timeout_unit, 'hour');
+      }
       if (node.data.type === 'llm') assert.equal(node.data.structured_output_enabled, true);
       if (node.data.type === 'code') {
         const files: Record<string, string> =
           file === 'lead-intake'
             ? { validate: 'validate_lead' }
             : file === 'operations-assistant'
-              ? { prepare: 'prepare_context', validate: 'validate_assistant' }
+              ? {
+                  prepare: 'prepare_context',
+                  validate: 'validate_assistant',
+                  'knowledge-guard': 'validate_knowledge',
+                  'procedure-language': 'select_procedure_language',
+                }
               : { redact: 'redact_document', validate: 'validate_document' };
-        assert.equal(node.data.code, readFileSync(`dify/code/${files[node.id]}.py`, 'utf8'));
+        assert.equal(
+          node.data.code,
+          readFileSync(`dify/code/${files[node.id]}.py`, 'utf8').replace(
+            '__PROCEDURES_JSON__',
+            JSON.stringify(JSON.parse(readFileSync('data/knowledge/procedures.json', 'utf8'))),
+          ),
+        );
       }
     }
   }

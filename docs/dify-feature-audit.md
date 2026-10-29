@@ -1,0 +1,33 @@
+# Dify-functiecontrole
+
+Stand: 29 oktober 2026. Een functie wordt pas als live werkend beschreven wanneer er een echte run is; een groene configuratiecheck is daarvoor onvoldoende.
+
+| Functie                             | Concreet gebruik                                          | Bewijs of resterend werk                                                                                                                                                                              |
+| ----------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App-tags                            | Vier apps groeperen op portfolio, taak en techniek        | Opgeslagen en na herladen gecontroleerd; classificatiebestand beschikbaar                                                                                                                             |
+| Canvas-notities                     | Proces, bron, eigenaar, testgevallen en foutpad uitleggen | Zeven kaarten per flow; documentexport met alle 23 nodeconfiguraties en verbindingen vergeleken                                                                                                       |
+| Native Agent en Agent Node          | Pandopties met catalogus-skill vergelijken                | Eerder vastgelegde echte run; onafhankelijke Python- en TypeScript-controle                                                                                                                           |
+| Gestructureerde uitvoer             | AI-voorstel begrenzen                                     | Schema plus onafhankelijke broncontrole; geen actietools                                                                                                                                              |
+| Document Extractor                  | Geüpload fictief document naar tekst                      | Native documentflow gepubliceerd; bestandsrun via Service API door quotum geblokkeerd                                                                                                                 |
+| Human Input                         | Inhoud bevestigen, afwijzen of laten verlopen             | Echte formulierpauze gezien; lokale protocoltests dekken alle uitkomsten en onbekende inzending; live hervatting door quotum geblokkeerd                                                              |
+| Fail branches                       | Model- en retrievalstoringen herkenbaar afhandelen        | Documentflow gepubliceerd; native retrievaltak gepubliceerd als dossierassistentversie 3; bronfouten stoppen de run                                                                                   |
+| Knowledge API                       | Actuele NL/FR-procedures zoeken                           | Echte verificatie met vijf economische documenten, beheerde zoekwoorden en oude-versiecontrole                                                                                                        |
+| Knowledge Retrieval-node            | Procedures naast dossieradvies beschikbaar maken          | Gepubliceerd als versie 3; alle 11 uitvoerbare nodeconfiguraties exact gelijk aan live export. Losse FR-node gaf eerder een bron met 0 modeltokens; volledige chatflow blijft door quotum geblokkeerd |
+| Documentmetadata                    | Filter op taal en actuele versie                          | language/state/version gesynchroniseerd; server controleert bron opnieuw                                                                                                                              |
+| Runmetadata en budget               | Uitval, tokenverbruik en kostenbovengrens begrijpen       | Lokale duurzame registratie en metadata-download; geen prompts of sleutels in export                                                                                                                  |
+| Lokale worker                       | Duurzame inbox en dagelijkse opvolging                    | Begrensde calls, herstartdrill, 20s timeout tegenover 30s lease                                                                                                                                       |
+| Native Schedule/Integration Trigger | Cloud-gebeurtenis aansluiten op duurzame ontvangst        | Nog te bouwen; een lokale worker is geen bewijs van deze native functies                                                                                                                              |
+| Externe tracing                     | Alleen toevoegen wanneer extra inzicht nodig is           | Eigen metadataregistratie werkt; geen Langfuse-account of nieuwe externe datastroom aangemaakt                                                                                                        |
+| Public webapp / API-toegang         | Gecontroleerde lokale verbinding                          | Publieke webapps uit; bestaande goedgekeurde app-sleutels uitsluitend lokaal                                                                                                                          |
+| Evaluaties                          | Regressies en harde grenzen volgen                        | AI-geschreven regressiesets werken; menselijke labels blijven in afwachting                                                                                                                           |
+| Overdracht                          | Installatie zonder bestaande lokale staat                 | Schone npm-installatie, setup, build, documenttools en drill geslaagd; lege Dify-workspace-import nog open                                                                                            |
+
+## Bewuste keuzes
+
+Economische trefwoordzoeking past bij deze kleine, beheerde procedureverzameling. Het portfolio claimt daardoor geen semantische zoekkwaliteit of algemene RAG-benchmark. Prijzen en beschikbaarheid blijven exacte catalogusfeiten, geen retrievalantwoord.
+
+OCR gebeurt alleen na expliciete keuze en met een begrensde lokale route. E-mailbezorging voor Human Input, openbaar toegankelijke dossiers en autonome CRM-writes zijn niet nodig om deze processen te demonstreren.
+
+## Nog open
+
+De complete uitvoeringslijst staat in [het werkplan](implementation-v3.md). Modelquota, menselijke labelreview en een echte externe triggeraansluiting worden afzonderlijk behandeld; geen van deze punten krijgt een verzonnen groen resultaat.

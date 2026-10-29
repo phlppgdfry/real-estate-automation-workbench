@@ -52,7 +52,7 @@ workflow:
           - local_file
           - remote_url
       number_limits: 3
-    opening_statement: Ik help je een blokkade begrijpen. Zonder dossiercontext gebruik ik uitsluitend fictieve demo-feiten. Ik voer geen acties uit.
+    opening_statement: Kies dossieradvies voor brongebonden uitleg, of procedures voor letterlijke actuele NL/FR-procedures. Beide routes vragen menselijke controle en voeren geen dossieracties uit.
     retriever_resource:
       enabled: false
     sensitive_word_avoidance:
@@ -74,10 +74,10 @@ workflow:
         type: custom
         position:
           x: 0
-          y: 235
+          y: 250
         positionAbsolute:
           x: 0
-          y: 235
+          y: 250
         sourcePosition: right
         targetPosition: left
         width: 242
@@ -86,7 +86,7 @@ workflow:
         data:
           type: start
           title: Dossiervraag
-          desc: Ontvangt een vraag en optionele context. De lokale API haalt de context zelf uit de store; de browser kan geen feiten meegeven.
+          desc: Ontvangt de vraag, optionele dossiercontext en route case/procedures. Proceduretaal is nl of fr; de standaardroute blijft dossieradvies.
           selected: false
           variables:
             - variable: case_context
@@ -95,14 +95,32 @@ workflow:
               required: false
               max_length: 12000
               options: []
+            - variable: route
+              label: Route
+              type: select
+              required: false
+              default: case
+              options:
+                - case
+                - procedures
+              max_length: 48
+            - variable: procedure_language
+              label: Proceduretaal
+              type: select
+              required: false
+              default: nl
+              options:
+                - nl
+                - fr
+              max_length: 2
       - id: prepare
         type: custom
         position:
-          x: 285
-          y: 235
+          x: 600
+          y: 250
         positionAbsolute:
-          x: 285
-          y: 235
+          x: 600
+          y: 250
         sourcePosition: right
         targetPosition: left
         width: 242
@@ -152,11 +170,11 @@ workflow:
       - id: explain
         type: custom
         position:
-          x: 570
-          y: 235
+          x: 900
+          y: 250
         positionAbsolute:
-          x: 570
-          y: 235
+          x: 900
+          y: 250
         sourcePosition: right
         targetPosition: left
         width: 242
@@ -233,11 +251,11 @@ workflow:
       - id: validate
         type: custom
         position:
-          x: 855
-          y: 235
+          x: 1200
+          y: 250
         positionAbsolute:
-          x: 855
-          y: 235
+          x: 1200
+          y: 250
         sourcePosition: right
         targetPosition: left
         width: 242
@@ -290,11 +308,11 @@ workflow:
       - id: answer
         type: custom
         position:
-          x: 1140
-          y: 235
+          x: 1500
+          y: 250
         positionAbsolute:
-          x: 1140
-          y: 235
+          x: 1500
+          y: 250
         sourcePosition: right
         targetPosition: left
         width: 242
@@ -307,16 +325,238 @@ workflow:
           selected: false
           answer: '{{#validate.result#}}'
           variables: []
+      - id: route
+        type: custom
+        position:
+          x: 300
+          y: 250
+        positionAbsolute:
+          x: 300
+          y: 250
+        width: 244
+        height: 140
+        selected: false
+        data:
+          type: if-else
+          title: Dossieradvies of procedure?
+          desc: Scheiding tussen dossierfeiten en interne procedures. De procedureroute gebruikt geen LLM.
+          selected: false
+          cases:
+            - id: 'true'
+              case_id: 'true'
+              logical_operator: and
+              conditions:
+                - id: route-procedures
+                  variable_selector:
+                    - start
+                    - route
+                  varType: string
+                  comparison_operator: is
+                  value: procedures
+      - id: knowledge
+        type: custom
+        position:
+          x: 900
+          y: 650
+        positionAbsolute:
+          x: 900
+          y: 650
+        width: 244
+        height: 140
+        selected: false
+        data:
+          type: knowledge-retrieval
+          title: Actuele procedures · taalfilter
+          desc: Native Knowledge Retrieval doorzoekt de economische portfolio-kennisbank met state=current en de gekozen taal. Geen embeddings of reranking-model.
+          selected: false
+          query_variable_selector:
+            - sys
+            - query
+          query_attachment_selector: []
+          dataset_ids:
+            - 0Hh8Hif/xe7OlouraDnu12FrTy65kZU2+7FF2JpO+ldsuBrZEDRrjUsbFVQ5PJcO
+          retrieval_mode: multiple
+          multiple_retrieval_config:
+            top_k: 5
+            score_threshold: null
+            reranking_enable: false
+            reranking_mode: weighted_score
+            weights:
+              weight_type: customized
+              vector_setting:
+                vector_weight: 0
+                embedding_provider_name: ''
+                embedding_model_name: ''
+              keyword_setting:
+                keyword_weight: 1
+          metadata_filtering_mode: manual
+          metadata_filtering_conditions:
+            conditions:
+              - comparison_operator: is
+                id: 1d49e681-927d-46f9-8147-8288d551cf4e
+                metadata_id: 4b411360-4ab3-487f-9d12-417e18a1b625
+                name: state
+                value: current
+              - comparison_operator: is
+                id: 9ee8dcbf-4e75-484d-8041-320037cd702f
+                metadata_id: faf1b031-1bad-42c8-afd0-5279c76e416e
+                name: language
+                value: '{{#procedure-language.language#}}'
+            logical_operator: and
+          error_strategy: fail-branch
+      - id: knowledge-guard
+        type: custom
+        position:
+          x: 1200
+          y: 650
+        positionAbsolute:
+          x: 1200
+          y: 650
+        width: 244
+        height: 140
+        selected: false
+        data:
+          type: code
+          title: Procedurebron onafhankelijk toetsen
+          desc: Python accepteert uitsluitend canonieke actuele bronnen in de gekozen taal en vereist de volledige letterlijke proceduretekst. Onjuiste of verouderde bron stopt de run.
+          selected: false
+          code_language: python3
+          code: |
+            import json
+            import re
+            import unicodedata
+
+            # Replaced from the canonical procedure manifest by scripts/dify/sync.ts.
+            PROCEDURES = json.loads(r'''[{"id":"SOP-VISIT-NL-2","language":"nl","version":2,"valid_from":"2026-10-01","state":"current","title":"Bezoekaanvraag opvolgen","text":"Controleer eerst de actuele pandstatus en de referentie. Een verkocht pand mag niet voor een bezoek worden bevestigd. Een medewerker beslist over de volgende stap. Een voorgestelde tekst is geen afspraakbevestiging.","keywords":["bezoek","bezoeken","bezoekaanvraag","verkocht","beschikbaar","pandstatus","afspraak","referentie","opvolging","bevestigen"]},{"id":"SOP-DOC-NL-1","language":"nl","version":1,"valid_from":"2026-10-01","state":"current","title":"Onvolledige pandfiche","text":"Controleer referentie, gemeente, vraagprijs en status met de bron. Ontbreekt een basisveld, markeer het als onbevestigd en vraag de ontbrekende informatie op. Raad geen prijs, EPC of beschikbaarheid.","keywords":["document","documenten","fiche","pandfiche","ontbreekt","onvolledig","basisveld","vraagprijs","gemeente","epc","bron","status"]},{"id":"SOP-RECOVERY-NL-1","language":"nl","version":1,"valid_from":"2026-10-01","state":"current","title":"Mislukte CRM-overdracht herstellen","text":"Na drie mislukte CRM-pogingen stopt automatische verwerking. Alleen een operator mag met een concrete herstelreden opnieuw klaarzetten. Controleer eerst pandstatus, prijs en versie. Bewaar eerdere fouten en goedkeuring.","keywords":["crm","overdracht","herstel","herstellen","mislukt","pogingen","operator","retry","fouten","prijs","versie"]},{"id":"SOP-VISIT-FR-1","language":"fr","version":1,"valid_from":"2026-10-01","state":"current","title":"Demande de visite","text":"Vérifiez la référence et la disponibilité actuelle du bien. Ne confirmez pas de visite pour un bien vendu. Un collaborateur contrôle la proposition avant toute communication.","keywords":["visite","visiter","vendu","disponible","disponibilité","bien","référence","collaborateur","proposition","communication"]},{"id":"SOP-VISIT-NL-1","language":"nl","version":1,"valid_from":"2025-01-01","state":"superseded","title":"Oud bezoekproces","text":"Historische procedure. Dit document is vervallen en mag niet als actuele werkinstructie worden gebruikt.","keywords":["historisch","historische","oud","vervallen","procedure","bezoek","verkocht"]}]''')
+
+
+            def normalized(value):
+                return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", value)).strip()
+
+
+            def main(records: list, language: str) -> dict:
+                if language not in ("nl", "fr") or not isinstance(records, list) or len(records) > 5:
+                    raise ValueError("KNOWLEDGE_INPUT")
+                allowed = {p["id"] + ".md": p for p in PROCEDURES
+                           if p["language"] == language and p["state"] == "current"}
+                facts = []
+                seen = set()
+                for record in records:
+                    if not isinstance(record, dict):
+                        raise ValueError("KNOWLEDGE_RECORD")
+                    metadata = record.get("metadata") or {}
+                    reference = allowed.get(metadata.get("document_name"))
+                    content = record.get("content")
+                    # Reject the whole run when retrieval violates the independent allowlist.
+                    if not reference or not isinstance(content, str):
+                        raise ValueError("KNOWLEDGE_SOURCE")
+                    if normalized(reference["text"]) not in normalized(content):
+                        raise ValueError("KNOWLEDGE_QUOTE")
+                    if reference["id"] not in seen:
+                        seen.add(reference["id"])
+                        facts.append({"source_id": reference["id"], "quote": reference["text"]})
+                result = {
+                    "summary": "\n\n".join(f["quote"] for f in facts) if facts else
+                    ("Geen passende actuele procedure gevonden. Vraag een medewerker om verduidelijking."
+                     if language == "nl" else "Aucune procédure actuelle correspondante. Demandez une clarification à un collaborateur."),
+                    "facts": facts,
+                    "risks": ["Proceduretekst is geen bevestiging van actuele pandstatus of prijs." if language == "nl" else "La procédure ne confirme pas le statut ou le prix actuel du bien."],
+                    "next_action": "Een medewerker controleert de procedure en de actuele dossierfeiten." if language == "nl" else "Un collaborateur vérifie la procédure et les faits actuels du dossier.",
+                    "requires_human": True,
+                }
+                return {"result": json.dumps(result, ensure_ascii=False)}
+          variables:
+            - variable: records
+              value_selector:
+                - knowledge
+                - result
+            - variable: language
+              value_selector:
+                - procedure-language
+                - language
+          outputs:
+            result:
+              type: string
+              children: null
+      - id: procedure-answer
+        type: custom
+        position:
+          x: 1500
+          y: 650
+        positionAbsolute:
+          x: 1500
+          y: 650
+        width: 244
+        height: 140
+        selected: false
+        data:
+          type: answer
+          title: Geciteerde procedure · geen model
+          desc: Geeft uitsluitend gecontroleerde proceduretekst en bron-ID terug. Bij geen treffers volgt een verduidelijkingsvraag.
+          selected: false
+          answer: '{{#knowledge-guard.result#}}'
+          variables: []
+      - id: knowledge-error
+        type: custom
+        position:
+          x: 1200
+          y: 950
+        positionAbsolute:
+          x: 1200
+          y: 950
+        width: 244
+        height: 140
+        selected: false
+        data:
+          type: answer
+          title: Zoekstoring · menselijke overname
+          desc: Een fout van retrieval gaat naar een expliciete storingsmelding, zonder modelantwoord of dossieractie.
+          selected: false
+          answer: De procedurezoekroute is niet bevestigd. Vraag een medewerker de actuele interne procedure te controleren. Er is geen alternatief modelantwoord gegenereerd.
+          variables: []
+      - id: procedure-language
+        type: custom
+        position:
+          x: 600
+          y: 650
+        positionAbsolute:
+          x: 600
+          y: 650
+        width: 244
+        height: 140
+        selected: false
+        data:
+          type: code
+          title: Taal expliciet bepalen
+          desc: Valideert nl/fr en maakt de gedocumenteerde standaard nl expliciet wanneer een optioneel debugveld niet is meegestuurd. Andere talen worden geweigerd.
+          code_language: python3
+          code: |
+            def main(language: str = "") -> dict:
+                # Optional Start defaults are not always submitted by Dify's debug form.
+                chosen = language or "nl"
+                if chosen not in ("nl", "fr"):
+                    raise ValueError("PROCEDURE_LANGUAGE")
+                return {"language": chosen}
+          variables:
+            - variable: language
+              value_selector:
+                - start
+                - procedure_language
+          outputs:
+            language:
+              type: string
+              children: null
+          selected: false
       - id: note-overview
         type: custom-note
         position:
           x: 0
-          y: 0
+          y: -140
         positionAbsolute:
           x: 0
-          y: 0
-        width: 900
-        height: 180
+          y: -140
+        width: 660
+        height: 360
         selected: false
         zIndex: 0
         data:
@@ -326,20 +566,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Dossierassistent · Een volgende stap die een collega kan controleren","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een collega begrijpt waarom een dossier vastloopt en welke controle nodig is, met verwijzingen naar de aangeleverde statusfeiten.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Leesrichting: invoer → modelvoorstel → onafhankelijke controle → menselijke beoordeling.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Dossierassistent · Dossieradvies of actuele interne procedures","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een collega begrijpt waarom een dossier vastloopt en welke controle nodig is, met verwijzingen naar de aangeleverde statusfeiten.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Leesrichting: invoer → modelvoorstel → onafhankelijke controle → menselijke beoordeling.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: blue
-          width: 900
-          height: 180
+          width: 660
+          height: 360
       - id: note-boundary
         type: custom-note
         position:
-          x: 930
-          y: 0
+          x: 690
+          y: -140
         positionAbsolute:
-          x: 930
-          y: 0
-        width: 450
-        height: 180
+          x: 690
+          y: -140
+        width: 660
+        height: 360
         selected: false
         zIndex: 0
         data:
@@ -349,20 +589,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Gegevensgrens & verantwoordelijkheid","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"De server maakt dossierfeiten: intentie, status, pogingen, catalogusstatus en blokkades. Geen naam, contactgegevens, ruwe aanvraag of vrij auditlog. Elke request start een nieuwe conversatie.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Gegevensgrens & verantwoordelijkheid","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"De server maakt dossierfeiten: intentie, status, pogingen, catalogusstatus en blokkades. Geen naam, contactgegevens, ruwe aanvraag of vrij auditlog. Elke request start een nieuwe conversatie. Proceduretekst komt alleen uit de fictieve, actuele kennisbankbronnen; live prijzen en beschikbaarheid blijven catalogusfeiten.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: violet
-          width: 450
-          height: 180
+          width: 660
+          height: 360
       - id: note-input
         type: custom-note
         position:
-          x: 0
-          y: 420
+          x: 1380
+          y: -140
         positionAbsolute:
-          x: 0
-          y: 420
-        width: 440
-        height: 245
+          x: 1380
+          y: -140
+        width: 660
+        height: 360
         selected: false
         zIndex: 0
         data:
@@ -372,20 +612,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"01 · Invoer & voorbereiding","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Ontvangt een vraag en optionele context. De lokale API haalt de context zelf uit de store; de browser kan geen feiten meegeven.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"In: sys.query + case_context","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Python accepteert maximaal twintig unieke feiten met een bron-ID. Ongeldige context wordt afgewezen.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"01 · Invoer & voorbereiding","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Ontvangt de vraag, optionele dossiercontext en route case/procedures. Proceduretaal is nl of fr; de standaardroute blijft dossieradvies.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"In: sys.query + case_context","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Lege context in Studio gebruikt uitsluitend de ingebouwde fictieve demo-feiten.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: yellow
-          width: 440
-          height: 245
+          width: 660
+          height: 360
       - id: note-model
         type: custom-note
         position:
-          x: 470
-          y: 420
+          x: 0
+          y: 1180
         positionAbsolute:
-          x: 470
-          y: 420
-        width: 440
-        height: 245
+          x: 0
+          y: 1180
+        width: 490
+        height: 360
         selected: false
         zIndex: 0
         data:
@@ -397,18 +637,18 @@ workflow:
           showAuthor: false
           text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"02 · Begrensde modeltaak","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Het model legt de situatie uit en stelt een concrete menselijke controle voor. Het citeert de aangeleverde feiten exact.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Uit: Samenvatting, broncitaten, risico’s en volgende stap","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Geen actietools. Vrije tekst blijft een voorstel, ook met geldige citaten.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: yellow
-          width: 440
-          height: 245
+          width: 490
+          height: 360
       - id: note-guard
         type: custom-note
         position:
-          x: 940
-          y: 420
+          x: 515
+          y: 1180
         positionAbsolute:
-          x: 940
-          y: 420
-        width: 440
-        height: 245
+          x: 515
+          y: 1180
+        width: 490
+        height: 360
         selected: false
         zIndex: 0
         data:
@@ -418,20 +658,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"03 · Controle & overdracht","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Elke bron-ID moet bestaan en het citaat moet exact gelijk zijn aan het statusfeit. Code voegt requires_human=true toe.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een medewerker beoordeelt het advies. Alleen een operator mag een vastgelopen overdracht herstellen.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een chatantwoord kan geen dossier goedkeuren of CRM-record wijzigen.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"03 · Controle & overdracht","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Elke bron-ID moet bestaan en het citaat moet exact gelijk zijn aan het statusfeit. Code voegt requires_human=true toe.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een medewerker beoordeelt het advies. Alleen een operator mag een vastgelopen overdracht herstellen.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een mislukte broncontrole wordt nooit als geslaagde zoekrun gepresenteerd.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: violet
-          width: 440
-          height: 245
+          width: 490
+          height: 360
       - id: note-tests
         type: custom-note
         position:
-          x: 0
-          y: 705
+          x: 1030
+          y: 1180
         positionAbsolute:
-          x: 0
-          y: 705
-        width: 675
-        height: 250
+          x: 1030
+          y: 1180
+        width: 490
+        height: 360
         selected: false
         zIndex: 0
         data:
@@ -441,20 +681,20 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Test het gedrag zelf","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Verkocht pand: Waarom kan DD-209 niet worden ingepland?\nVerwacht: Verwijzing naar het verkochte pand; geen bezoekbelofte.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Herstelvraag: Wat moet een medewerker controleren bij drie CRM-fouten?\nVerwacht: Controle van overdracht en beheerherstel; geen autonome retry.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Ontbrekend bewijs: Welke bezoekdatum heeft de klant bevestigd?\nVerwacht: Benoem ontbrekend bewijs; verzin geen afspraakdatum.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Test het gedrag zelf","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Verkocht pand: Waarom kan DD-209 niet worden ingepland?\nVerwacht: Verwijzing naar het verkochte pand; geen bezoekbelofte.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Herstelvraag: Wat moet een medewerker controleren bij drie CRM-fouten?\nVerwacht: Controle van overdracht en beheerherstel; geen autonome retry.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Ontbrekend bewijs: Welke bezoekdatum heeft de klant bevestigd?\nVerwacht: Benoem ontbrekend bewijs; verzin geen afspraakdatum.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Procedure FR: Route procedures, taal fr, vraag vendu\nVerwacht: Alleen SOP-VISIT-FR-1, met exacte proceduretekst en menselijke controle.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: blue
-          width: 675
-          height: 250
+          width: 490
+          height: 360
       - id: note-operations
         type: custom-note
         position:
-          x: 705
-          y: 705
+          x: 1545
+          y: 1180
         positionAbsolute:
-          x: 705
-          y: 705
-        width: 675
-        height: 250
+          x: 1545
+          y: 1180
+        width: 490
+        height: 360
         selected: false
         zIndex: 0
         data:
@@ -464,23 +704,11 @@ workflow:
           type: ''
           selected: false
           showAuthor: false
-          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Als het misgaat","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een citaat met een onbekende bron of andere tekst stopt de run. Geen automatisch alternatief advies; toon de fout en raadpleeg het bronsysteem.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Beheer: sleutels alleen op de server; Web App uit; geen actietools. Wijzig broncode/prompts → dify:sync → tests → importeer → publiceer → live smoke.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+          text: '{"root":{"children":[{"children":[{"detail":0,"format":1,"mode":"normal","style":"font-size: 20px;","text":"Als het misgaat","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":1,"textStyle":"font-size: 20px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Een citaat met een onbekende bron of andere tekst stopt de run. Geen automatisch alternatief advies; toon de fout en raadpleeg het bronsysteem. Retrieval-fouten hebben een eigen antwoordtak; bronfouten stoppen de run zonder modelalternatief.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"},{"children":[{"detail":0,"format":0,"mode":"normal","style":"font-size: 16px;","text":"Beheer: sleutels alleen op de server; Web App uit; geen actietools. Wijzig broncode/prompts → dify:sync → tests → importeer → publiceer → live smoke.","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":"font-size: 16px;"}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
           theme: violet
-          width: 675
-          height: 250
+          width: 490
+          height: 360
     edges:
-      - id: start-source-prepare-target
-        source: start
-        sourceHandle: source
-        target: prepare
-        targetHandle: target
-        type: custom
-        zIndex: 0
-        data:
-          isInIteration: false
-          isInLoop: false
-          sourceType: start
-          targetType: code
       - id: prepare-source-explain-target
         source: prepare
         sourceHandle: source
@@ -517,7 +745,91 @@ workflow:
           isInLoop: false
           sourceType: code
           targetType: answer
+      - id: start-source-route
+        source: start
+        sourceHandle: source
+        target: route
+        targetHandle: target
+        type: custom
+        zIndex: 0
+        data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: start
+          targetType: if-else
+      - id: route-false-prepare
+        source: route
+        sourceHandle: 'false'
+        target: prepare
+        targetHandle: target
+        type: custom
+        zIndex: 0
+        data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: if-else
+          targetType: code
+      - id: route-true-procedure-language
+        source: route
+        sourceHandle: 'true'
+        target: procedure-language
+        targetHandle: target
+        type: custom
+        zIndex: 0
+        data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: if-else
+          targetType: code
+      - id: knowledge-source-knowledge-guard
+        source: knowledge
+        sourceHandle: source
+        target: knowledge-guard
+        targetHandle: target
+        type: custom
+        zIndex: 0
+        data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: knowledge-retrieval
+          targetType: code
+      - id: knowledge-fail-branch-knowledge-error
+        source: knowledge
+        sourceHandle: fail-branch
+        target: knowledge-error
+        targetHandle: target
+        type: custom
+        zIndex: 0
+        data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: knowledge-retrieval
+          targetType: answer
+      - id: knowledge-guard-source-procedure-answer
+        source: knowledge-guard
+        sourceHandle: source
+        target: procedure-answer
+        targetHandle: target
+        type: custom
+        zIndex: 0
+        data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: code
+          targetType: answer
+      - id: procedure-language-source-knowledge
+        source: procedure-language
+        sourceHandle: source
+        target: knowledge
+        targetHandle: target
+        type: custom
+        zIndex: 0
+        data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: code
+          targetType: knowledge-retrieval
     viewport:
-      x: 75
-      y: 35
-      zoom: 0.78
+      x: 50
+      y: 120
+      zoom: 0.5

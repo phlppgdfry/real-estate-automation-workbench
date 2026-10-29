@@ -10,6 +10,14 @@ Een vastgoedaanvraag één keer ontvangen, controleren en betrouwbaar aan een co
 
 ![Dify werkbank met echte broncitaten](public/dify/screenshots/workbench.png)
 
+## Verbonden dossierwerkplek in ontwikkeling
+
+De nieuwe werkplek verbindt duurzame intake, documentupload, inhoudelijke review, casegebonden runs en een afzonderlijke HTTP-testconnector. De echte Dify Knowledge API-route is met NL/FR- en versiecontroles geverifieerd. De vier Studio-apps hebben consistente tags. [Starten en grenzen](docs/connected-workspace.md) · [Classificatie](docs/dify-classification.md) · [Werkstatus](docs/implementation-v3.md).
+
+![Documenteninbox en procedurezoekroute van de lokale API](public/dify/screenshots/procedures.png)
+
+[Bekijk de echte lokale API-opname](public/dify/connected-local-demo.webm). De opname gebruikt fictieve gegevens en roept geen Dify-model aan. Live Human Input-hervatting en nieuwe modelbenchmarks wachten op beschikbaar modelquotum. Menselijke evaluatielabels zijn nog niet bevestigd.
+
 ## Het probleem
 
 Website, mailbox en portaal leveren aanvragen aan. Medewerkers moeten het doel herkennen, het juiste pand opzoeken, prijs en beschikbaarheid controleren, een antwoord voorbereiden en opvolging registreren. Bij elke overdracht kan informatie verloren gaan.
