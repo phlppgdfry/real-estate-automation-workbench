@@ -1,5 +1,16 @@
 # Wijzigingen
 
+## 3.0.0 — Verbonden dossierwerkplek en controleerbare showcase
+
+- Duurzame intake, dossierdocumenten, brongebonden inhoudsreview, expiry, native Human Input-client en afzonderlijke HTTP-testconnector. Nieuwe workspace-API en migraties 4/5.
+- Gepubliceerde native proceduretak met NL/FR-filters en onafhankelijke broncontrole; echte Knowledge API-verificatie. Vijfde app met echte geplande modelvrije Schedule Trigger-run, daarna uitgeschakeld.
+- Benchmark met identieke criteria, modelvrije vaste workflow en expliciete scheiding tussen lokale uitvoering en niet uitgevoerde Cloud-metingen.
+- Meertalige negatiegrenzen hersteld; dagbudgetten volgen Europe/Brussels inclusief DST. Sessiewisseling wist geladen gegevens; documenten en procedures krijgen leesbare resultaten.
+- Extra documentreview- en browseracceptatie, schone-installatierunner met echte HTTP-demo, bronpakket met commit/bestandschecksums, gepinde officiële CI-actions en repo-scan.
+- README, bewijsmatrix, startgids, Engelse reviewroute en statusweergave gelijkgetrokken. Modelbudget, menselijke labels en verse Dify-workspace blijven expliciete externe verificatievoorwaarden; geen nieuwe kosten gemaakt.
+
+De oorspronkelijke API-contracten blijven behouden. Major-versie markeert de uitbreiding naar een verbonden dossierwerkplek; bestaande databases migreren atomisch. Labcredentials en lokale configuratie blijven nodig.
+
 ## 2.0.0 — Betrouwbaarheid en reviewbewijs
 
 - Duurzame inbox vóór analyse, 202/statusendpoint, begrensde batches, leases en fencing.

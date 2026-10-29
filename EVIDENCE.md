@@ -1,53 +1,28 @@
-# Van functie-eis naar bewijs
+# Van claim naar uitvoerbaar bewijs
 
-Open de code en voer de tests uit. Een uitgewerkt project bewijst nog geen zelfstandige beheersing: laat de auteur het uitleggen en aanpassen.
+Stand: 29 oktober 2026. Een configuratiecheck, lokale protocoltest en echte Cloud-run bewijzen verschillende dingen. De onderstaande bronnen maken dat onderscheid expliciet. Uitgewerkt met AI-assistentie; laat de auteur keuzes uitleggen en aanpassen.
 
-| Vaardigheid                      | Concreet bewijs                                                 | Demo / controle                 | Grens                                                                             |
-| -------------------------------- | --------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------- |
-| Procesanalyse en bedrijfsinzicht | [AS-IS, TO-BE, KPI's](CASE_STUDY.md)                            | Proces & impact, tour 1/7       | Werkhypothese; geen echte workshop                                                |
-| API's en systeemintegraties      | [API](server/app.ts), [contract](docs/openapi.json)             | Technisch dossier, HTTP-tests   | Lokale mock, geen echte CRM-credentials                                           |
-| LLMs praktisch toepassen         | [Extractor](server/ai.ts), [regels](src/domain.ts)              | Broncitaat, tour 2/3            | Dify live smoke-tests met fictieve fixtures; geen onafhankelijke kwaliteitsmeting |
-| Workflow en foutafhandeling      | [Outbox](server/store.ts)                                       | Fout simuleren, tour 4/5        | Eén lokale worker; geen netwerkgarantie                                           |
-| Database en gegevensvalidatie    | [Store](server/store.ts), [schema](src/domain.ts)               | Rollback-/restarttests          | Geen productiecluster of migratieplatform                                         |
-| Scripts en eigen toepassingen    | [React](src/App.tsx), [API-demo](scripts/demo-api.ts)           | Nieuwe aanvraag, filter, reset  | Browser en API zijn aparte adapters                                               |
-| Testen, verbeteren, documenteren | [Tests](tests/domain.test.ts), [evaluatie](scripts/evaluate.ts) | Uitzonderingen, tour 6          | Handgeschreven kleine fixturebaseline                                             |
-| Medewerkers en beheer meenemen   | [Handleiding](docs/user-guide.md), [pilot](docs/operations.md)  | Calculator en gebeurtenissenlog | Geen uitgevoerde pilot of gemeten besparing                                       |
+| Claim                                                       | Bron                                                                                                           | Zelf controleren                                                                               | Bewijsgrens                                                                                            |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Ontvangst overleeft provideruitval                          | [Inbox](server/inbox.ts), [worker](server/analysis-worker.ts)                                                  | [Herstart-, outage- en fencingtests](tests/reliability.test.ts); `npm run drill`               | Lokale SQLite; geen productiecluster                                                                   |
+| Goedkeuring heeft een bevoegdheids- en broncontrole         | [Domein](src/domain.ts), [rollen](server/auth.ts)                                                              | [HTTP- en domeintests](tests/domain.test.ts), [browserflow](tests/browser/workflow.spec.ts)    | Labcredentials; geen organisatie-SSO                                                                   |
+| Ontkende NL/FR/EN-vragen krijgen geen standaardvoorstel     | [Meertalige fixtures](data/multilingual.json), [regels](src/domain.ts)                                         | `npm run evaluate`; [rapport](data/evaluation-report.json)                                     | AI-geschreven regressies, geen onafhankelijke eindtest                                                 |
+| Documentcorrecties behouden letterlijke herkomst            | [Reviewservice](server/document-review.ts), [paneel](src/components/DocumentReviewPanel.tsx)                   | [API-tests](tests/connected.test.ts), [browserreview](tests/browser/connected.spec.ts)         | Inhoudelijke review is geen dossiergoedkeuring of juridische controle                                  |
+| PDF/DOCX/EML/OCR heeft begrensde extractie                  | [Extractie](server/document-extract.ts), [parser](scripts/extract_document.py)                                 | `npm run install:check`; [documenttests](tests/connected.test.ts)                              | OCR eerste vijf pagina’s, Engels model; dependency vereist                                             |
+| Onbekende CRM-uitkomst wordt afgestemd                      | [HTTP-connector](server/crm-connector.ts), [aparte testdienst](server/crm-test-service.ts)                     | [Commit-disconnect met echte databaseherstart](tests/connected.test.ts)                        | Fictieve lokale HTTP-dienst, geen vastgoedleverancier                                                  |
+| Runbudget telt onbekend verbruik conservatief               | [Ledger](server/run-ledger.ts), [kalender](server/calendar.ts)                                                 | Budget- en DST-tests                                                                           | Kosten zijn alleen een geconfigureerde bovengrens; geen factuur                                        |
+| Vier Dify-werkbankapps hebben echt runbewijs                | [Runbewijzen](public/dify/evidence.json), [lokale keten](public/dify/local-verification.json)                  | [Import en verificatie](docs/dify-integration.md)                                              | Historische fixtures; geen nieuwe modelbenchmark                                                       |
+| Native Agent gebruikt een echte Python-skill                | [Gebruikte skill-zip](dify/agent/catalog-compare.skill.zip), [Agent-proof](data/agent/local-api-proof.json)    | [Python + TypeScript-guards](tests/comparison.test.ts)                                         | Linux-sandbox is geen alleen-lezen beveiligingsgrens                                                   |
+| Actuele procedurebronnen worden op taal en versie gefilterd | [Knowledge API-verificatie](public/dify/knowledge-verification.json), [guard](dify/code/validate_knowledge.py) | [Providercontract](tests/knowledge-dify.test.ts), [native guard](tests/knowledge-node.test.ts) | Vijf beheerde fictieve bronnen, trefwoordretrieval                                                     |
+| Nieuwe dossierflow is gepubliceerd                          | [Canvasvergelijking](public/dify/canvas-verification.json)                                                     | 11 uitvoerbare nodeconfiguraties, 10 verbindingen tegen live export                            | Volledige chatflow blijft [door modelquotum geblokkeerd](public/dify/procedure-flow-verification.json) |
+| Human Input heeft pauze, bedoelde actie en reconcile        | [Client](server/dify-human.ts), [review](server/document-review.ts)                                            | [Goedkeuren/afwijzen/timeout/unknown-tests](tests/dify-human.test.ts)                          | Formulierpauze live gezien; Cloud-hervatting nog geblokkeerd                                           |
+| Native timer voert zonder model uit                         | [Timerbewijs](public/dify/trigger-verification.json), [DSL](dify/apps/follow-up-trigger.yml)                   | Echte geplande testrun: 3 stappen, 0,483 s, 0 tokens; daarna uitgeschakeld                     | Geen onbemande productiescheduler of directe verbinding naar localhost                                 |
+| Een native event kan veilig lokaal worden herhaald          | [Replay-CLI](scripts/trigger-replay.ts), [fixture](data/trigger/native-event.json)                             | [Echte CLI → HTTP → één ontvangst](tests/trigger.test.ts)                                      | Expliciete operatorreplay, geen automatische Cloud-bridge                                              |
+| Directe query en vaste workflow gebruiken gelijke criteria  | [Runner](scripts/benchmark.ts), [rapport](public/dify/benchmark.json)                                          | `npm run benchmark`                                                                            | Lokale uitvoeringsmodus; Cloud- en Agent-metingen niet ingevuld                                        |
+| Installatie vraagt geen bestaande lokale staat              | [Installatierunner](scripts/verify-install.ts)                                                                 | `npm run verify:install`; CI-artifact `validation-evidence`                                    | Geen nieuwe Dify-workspace of onafhankelijke menselijke installatietest                                |
 
-## Acceptatiecriteria
+## Niet bewezen
 
-| ID    | Gedrag                                                                                | Testbewijs                                   |
-| ----- | ------------------------------------------------------------------------------------- | -------------------------------------------- |
-| AC-01 | Identiek event wordt geen tweede lead; zelfde ID met gewijzigde inhoud geeft conflict | integratie: event idempotentie               |
-| AC-02 | Prijs uit catalogus; geen bezoekdatum beloven                                         | domein: catalogusprijs                       |
-| AC-03 | Verkocht, onbekend of verouderd pand blokkeert                                        | domein: referenties/verouderd/verkocht       |
-| AC-04 | Verouderde of dubbele goedkeuring mislukt                                             | domein + HTTP: versie                        |
-| AC-05 | Outboxfout rolt goedkeuring terug                                                     | integratie: SQLite-trigger injecteert fout   |
-| AC-06 | Herstart verliest geen geaccepteerde overdracht                                       | integratie: duurzame opslag                  |
-| AC-07 | Drie fouten vereisen interventie                                                      | domein: retry/backoff                        |
-| AC-08 | Modelweigering, incomplete output en gefabriceerde bron worden afgewezen              | domein + AI-contracttests                    |
-| AC-09 | UI bewaart status bij herladen, reset herstelt seed, mobiel werkt                     | browser: workflow/tour/375px                 |
-| AC-10 | Geen e-mailtransport beschikbaar                                                      | geen mailadapter; server test `sentEmails=0` |
+Menselijke evaluatielabels blijven `null` tot een persoon werkelijk beoordeelt. Nieuwe native bestandsruns, Human Input-hervatting en een volledige Cloud-driewegsbenchmark vragen beschikbaar modelbudget. Een volledig verse Dify-workspace met alle plugins, Agent-assets en kennisbankbindingen is niet getest. Dit wordt niet vervangen door een groene YAML- of unit-test.
 
-## Aanvullend bewijs in v1.1
-
-| Onderwerp                       | Code                                                                      | Verificatie                                                               |
-| ------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Ontvangst vóór provider-I/O     | [inbox](server/inbox.ts), [worker](server/analysis-worker.ts)             | restart, outage, stale worker, twee verbindingen                          |
-| Functiescheiding                | [auth](server/auth.ts), [API](server/app.ts)                              | reader/reviewer/operator krijgen 403 buiten hun rol                       |
-| Herstel en bron opnieuw toetsen | [domein](src/domain.ts), [Store](server/store.ts)                         | foutgeschiedenis blijft, verkocht pand blokkeert                          |
-| Reproduceerbare afweging        | [senior review](docs/senior-review.md), [drill](scripts/failure-drill.ts) | `npm run drill`, CI-artifact                                              |
-| Kritische evaluatie             | [rapport](data/evaluation-report.json)                                    | 16/16 regressiecases na taalherkenningsfix; geen onafhankelijke benchmark |
-
-## Dify operationeel in v2.1
-
-Drie apps, native schema-output, Python-broncontrole en onafhankelijke TypeScript-validatie. [Importeerbare DSL](dify/apps/lead-intake.yml), [werkbank](src/components/DifyWorkbench.tsx), [live fixtures en run-ID’s](public/dify/evidence.json), [volledige HTTP-keten](public/dify/local-verification.json) en [installatie met screenshots](docs/dify-integration.md). De echte CRM-koppeling en productiehosting blijven buiten scope.
-
-## Overdraagbaarheid en controle in v2.2
-
-[Centraal beheerde canvasgids](dify/canvas/guide.json) → [DSL-generator](scripts/dify/canvas.ts) → drie importeerbare apps én [interactieve site-uitleg](src/components/DifyFlowGuide.tsx). De tests controleren de aansluiting op uitvoerbare nodes, geldige notities zonder uitvoeringsverbindingen en het ontbreken van overlappende notitiepanelen. [Senior review met demonstratievragen](docs/dify-canvas-review.md). De onafhankelijke documentguard vult onbevestigde basisvelden aan, ook als het model die niet meldt.
-
-## Native Agent en beeldkwaliteit (v2.3.0)
-
-[Onderzoek en functiematrix](docs/dify-agent-review.md) → [daadwerkelijk geüploade skill](dify/agent/catalog-compare.skill.zip) → [gepubliceerde Agent-workflow](dify/agent/live-workflow-export.yml) → [echte lokale API-run](data/agent/local-api-proof.json). De Python- en TypeScript-guards wijzen gewijzigde prijzen, bronnen, criteria, verkochte voorstellen en ontbrekende matches af. Een eerste contractfout is bewaard als regressiecontext; de guard is niet versoepeld.
-
-54 automatische unit/integratietests en 11 browsertests controleren de huidige versie. De beeldviewer toont het volledige opnieuw opgenomen dossiercanvas, ondersteunt zoom, toetsenbordsluiting en focusterugkeer; de favicon werkt onder het GitHub Pages-basispath. Desktop (1536×1050) en mobiel (375×812) zijn gecontroleerd zonder app-consolefouten of horizontale overflow. De [vierde flow](public/dify/screenshots/comparison.png) heeft apart runbewijs.
+Productie-SSO, een echt CRM, e-mail/agenda, externe alertdienst, onafhankelijke pilot en gemeten besparing vallen buiten deze portfolio-release. Zie [de releasecontrole](docs/release-readiness.md), [evaluatiemethode](docs/evaluation.md) en [het runbook](docs/operations.md).

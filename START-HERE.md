@@ -1,35 +1,27 @@
 # Start hier
 
-Voor recruiter, zaakvoerder en technische reviewer. Kies een route.
+Duin & Dorp is een fictieve vastgoedcase met een openbare demo, een echte lokale API en vastgelegd Dify-bewijs. Voor de eerste beoordeling heb je geen account of modelbudget nodig.
 
-## Twee minuten
+## Twee minuten: ervaar de regels
 
-[Open de rondleiding](https://phlppgdfry.github.io/real-estate-automation-workbench/?tour). Probleem: handwerk tussen aanvraag en opvolging. Oplossing: gecontroleerde werkstroom met menselijke goedkeuring en zichtbare uitzonderingen. Liever lezen? [Samenvatting](application-kit/executive/one-page-summary.md).
+[Open de rondleiding](https://phlppgdfry.github.io/real-estate-automation-workbench/?tour). Keur een voorstel goed, simuleer een CRM-fout en open een verkocht pand. Zie dat goedkeuring, uitvoering en ontvangst afzonderlijke stappen zijn.
 
-## Vijf minuten
+## Vijf minuten: beoordeel de waarde
 
-Lees [proces en businesscase](CASE_STUDY.md), probeer een verkocht pand en mislukte overdracht, en bekijk [de bewijsmatrix](EVIDENCE.md). De calculator toont scenario-aannames.
+Lees [de case](CASE_STUDY.md), open **Dify werkbank** en bekijk een vastgelegde echte run met bronnen. **Technisch dossier** toont het verschil tussen lokale tests, Cloud-bewijs en resterende grenzen. De calculator is een scenario, geen gerealiseerde besparing.
 
-## Vijftien minuten
+## Vijftien minuten: controleer de techniek
 
-Volg [het demoscript](application-kit/demo/5-minute-story.md), lees [architectuur](docs/architecture.md) en [ontwerpkeuzes](docs/decisions.md), en bekijk [integratietests](tests/integration.test.ts). Let op idempotentie, rollback en herstart.
+Volg [de technische leesroute](docs/reviewer-guide.md). Bekijk de [bewijsmatrix](EVIDENCE.md), [architectuur](docs/architecture.md), [releasecontrole](docs/release-readiness.md) en voer `npm run drill` uit. Vraag de auteur een broncitaat te vervalsen en een herstelpad uit te leggen.
 
-## Zelf verifiëren
+## Zelf overnemen
 
-Volg [README](README.md), draai `npm run check`, `npm run test:e2e` en `npm run demo:api`. Lees [het runbook](docs/operations.md) en [de kennisgids](docs/knowledge.md). Geen JavaScript? [Statische samenvatting](public/fallback.html).
+Volg [README](README.md) voor demo en API; [de verbonden werkplek](docs/connected-workspace.md) voor documenten, rollen, worker en connector. `npm run verify:install` maakt een schone kopie zonder bestaande sleutels of database en controleert de volledige lokale start.
 
-Fictieve data, CRM-mock, geen e-mails, geen bewezen bedrijfsresultaten.
+Voor Dify: [importgids](docs/dify-integration.md), [Agent-assets](docs/dify-agent-review.md), [native timer](docs/native-trigger.md). De vier werkbankapps en de afzonderlijke trigger zijn gepubliceerd. De trigger staat uit na een geslaagde echte timer-run; een lokaal schema wordt niet als Cloud-triggerbewijs gepresenteerd.
 
-## Senior reviewer
+## Wat je niet als groen resultaat moet lezen
 
-[Bevindingen en fixes](docs/senior-review.md) · [technische leesroute](docs/reviewer-guide.md) · [evaluatie inclusief missers](docs/evaluation.md). Voer `npm run drill` uit voor uitval en gecontroleerd herstel.
+Nieuwe Dify-modelruns zijn door het gratis modelquotum geblokkeerd. De benchmark voert standaard alleen de directe query en de echte Python-nodes van de vaste workflow lokaal uit. Nieuwe Cloud-runs, volledig verse workspace-import en menselijke labelvalidatie worden apart verantwoord. Fictieve data, geen productie-CRM, geen e-mails of bewezen bedrijfsresultaten.
 
-## Dify beoordelen
-
-Open **Dify werkbank** in de demo: lees aanvraagclassificatie, dossieradvies en documentfeiten in gewone taal met hun broncitaten. De knop voor een vastgelegde run maakt geen nieuwe providerrequest. De [installatiegids](docs/dify-integration.md) bevat de oorspronkelijke drie importeerbare apps, echte screenshots, modelrunbewijs en de lokale end-to-end ketentest.
-
-De oorspronkelijke drie flows bevatten nu ook de uitleg op het Dify-canvas zelf. Open de [canvas-reviewgids](docs/dify-canvas-review.md), volg de kleuren en stel één van de demonstratievragen. De site toont dezelfde uitleg zonder dat je toegang tot de workspace nodig hebt.
-
-## Native Agent en volledige beelden
-
-Kies **Agent · Pandvergelijker** in de Dify werkbank en open de vastgelegde echte run. Vergelijk DD-212 en DD-204 met de uitgesloten DD-223. Bekijk de functiematrix onderaan: wat is gebruikt, wat nog ontbreekt en waarom. De beeldgalerij opent elk volledig canvas met zoom en runbewijs. [Native Agent-handleiding](docs/dify-agent-review.md).
+[English guide](docs/review-en.md) · [statische samenvatting](public/fallback.html).

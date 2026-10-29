@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ShowcaseEvidence } from './ShowcaseEvidence';
 import evaluation from '../../data/evaluation-report.json';
 const repo = 'https://github.com/phlppgdfry/real-estate-automation-workbench';
 export function Impact() {
@@ -186,13 +187,15 @@ export function Technical() {
           <strong>{evaluation.challenge.missedManualReview}</strong>.
         </p>
         <p className="fine">
-          Drie taalvarianten gaan onnodig naar een medewerker. Deze AI-geschreven voorbeelden zijn
-          tijdens de review gebruikt en zijn geen onafhankelijke benchmark of live AI-test.
+          Aanvullende NL/FR/EN-regressie: {evaluation.multilingual.passed}/
+          {evaluation.multilingual.total}. Deze AI-geschreven voorbeelden zijn tijdens de review
+          gebruikt en zijn geen onafhankelijke benchmark of live AI-test.
         </p>
         <a href={`${import.meta.env.BASE_URL}evaluation.json`}>
           Open het reproduceerbare meetrapport ↗
         </a>
       </section>
+      <ShowcaseEvidence />
       <h3>Beoordeel de bron</h3>
       <div className="doc-links">
         {[

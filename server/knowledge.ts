@@ -8,16 +8,57 @@ export const KnowledgeInput = z
   })
   .strict();
 export function retrieveProcedures(question: string, language: 'nl' | 'fr') {
-  const words = question.toLocaleLowerCase().match(/[\p{L}\p{N}]{4,}/gu) ?? [];
-  const terms = words.flatMap((w) =>
-    /verkocht|bezoek|afspraak|vendu|visite/.test(w)
+  const words = question.toLocaleLowerCase().match(/[\p{L}\p{N}]{3,}/gu) ?? [];
+  const topics = words.flatMap((w) =>
+    /verkoch|bezo|afspraak|vendu|visite/.test(w)
       ? ['bezoek', 'visite', 'verkocht', 'vendu']
-      : /crm|overdracht|herstel|pogingen/.test(w)
+      : /crm|overdracht|herstel|poging/.test(w)
         ? ['crm', 'overdracht', 'herstel']
-        : /fiche|document|ontbre|prijs/.test(w)
+        : /fiche|document|ontbre|prijs|epc/.test(w)
           ? ['fiche', 'basisveld', 'prijs']
-          : [w],
+          : [],
   );
+  // Generic question words are not evidence that an unrelated procedure is relevant.
+  const stopwords = new Set([
+    'hoe',
+    'wat',
+    'waarom',
+    'een',
+    'het',
+    'bij',
+    'voor',
+    'van',
+    'kan',
+    'niet',
+    'welke',
+    'moet',
+    'worden',
+    'met',
+    'zijn',
+    'dit',
+    'dat',
+    'door',
+    'les',
+    'des',
+    'une',
+    'pour',
+    'dans',
+    'avec',
+    'pas',
+    'est',
+    'comment',
+    'pourquoi',
+    'que',
+    'quoi',
+    'aux',
+    'nous',
+    'vous',
+    'the',
+    'and',
+    'how',
+    'why',
+  ]);
+  const terms = [...new Set(topics.length ? topics : words.filter((w) => !stopwords.has(w)))];
   const matches = procedures
     .filter((p) => p.state === 'current' && p.language === language)
     .map((p) => ({
@@ -39,7 +80,9 @@ export function retrieveProcedures(question: string, language: 'nl' | 'fr') {
     })),
     answer: matches.length
       ? matches.map((p) => p.text).join('\n\n')
-      : 'Geen voldoende passende actuele procedure gevonden. Vraag een medewerker om verduidelijking.',
+      : language === 'fr'
+        ? 'Aucune procédure actuelle correspondante. Demandez une clarification à un collaborateur.'
+        : 'Geen voldoende passende actuele procedure gevonden. Vraag een medewerker om verduidelijking.',
     requires_human: true,
   };
 }

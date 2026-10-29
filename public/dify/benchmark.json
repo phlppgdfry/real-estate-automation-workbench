@@ -1,0 +1,189 @@
+{
+  "recordedAt": "2026-10-29T08:23:44.053Z",
+  "method": "Identical explicit criteria and fictional catalogue. Cloud paths use the same Comparison contract. Local workflow means actual exported Python nodes executed locally, not the Dify runtime.",
+  "corpusSha256": "21abf98301fbb6baf9de83d06528120ae37bf7fb036b559ef0287ea7133dab86",
+  "fixedWorkflowSha256": "74336b121a63a5d2e97dff04a2947c37b12fcca6b70f53d4ae0c4a25017e2e6d",
+  "cases": [
+    {
+      "id": "nl-matches",
+      "language": "nl",
+      "question": "Vergelijk de beschikbare panden volgens deze criteria.",
+      "city": "Oudenburg",
+      "maxPrice": 390000,
+      "minBedrooms": 3
+    },
+    {
+      "id": "fr-matches",
+      "language": "fr",
+      "question": "Comparez les biens disponibles selon ces critères explicites.",
+      "city": "Oudenburg",
+      "maxPrice": 390000,
+      "minBedrooms": 3
+    },
+    {
+      "id": "empty-city",
+      "language": "nl",
+      "question": "Welke panden voldoen aan deze expliciete criteria?",
+      "city": "Oostende",
+      "maxPrice": 390000,
+      "minBedrooms": 3
+    },
+    {
+      "id": "sold-excluded",
+      "language": "nl",
+      "question": "Vergelijk alle opties; een verkocht pand is nooit een voorstel.",
+      "city": "Oudenburg",
+      "maxPrice": 1000000,
+      "minBedrooms": 0
+    }
+  ],
+  "results": [
+    {
+      "caseId": "nl-matches",
+      "language": "nl",
+      "mode": "direct-query",
+      "status": "passed",
+      "references": ["DD-212", "DD-204"],
+      "elapsedMs": 62.35,
+      "totalTokens": 0
+    },
+    {
+      "caseId": "nl-matches",
+      "language": "nl",
+      "mode": "fixed-workflow-local",
+      "status": "passed",
+      "references": ["DD-212", "DD-204"],
+      "elapsedMs": 62.19,
+      "totalTokens": 0
+    },
+    {
+      "caseId": "nl-matches",
+      "language": "nl",
+      "mode": "fixed-workflow-cloud",
+      "status": "not-run",
+      "reason": "No network requests in default mode. Explicit --live and provider budget required.",
+      "elapsedMs": null,
+      "totalTokens": null
+    },
+    {
+      "caseId": "nl-matches",
+      "language": "nl",
+      "mode": "native-agent-cloud",
+      "status": "not-run",
+      "reason": "No network requests in default mode. Explicit --live and provider budget required.",
+      "elapsedMs": null,
+      "totalTokens": null
+    },
+    {
+      "caseId": "fr-matches",
+      "language": "fr",
+      "mode": "direct-query",
+      "status": "passed",
+      "references": ["DD-212", "DD-204"],
+      "elapsedMs": 49.77,
+      "totalTokens": 0
+    },
+    {
+      "caseId": "fr-matches",
+      "language": "fr",
+      "mode": "fixed-workflow-local",
+      "status": "passed",
+      "references": ["DD-212", "DD-204"],
+      "elapsedMs": 61.4,
+      "totalTokens": 0
+    },
+    {
+      "caseId": "fr-matches",
+      "language": "fr",
+      "mode": "fixed-workflow-cloud",
+      "status": "not-run",
+      "reason": "No network requests in default mode. Explicit --live and provider budget required.",
+      "elapsedMs": null,
+      "totalTokens": null
+    },
+    {
+      "caseId": "fr-matches",
+      "language": "fr",
+      "mode": "native-agent-cloud",
+      "status": "not-run",
+      "reason": "No network requests in default mode. Explicit --live and provider budget required.",
+      "elapsedMs": null,
+      "totalTokens": null
+    },
+    {
+      "caseId": "empty-city",
+      "language": "nl",
+      "mode": "direct-query",
+      "status": "passed",
+      "references": [],
+      "elapsedMs": 47.55,
+      "totalTokens": 0
+    },
+    {
+      "caseId": "empty-city",
+      "language": "nl",
+      "mode": "fixed-workflow-local",
+      "status": "passed",
+      "references": [],
+      "elapsedMs": 61.39,
+      "totalTokens": 0
+    },
+    {
+      "caseId": "empty-city",
+      "language": "nl",
+      "mode": "fixed-workflow-cloud",
+      "status": "not-run",
+      "reason": "No network requests in default mode. Explicit --live and provider budget required.",
+      "elapsedMs": null,
+      "totalTokens": null
+    },
+    {
+      "caseId": "empty-city",
+      "language": "nl",
+      "mode": "native-agent-cloud",
+      "status": "not-run",
+      "reason": "No network requests in default mode. Explicit --live and provider budget required.",
+      "elapsedMs": null,
+      "totalTokens": null
+    },
+    {
+      "caseId": "sold-excluded",
+      "language": "nl",
+      "mode": "direct-query",
+      "status": "passed",
+      "references": ["DD-223", "DD-212", "DD-204"],
+      "elapsedMs": 47.81,
+      "totalTokens": 0
+    },
+    {
+      "caseId": "sold-excluded",
+      "language": "nl",
+      "mode": "fixed-workflow-local",
+      "status": "passed",
+      "references": ["DD-223", "DD-212", "DD-204"],
+      "elapsedMs": 58.43,
+      "totalTokens": 0
+    },
+    {
+      "caseId": "sold-excluded",
+      "language": "nl",
+      "mode": "fixed-workflow-cloud",
+      "status": "not-run",
+      "reason": "No network requests in default mode. Explicit --live and provider budget required.",
+      "elapsedMs": null,
+      "totalTokens": null
+    },
+    {
+      "caseId": "sold-excluded",
+      "language": "nl",
+      "mode": "native-agent-cloud",
+      "status": "not-run",
+      "reason": "No network requests in default mode. Explicit --live and provider budget required.",
+      "elapsedMs": null,
+      "totalTokens": null
+    }
+  ],
+  "humanLabels": "AI-authored fixtures; independent human review pending",
+  "cost": "No rates assumed. Default execution uses no model or network. Latency includes Python process startup and is not a production speed ranking.",
+  "status": "local-passed-cloud-not-run"
+}

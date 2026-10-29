@@ -1,68 +1,62 @@
-# Duin & Dorp · vastgoedautomatisering
+# Duin & Dorp · van aanvraag tot gecontroleerde overdracht
 
-Een vastgoedaanvraag één keer ontvangen, controleren en betrouwbaar aan een collega overdragen. Deze case verbindt procesanalyse met een werkende app en een geteste lokale API.
+Een vastgoedaanvraag één keer ontvangen, het juiste pand controleren en het werk betrouwbaar aan een collega overdragen. Deze portfolio-case verbindt procesanalyse, een werkende dossierwerkplek en vijf Dify-flows met controleerbaar bewijs.
 
-**[Demo + rondleiding](https://phlppgdfry.github.io/real-estate-automation-workbench/?tour)** · **[Dify werkbank](https://phlppgdfry.github.io/real-estate-automation-workbench/?view=dify)** · **[Dify-installatie](docs/dify-integration.md)** · **[Start hier](START-HERE.md)** · **[Bewijsmatrix](EVIDENCE.md)** · **[Architectuur](docs/architecture.md)** · **[Kennisgids](docs/knowledge.md)**
+[![Verify and publish](https://github.com/phlppgdfry/real-estate-automation-workbench/actions/workflows/verify-and-publish.yml/badge.svg)](https://github.com/phlppgdfry/real-estate-automation-workbench/actions/workflows/verify-and-publish.yml)
 
-> Onafhankelijke portfolio-case voor een fictief vastgoedkantoor. Alle namen, aanvragen en panden zijn verzonnen. Geen relatie met een echte werkgever, vertrouwelijke informatie, geclaimde productie-ervaring of gerealiseerde besparing. Uitgewerkt met AI-assistentie; beoordeel de bron en laat de auteur keuzes uitleggen en aanpassen.
+**[Probeer de demo](https://phlppgdfry.github.io/real-estate-automation-workbench/?tour)** · **[Techniek & bewijs](https://phlppgdfry.github.io/real-estate-automation-workbench/?view=technical)** · **[Installatie](#zelf-draaien-zonder-modelbudget)** · **[English reviewer guide](docs/review-en.md)** · **[Bronpakket](https://github.com/phlppgdfry/real-estate-automation-workbench/releases/latest)**
 
-![Werkende vastgoedwerkplek](public/preview.png)
+![Werkende vastgoedwerkplek met aanvragen, broncontrole en menselijke goedkeuring](public/preview.png)
 
-![Dify werkbank met echte broncitaten](public/dify/screenshots/workbench.png)
+> Onafhankelijke case voor een fictief vastgoedkantoor. Alle personen, aanvragen en panden zijn verzonnen. Gebouwd met AI-assistentie; geen relatie met een echte werkgever, productie-ervaring of gerealiseerde besparing geclaimd.
 
-## Verbonden dossierwerkplek in ontwikkeling
+## Bekijk in twee minuten wat er toe doet
 
-De nieuwe werkplek verbindt duurzame intake, documentupload, inhoudelijke review, casegebonden runs en een afzonderlijke HTTP-testconnector. De echte Dify Knowledge API-route is met NL/FR- en versiecontroles geverifieerd. De vier Studio-apps hebben consistente tags. [Starten en grenzen](docs/connected-workspace.md) · [Classificatie](docs/dify-classification.md) · [Werkstatus](docs/implementation-v3.md).
+1. **Keur een voorstel goed.** De opdracht komt in de wachtrij; er is nog niets verstuurd.
+2. **Laat de overdracht mislukken.** Bekijk retry, foutgeschiedenis en het herstelpad na drie fouten.
+3. **Open een verkocht pand.** Bronregels blokkeren goedkeuring, ook als AI een bezoek herkent.
+4. **Open Dify werkbank.** Bekijk een vastgelegde echte run met letterlijke broncitaten, zonder nieuwe modelrequest.
+5. **Open Technisch dossier.** Vergelijk werkend gedrag, het runbewijs en de expliciete testgrenzen.
 
-![Documenteninbox en procedurezoekroute van de lokale API](public/dify/screenshots/procedures.png)
+De publieke demo gebruikt browseropslag. De verbonden werkplek draait lokaal met echte HTTP-routes en SQLite. Dat onderscheid blijft zichtbaar; de openbare site ontvangt geen klantdossiers.
 
-[Bekijk de echte lokale API-opname](public/dify/connected-local-demo.webm). De opname gebruikt fictieve gegevens en roept geen Dify-model aan. Live Human Input-hervatting en nieuwe modelbenchmarks wachten op beschikbaar modelquotum. Menselijke evaluatielabels zijn nog niet bevestigd.
+## Wat dit laat zien
 
-## Het probleem
+| Onderdeel           | Concreet gedrag                                                                                             | Controleerbaar bewijs                                                                               |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Duurzame intake     | Ontvangst vóór AI, duplicaatcontrole, workerleases en herstel na herstart                                   | [Storingsdrill](scripts/failure-drill.ts), [integratietests](tests/reliability.test.ts)             |
+| Menselijk oordeel   | Aparte lees-, review- en operatorrechten; versiecontrole en actuele pandtoets                               | [API](server/app.ts), [domeinregels](src/domain.ts)                                                 |
+| Documenten          | PDF/DOCX/EML/TXT/MD, begrensde OCR, exacte citaten, correcties en verlopen reviews                          | [Verbonden werkplek](docs/connected-workspace.md), [browsertests](tests/browser/connected.spec.ts)  |
+| Dify in de praktijk | Vier gespecialiseerde apps, native Agent met Python-skill, Human Input en broncontrole                      | [Live runbewijs](public/dify/evidence.json), [importgids](docs/dify-integration.md)                 |
+| Actuele procedures  | NL/FR- en versiefilters; onafhankelijke controle tegen beheerde bronnen                                     | [Knowledge API-bewijs](public/dify/knowledge-verification.json)                                     |
+| Native planning     | Een echte Schedule Trigger voert drie modelvrije stappen uit                                                | [0,483 s / 0 tokens](public/dify/trigger-verification.json), [DSL](dify/apps/follow-up-trigger.yml) |
+| Integratie          | Afzonderlijke HTTP-testdienst, idempotentiesleutel, rate limit en reconcile na onbekende uitkomst           | [Connector](server/crm-connector.ts), [herstarttest](tests/connected.test.ts)                       |
+| Kritisch evalueren  | Gelijke criteria voor directe query, vaste workflow en native Agent; onderscheid lokale en Cloud-uitvoering | [Vergelijkingsmethode](docs/benchmark.md), [rapport](public/dify/benchmark.json)                    |
 
-Website, mailbox en portaal leveren aanvragen aan. Medewerkers moeten het doel herkennen, het juiste pand opzoeken, prijs en beschikbaarheid controleren, een antwoord voorbereiden en opvolging registreren. Bij elke overdracht kan informatie verloren gaan.
+![Verbonden lokale dossierwerkplek met documentinbox en procedurezoekroute](public/dify/screenshots/connected-workspace.png)
 
-```text
-Aanvraag → ondertekende ontvangst → validatie & duplicaatcontrole → duurzame inbox
-        → analyseworker → intentie + broncitaat → cataloguscontrole → antwoordvoorstel
-        → menselijke goedkeuring → transactionele outbox
-        → CRM-mock → ontvangstbevestiging
+[Bekijk de echte lokale API-opname](public/dify/connected-local-demo.webm). De opname gebruikt fictieve data en maakt geen Dify-modelcalls.
+
+## De belangrijkste ontwerpkeuze
+
+AI levert een begrensd voorstel. Code controleert bronnen, prijs, status en bevoegdheid; een medewerker beslist. Goedkeuring en overdrachtsopdracht worden samen opgeslagen. Een provider- of CRM-storing verliest geen geaccepteerde aanvraag.
+
+```mermaid
+flowchart LR
+  A[Ondertekende aanvraag] --> B[Duurzame inbox]
+  B --> C[Analyse en cataloguscontrole]
+  C --> D[Menselijke beoordeling]
+  D --> E[Transactionele outbox]
+  E --> F[HTTP-testconnector]
+  F --> G[Ontvangst of zichtbaar herstel]
+  H[Documenten en actuele procedures] --> D
 ```
 
-De browserdemo en server delen dezelfde domeinregels. De server gebruikt SQLite voor duurzame ontvangst vóór AI-analyse, plus een worker met leases. De optionele AI-adapter extraheert uitsluitend intentie, pandreferentie en een letterlijk citaat. Antwoorden worden samengesteld uit gecontroleerde catalogusdata. Er is geen e-mailtransport en geen AI met CRM-tools.
+Lees [de architectuur](docs/architecture.md), [afwegingen](docs/decisions.md) en [het runbook](docs/operations.md). Er is geen e-mailtransport, autonoom schrijvende Agent of productiekoppeling met een vastgoed-CRM.
 
-## Probeer in twee minuten
+## Zelf draaien zonder modelbudget
 
-1. Keur Lottes voorstel goed. De CRM-wachtrij groeit.
-2. Schakel **CRM-fout simuleren** in en verwerk de wachtrij. Bekijk het gebeurtenissenlog. Schakel de fout uit en probeer na de wachttijd opnieuw.
-3. Open Noor: het pand is verkocht. Goedkeuring is geblokkeerd.
-4. Maak een aanvraag met een verdachte instructie of ontbrekende referentie.
-5. Open **Dify werkbank**, kies een toepassing en bekijk een vastgelegde echte run met broncitaten.
-6. Open **Proces & impact** en verander de aannames van de businesscase.
-
-## Native Agent met aantoonbare grenzen
-
-De **Pandvergelijker** gebruikt Dify Build Mode, een gepubliceerde native Agent, een echte Python-skill en een Agent Node. De workflow toetst daarna zelfstandig prijzen, bronvelden, zoekcriteria en de volledige set beschikbare matches; de lokale API valideert nogmaals in TypeScript. Een mislukte eerste run en de oplossing zijn vastgelegd. [Onderzoek, functies en reproduceerbaarheid](docs/dify-agent-review.md).
-
-De site heeft nu een favicon en een toegankelijke beeldviewer: volledige canvassen, zoom, runbewijs, vorige/volgende flow en Escape met focusterugkeer. De eerder afgesneden dossierfoto is opnieuw opgenomen in de echte Dify-editor.
-
-![Volledige native Agent-workflow met uitleg](public/dify/screenshots/comparison.png)
-
-## Dify-flows die je kunt uitleggen en overdragen
-
-Elke importeerbare flow bevat procesuitleg, gegevensgrenzen, controlepunten, testscenario’s en foutafhandeling **op het Dify-canvas zelf**. De werkbank toont die inhoud ook als klikbare stappen. De documentguard markeert basisvelden zonder gecontroleerd citaat zelfstandig als onbevestigd. [Canvas-review en senior afwegingen](docs/dify-canvas-review.md).
-
-![Geannoteerde Dify-documentflow](public/dify/screenshots/document.png)
-
-## Belangrijkste keuzes
-
-- **AI als begrensde extractor:** schema én bronvalidatie; prijzen komen uit een catalogus; medewerker beslist. [Afwegingen](docs/decisions.md)
-- **Kleine monoliet:** gedeelde TypeScript-kern, SQLite en echte rollback-/restarttests. Geen cloud nodig om het proces te beoordelen. [Architectuur](docs/architecture.md)
-- **Outbox en ontvangstbewijs:** goedkeuring en opdracht ontstaan atomair. De mock gebruikt een unieke externe sleutel; dat bewijst geen exactly-once netwerkaflevering. [Runbook](docs/operations.md)
-
-## Zelf starten en controleren
-
-Vereist: Node.js 24+, npm en Python 3.
+Vereist: Node.js 24+, npm en Python 3. De browserdemo, lokale API, evaluatie en storingsdrill hebben geen accounts of betaalde API nodig.
 
 ```bash
 git clone https://github.com/phlppgdfry/real-estate-automation-workbench.git
@@ -72,62 +66,49 @@ npm run dev
 # http://127.0.0.1:5187/real-estate-automation-workbench/?tour
 ```
 
-```bash
-npm run check       # evaluatie, build, tests, storingsdrill, contract en links
-npx playwright install chromium
-npm run test:e2e    # workflow, rondleiding, mobiel
-```
-
-Lokale API, in een tweede terminal:
+Voor de verbonden dossierwerkplek:
 
 ```bash
-npm run setup:local # lokale secrets en fictieve catalogus; toont geen secrets
-npm run server     # uitsluitend http://127.0.0.1:4318
-# In een derde terminal:
-npm run demo:api    # signed webhook → goedkeuring → CRM-mock; herhaalbaar
+npm run setup:local
+npm run build
+npm run server
+# http://127.0.0.1:4318/real-estate-automation-workbench/?view=connected
+# Tweede terminal: doorloopt ondertekende intake, review en CRM-mock
+npm run demo:api
 ```
 
-De standaard-API gebruikt herkenningsregels. De [Dify-integratie](docs/dify-integration.md) bevat vier importeerbare workflows: aanvraaganalyse, dossieradvies, documentcontrole en een native Agent-pandvergelijker met Python-skill en onafhankelijke broncontrole. De vierde flow is ook via de geauthenticeerde lokale API getest. De lokale server bedient ook de gebouwde werkbank en biedt geauthenticeerde Dify-routes. De publieke website toont expliciet vastgelegde echte runs. App-sleutels blijven in de genegeerde serveromgeving; een lokale reviewer gebruikt een aparte sessietoken. De [OpenAI-adapter](server/ai.ts) heeft contracttests; daarvoor wordt geen live verificatie geclaimd. De oorspronkelijke demo blijft zonder providerbudget bruikbaar.
+`setup:local` maakt afzonderlijke labtokens in de genegeerde `.env.local` met rechten 0600. Open dat bestand lokaal en gebruik de juiste rol in de werkplek. De token blijft in het tabbladgeheugen. [Documenttools, worker en HTTP-connector instellen](docs/connected-workspace.md) · [optionele configuratie](config/example.env).
 
-Verwacht: zes fictieve aanvragen. Goedkeuring zet een aanvraag in de wachtrij, succesvolle simulatie verandert die in afgehandeld. De e-mailteller blijft nul. `demo:api` bewijst de persistente serverketen afzonderlijk. De Pages-browser communiceert niet met de lokale API: de publieke demo is zonder accounts of infrastructuur te beoordelen.
+```bash
+npm run check          # evaluatie, build, tests, bron/DSL-sync, drill, API, links en repo-scan
+npm run test:e2e       # echte browseracceptatie, ook tegen de lokale API
+npm run benchmark     # geen model of netwerk; Cloud-paden expliciet niet uitgevoerd
+npm run verify:install # geïsoleerde schone installatie en echte lokale HTTP-keten
+```
 
-## Bewijs en grenzen
+Installeer voor browsertests eenmalig Chromium met `npx playwright install chromium`. De schone installatietest gebruikt de npm-cache; voer eerst `npm ci` uit. PDF vereist Poppler; OCR vereist Tesseract met `eng`. Controleer met `npm run install:check`.
 
-| Onderdeel                                          | Status                                                                                   |
-| -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| App, formulieren, filtering, goedkeuring, retry    | Werkend met browseropslag                                                                |
-| HMAC-webhook, versiecontrole, domeinregels         | Werkend, getest                                                                          |
-| SQLite-outbox en unieke CRM-ontvangst              | Lokaal werkend; herstart en rollback getest                                              |
-| CRM, panden, klanten, tijdwinst                    | Mock / fictief / scenario                                                                |
-| Dify-analyse, dossieradvies, tekstcontrole         | Drie Cloud-apps, echte API-runs en lokale ketentest; [bewijs](public/dify/evidence.json) |
-| OpenAI-extractie                                   | Adapter en contracttests; live test open                                                 |
-| Productie-SSO, echt CRM, agenda, mail, alertdienst | Niet geïmplementeerd                                                                     |
+## Dify importeren en bewijs beoordelen
 
-De ontwikkelset scoort 24/24; de aanvullende diagnostische regressieset 16/16 na de recente uitbreiding van Nederlandse en Franse intentieherkenning. Beide sets zijn AI-geschreven en tijdens ontwikkeling/review gebruikt: geen onafhankelijke benchmark of live LLM-score. [Methode en missers](docs/evaluation.md).
+De map [dify/apps](dify/apps/lead-intake.yml) bevat aanvraaganalyse, dossierassistent, documentcontrole, Agentvergelijking en een afzonderlijke opvolgtrigger. De native Agent heeft daarnaast [de gebundelde Python-skill](dify/agent/catalog-compare.skill.zip) nodig. De [vaste catalogusworkflow](dify/benchmarks/fixed-comparison.yml) is een afzonderlijke modelvrije benchmarkreferentie.
 
-## Wegwijzer
+[Importvolgorde en herstel na import](docs/dify-integration.md) · [native Agent](docs/dify-agent-review.md) · [native trigger en lokale replay](docs/native-trigger.md) · [bewijs per claim](EVIDENCE.md).
 
-| Vraag                                     | Artefact                                                           |
-| ----------------------------------------- | ------------------------------------------------------------------ |
-| Welk bedrijfsproces verbetert dit?        | [Case](CASE_STUDY.md)                                              |
-| Welke kennis wordt zichtbaar?             | [EVIDENCE](EVIDENCE.md), [kennisgids](docs/knowledge.md)           |
-| Hoe werkt de integratie?                  | [Architectuur](docs/architecture.md), [OpenAPI](docs/openapi.json) |
-| Hoe beheer je fouten en persoonsgegevens? | [Beheer en pilot](docs/operations.md)                              |
-| Hoe leg je dit uit aan medewerkers?       | [Handleiding](docs/user-guide.md)                                  |
-| Wat als de app niet laadt?                | [Statische samenvatting](public/fallback.html)                     |
+Het huidige gratis Dify-modelquotum is opgebruikt. Bestaande live resultaten blijven inspecteerbaar; nieuwe modelruns zijn niet als geslaagd ingevuld. Native bestandsuitvoering, Human Input-hervatting en de nieuwe Cloud-benchmark vragen beschikbaar providerbudget. De native timer is wél op een echt gepland moment uitgevoerd en daarna uitgeschakeld. De menselijke labelreview en een volledig nieuwe Dify-workspace zijn nog niet onafhankelijk geverifieerd. [Volledige releasecontrole](docs/release-readiness.md).
 
-`src/`: app en domein · `server/`: API, AI en SQLite · `tests/`: unit/integratie/browser · `data/`: evaluatie · `scripts/`: setup en verificatie · `docs/`: analyse en overdracht · `design/`: ontwerpbron.
+## Kies je reviewroute
 
-## Bronnen en licenties
+| Tijd           | Begin hier                                                                             |
+| -------------- | -------------------------------------------------------------------------------------- |
+| 2 minuten      | [Rondleiding](https://phlppgdfry.github.io/real-estate-automation-workbench/?tour)     |
+| 5 minuten      | [Proces en businesscase](CASE_STUDY.md), [bewijsmatrix](EVIDENCE.md)                   |
+| 15 minuten     | [Technische reviewroute](docs/reviewer-guide.md), `npm run drill`                      |
+| Zelf overnemen | [Startgids](START-HERE.md), [beheer](docs/operations.md), [bijdragen](CONTRIBUTING.md) |
 
-Philippe Godfroy, met AI-assistentie, 2026. Code MIT; documentatie en fictieve data CC BY 4.0; zie [LICENSE](LICENSE). React MIT, Vite MIT, TypeScript Apache-2.0, Zod MIT, tsx MIT, Playwright Apache-2.0; afhankelijkheden behouden hun eigen licenties. Systeemfonts, geen externe font- of beeldverzoeken. Image Gen leverde de visuele specificatie; de UI is echte HTML/CSS.
+De calculator toont scenario-aannames; evaluatievoorbeelden zijn AI-geschreven regressies, geen onafhankelijke accuracymeting. Een exact citaat bewijst herkomst, geen juiste interpretatie. [Evaluatiemethode](docs/evaluation.md) · [menselijke review](docs/evaluation-human-review.md).
 
-Primaire technische bronnen: [React state](https://react.dev/reference/react/useState), [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [Node SQLite](https://nodejs.org/api/sqlite.html), [SQLite-transacties](https://www.sqlite.org/lang_transaction.html). Bedrijfsspecifiek onderzoek en sollicitatievoorbereiding staan uitsluitend in het privédossier.
+## Herkomst en licentie
 
-## Wat v2.0 toevoegt aan het bewijs
+Philippe Godfroy, met AI-assistentie, 2026. Code MIT; documentatie en fictieve data CC BY 4.0: [LICENSE](LICENSE). Afhankelijkheden behouden hun eigen licenties. Systeemfonts, geen externe fontverzoeken. De interface is HTML/CSS; screenshots en opnamen tonen de werkende toepassingen.
 
-Een providerstoring verliest geen geaccepteerde aanvraag meer. Reader/reviewer/operator hebben verschillende rechten; een oude worker mag na een verlopen lease geen resultaat opslaan. Na drie CRM-fouten kan een operator met actuele versie en verplichte reden gecontroleerd herstellen, mits de pandgegevens nog kloppen.
-
-Lees de [senior review](docs/senior-review.md), volg de [technische reviewroute](docs/reviewer-guide.md) en voer `npm run drill` uit: provideruitval → herstart → CRM-uitval → gecontroleerd herstel. Dit vraagt geen live API-key. De API gebruikt nu een ontvangstbewijs met HTTP 202; zie [de migratienotitie](CHANGELOG.md). `setup:local` vult drie rolcredentials aan; het oude APP_TOKEN wordt niet gebruikt.
-
-De [technische screenshot](public/technical-preview.png) toont het zichtbare kwaliteitsrapport. De [ontwerpcontrole](design/QA.md) beschrijft de gerichte UI-uitbreidingen en geteste schermgroottes.
+[Beveiligingsmelding](SECURITY.md) · [wijzigingen](CHANGELOG.md) · [statische samenvatting zonder JavaScript](public/fallback.html). Bedrijfsspecifiek onderzoek en sollicitatievoorbereiding staan buiten deze publieke repo.

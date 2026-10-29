@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-29T07:57:00.000Z",
+  "mode": "Dify Cloud native Schedule Trigger, draft Test Run listening for a real scheduled minute event",
+  "appId": "68b0532c-5b57-4241-91f5-d299badba917",
+  "workflowId": "522bbc97-ef2f-4d40-88f9-2c3f24dd0955",
+  "status": "passed",
+  "startedAtLocal": "2026-10-29 08:57:00 Europe/Brussels",
+  "sysTimestamp": 1793260620,
+  "elapsedSeconds": 0.483,
+  "totalTokens": 0,
+  "steps": 3,
+  "event": {
+    "eventId": "native-schedule-2026-10-29",
+    "kind": "schedule"
+  },
+  "normalSchedule": {
+    "cron": "0 9 * * 1-5",
+    "timezone": "Europe/Brussels"
+  },
+  "limitation": "Observed in the real Dify run-history UI. Timed draft execution; no claim of unattended production scheduling or direct Cloud-to-localhost delivery. Separate local replay verifies durable reception. No external account connection, model call, email or CRM write.",
+  "publishedVersion": 1,
+  "active": false,
+  "postTestVerification": "Published after restoring 0 9 * * 1-5; access-point UI confirmed 0/1 enabled and switch off. Web app, API and MCP are unavailable for this trigger-only app."
+}

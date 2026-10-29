@@ -96,7 +96,7 @@ export function extractRules(message: string): Extraction {
     /schatting|waardebepaling|verkopen|valuation|sell my|estimer|estimation|évaluer|évaluation/i.exec(
       message,
     );
-  const search = /\bzoek\b|op zoek|looking for|search/i.exec(message);
+  const search = /\bzoek\b|op zoek|looking for|search|recherche|\bcherche\b/i.exec(message);
   if (ambiguousRequest(message))
     return {
       intent: 'unknown',
@@ -111,14 +111,19 @@ export function extractRules(message: string): Extraction {
   };
 }
 function ambiguousRequest(message: string): boolean {
-  const negated =
-    /(?:\bniet\b|\bgeen\b|\bnot\b|don't)[\s\S]{0,30}(?:bezoek|bezichtig|visit|viewing|kijkje\s+nemen|visite)|(?:bezoek|bezichtig|visit|viewing|kijkje\s+nemen|visite)[\s\S]{0,32}(?:\bniet\b|\bnot\b)/i.test(
-      message,
-    );
+  // Negation applies to every supported task, not only visits. Conservative escalation
+  // is preferable to drafting an unwanted valuation or search response.
+  const task =
+    '(?:bezoek|bezichtig|visit|viewing|kijkje\\s+nemen|schatting|waardebepaling|verkopen|valuation|sell my|estimer|estimation|évaluer|évaluation|zoek|looking for|search|recherche|cherche)';
+  const denial = "(?:\\bniet\\b|\\bgeen\\b|\\bnot\\b|don't|\\bpas\\b|\\bjamais\\b)";
+  const negated = new RegExp(
+    `${denial}[\\s\\S]{0,64}${task}|${task}[\\s\\S]{0,64}${denial}`,
+    'i',
+  ).test(message);
   const intentCount = [
     /bezoek|bezichtig|visit|viewing|kijkje\s+nemen|visite/i,
     /schatting|waardebepaling|verkopen|valuation|sell my|estimer|estimation|évaluer|évaluation/i,
-    /\bzoek\b|op zoek|looking for|search/i,
+    /\bzoek\b|op zoek|looking for|search|recherche|\bcherche\b/i,
   ].filter((pattern) => pattern.test(message)).length;
   const references = new Set(
     (message.match(/\bDD-\d{3}\b/gi) ?? []).map((ref) => ref.toUpperCase()),

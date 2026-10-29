@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { Store } from './store';
 import { DomainError } from '../src/domain';
+import { brusselsDayWindow } from './calendar';
 export type RunBudget = {
   dailyTokens: number;
   reservationTokens: number;
@@ -101,11 +102,12 @@ export class RunLedger {
       );
   }
   usage(now: string) {
+    const day = brusselsDayWindow(now);
     const rows = this.store.db
       .prepare(
-        'SELECT state,total_tokens,reserved_tokens,elapsed_ms FROM ai_runs WHERE started_at>=?',
+        'SELECT state,total_tokens,reserved_tokens,elapsed_ms FROM ai_runs WHERE started_at>=? AND started_at<?',
       )
-      .all(now.slice(0, 10) + 'T00:00:00.000Z') as {
+      .all(day.start, day.end) as {
       state: string;
       total_tokens: number | null;
       reserved_tokens: number;

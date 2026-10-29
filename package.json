@@ -1,6 +1,6 @@
 {
   "name": "real-estate-automation-workbench",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -17,7 +17,7 @@
     "test": "tsx --test tests/*.test.ts",
     "test:e2e": "playwright test",
     "evaluate": "tsx scripts/evaluate.ts",
-    "check": "node --import tsx scripts/dify/sync.ts --check && npm run evaluate && npm run build && npm test && npm run drill && npm run validate:api && npm run format:check && python3 scripts/check-links.py",
+    "check": "node --import tsx scripts/dify/sync.ts --check && npm run evaluate && npm run build && npm test && npm run drill && npm run validate:api && npm run format:check && node --import tsx scripts/check-repo.ts && python3 scripts/check-links.py",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate:api": "tsx scripts/validate-api.ts",
@@ -28,7 +28,12 @@
     "dify:verify-local": "node --import tsx --env-file-if-exists=.env.local scripts/dify/verify-local.ts",
     "install:check": "node --import tsx scripts/install-check.ts",
     "worker": "node --import tsx --env-file-if-exists=.env.local scripts/worker.ts",
-    "crm:test": "node --import tsx scripts/start-crm-test.ts"
+    "crm:test": "node --import tsx scripts/start-crm-test.ts",
+    "benchmark": "node --import tsx scripts/benchmark.ts",
+    "verify:install": "node --import tsx scripts/verify-install.ts",
+    "trigger:replay": "node --import tsx --env-file-if-exists=.env.local scripts/trigger-replay.ts",
+    "capture:connected": "node --import tsx scripts/capture-connected.ts",
+    "release:package": "python3 scripts/package-release.py"
   },
   "dependencies": {
     "react": "^19.2.0",

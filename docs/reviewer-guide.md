@@ -10,3 +10,11 @@ Voor een hiring manager of senior engineer. Gebruik [de demo](https://phlppgdfry
 6. **2 min — Grenzen:** kies één punt uit de productie-eisen in [de review](senior-review.md) en laat de auteur een alternatief verdedigen.
 
 Zelfstandigheidstoets: voeg met een eerst falende test een nieuwe pandstatus toe. Of verklaar waarom een worker na een verlopen lease geen resultaat mag opslaan, ook als zijn analyse inhoudelijk juist is. Een AI-uitgewerkte repo vervangt die demonstratie niet.
+
+## Aanvullende v3-controles
+
+- `npm run verify:install`: installatie zonder bestaande credentials of database, gevolgd door echte lokale HTTP-overdracht.
+- `npm run benchmark`: dezelfde criteria voor directe query en vaste workflowcode; Cloud-paden expliciet niet uitgevoerd.
+- [Native timerbewijs](../public/dify/trigger-verification.json) tegenover [lokale replay](../tests/trigger.test.ts): leg uit waarom deze twee bewijzen geen automatische Cloud-bridge opleveren.
+- [Meertalige ontkenning](../data/multilingual.json), [DST-budgetgrens](../tests/calendar.test.ts) en de [documentreview-browsertest](../tests/browser/connected.spec.ts).
+- [Releasecontrole](release-readiness.md): onderscheid bewezen technische werking van budget, menselijke labels en een nieuwe Dify-workspace.

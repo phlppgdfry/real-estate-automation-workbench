@@ -63,6 +63,8 @@ test('local dossier selection uses reviewer session without persisting token and
   expect(await page.evaluate(() => JSON.stringify(localStorage))).not.toContain(
     'test-session-token',
   );
+  await page.getByRole('textbox', { name: 'Reviewer-token' }).fill('another-session');
+  await expect(page.getByRole('heading', { name: assistantSummary, exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'Documentcontrole', exact: true }).click();
   await page
     .getByLabel('Tekstbestand toevoegen')
@@ -173,7 +175,7 @@ test('complete canvas viewer fits, zooms, switches evidence, traps focus and clo
   await viewer.getByRole('button', { name: 'Passend maken', exact: true }).click();
   expect(await fits()).toBe(true);
   await viewer.getByRole('button', { name: 'Echte run', exact: true }).click();
-  await expect(image).toHaveAttribute('src', /assistant-run.png\?v=2.3.0/);
+  await expect(image).toHaveAttribute('src', /assistant-run.png\?v=3.0.0/);
   await viewer.getByRole('button', { name: 'Volgende flow →', exact: true }).click();
   await expect(
     viewer.getByRole('heading', { name: 'Documentcontrole', exact: true }),
@@ -204,6 +206,24 @@ test('native Agent proof renders property sources and exclusions without a model
   );
   await expect(page.getByText('DD-223: bedrooms', { exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Dify functies en afwegingen' })).toContainText(
-    'niet ingericht',
+    'formulierpauze',
   );
+});
+
+test('technical deep link distinguishes native timer evidence from unexecuted Cloud benchmark on mobile', async ({
+  page,
+}) => {
+  let apiCalls = 0;
+  await page.route('**/api/**', (route) => {
+    apiCalls++;
+    return route.abort();
+  });
+  await page.goto('./?view=technical');
+  const evidence = page.getByRole('region', { name: 'Bewijs en resterende grenzen', exact: true });
+  await expect(evidence).toContainText('Native Schedule Trigger');
+  await expect(evidence).toContainText('0 modeltokens');
+  await expect(evidence).toContainText('Nieuwe Cloud-benchmark');
+  await page.setViewportSize({ width: 375, height: 812 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(apiCalls).toBe(0);
 });

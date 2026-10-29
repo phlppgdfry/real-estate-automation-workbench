@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { format } from 'prettier';
 import development from '../data/evaluation.json';
 import challenge from '../data/challenge.json';
+import multilingual from '../data/multilingual.json';
 import { createLead } from '../src/domain';
 import { catalog } from '../src/seed';
 const now = '2026-10-25T10:00:00.000Z';
@@ -12,6 +13,7 @@ type Example = {
   intent: string;
   status: string;
   category?: string;
+  language?: string;
   mustBlock?: boolean;
 };
 function evaluate(examples: Example[]) {
@@ -29,6 +31,7 @@ function evaluate(examples: Example[]) {
     );
     return {
       id: x.id,
+      language: x.language ?? 'unspecified',
       category: x.category ?? 'development',
       expectedIntent: x.intent,
       actualIntent: lead.extraction.intent,
@@ -59,6 +62,7 @@ const report = {
   beforeReview: { challengePassed: 10, challengeTotal: 16, missedManualReview: 3 },
   development: evaluate(development),
   challenge: evaluate(challenge),
+  multilingual: evaluate(multilingual),
 };
 const json = await format(JSON.stringify(report), { parser: 'json', printWidth: 100 });
 writeFileSync('data/evaluation-report.json', json);
@@ -66,13 +70,19 @@ writeFileSync('public/evaluation.json', json);
 console.log(
   `Ontwikkelset: ${report.development.passed}/${report.development.total}; challengeset: ${report.challenge.passed}/${report.challenge.total}; expliciete harde grenzen geschonden: ${report.challenge.boundaryViolations}.`,
 );
-for (const x of report.challenge.results.filter((x) => !x.pass))
+console.log(
+  `Meertalige regressie: ${report.multilingual.passed}/${report.multilingual.total}; menselijke labelreview blijft open.`,
+);
+for (const x of [...report.challenge.results, ...report.multilingual.results].filter(
+  (x) => !x.pass,
+))
   console.log(
     `BEPERKING ${x.id} (${x.category}): ${x.actualIntent}/${x.actualStatus}, verwacht ${x.expectedIntent}/${x.expectedStatus}`,
   );
 if (
   report.development.passed !== report.development.total ||
   report.challenge.boundaryViolations > 0 ||
-  report.challenge.missedManualReview > 0
+  report.challenge.missedManualReview > 0 ||
+  report.multilingual.passed !== report.multilingual.total
 )
   process.exitCode = 1;
