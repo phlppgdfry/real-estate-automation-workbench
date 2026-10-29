@@ -12,6 +12,8 @@ import { join, dirname } from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { createServer } from 'node:net';
+import { createHash } from 'node:crypto';
+import { sourceFiles } from './source-files.ts';
 
 const root = process.cwd();
 const dir = mkdtempSync(join(tmpdir(), 'duin-clean-install-'));
@@ -24,16 +26,26 @@ const env = Object.fromEntries(
 let server: ReturnType<typeof spawn> | undefined;
 const checks: string[] = [];
 try {
-  const files = execFileSync('git', ['ls-files', '-co', '--exclude-standard', '-z'], {
-    encoding: 'utf8',
-  })
-    .split('\0')
-    .filter(Boolean);
+  const files = sourceFiles();
+  const hashes: Record<string, string> = {};
   for (const file of new Set(files)) {
     if (!existsSync(file)) continue;
     mkdirSync(dirname(join(dir, file)), { recursive: true });
     cpSync(file, join(dir, file));
+    if (file !== 'RELEASE-MANIFEST.json')
+      hashes[file] = createHash('sha256').update(readFileSync(file)).digest('hex');
   }
+  writeFileSync(
+    join(dir, 'RELEASE-MANIFEST.json'),
+    JSON.stringify(
+      {
+        kind: 'isolated-source-snapshot',
+        files: hashes,
+      },
+      null,
+      2,
+    ) + '\n',
+  );
   if (existsSync(join(dir, '.env.local')) || existsSync(join(dir, 'var')))
     throw Error('CLEAN_COPY_CONTAINS_STATE');
   checks.push('source copied without .env, database, node_modules or git metadata');
@@ -43,10 +55,10 @@ try {
   checks.push('npm ci --offline');
   run(['run', 'setup:local']);
   checks.push('fresh local credentials and catalogue');
-  run(['run', 'build']);
-  checks.push('TypeScript and production build');
-  run(['run', 'drill']);
-  checks.push('restart and recovery drill');
+  run(['run', 'check']);
+  checks.push(
+    'full npm run check without Git: build, tests, evaluation, recovery, schemas and source scan',
+  );
   // Reserve a free local port; use a dedicated child with no inherited provider credentials.
   const probe = createServer();
   probe.listen(0, '127.0.0.1');

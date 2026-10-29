@@ -18,3 +18,7 @@ Controle op 29 oktober 2026, met fictieve data en zonder nieuwe modelkosten. Dez
 | Repo had geen expliciete beveiligings-/bijdrageroute en beperkte social metadata                              | SECURITY, CONTRIBUTING, fictieve bugmelding, voorbeeldconfiguratie en Open Graph                         | Repo-scan, `npm audit`, build en links                                                     |
 
 De [releasecontrole](release-readiness.md) bewaart de echte resterende verificatievoorwaarden: beschikbaar modelbudget, menselijke labels en een volledig nieuwe Dify-workspace. Een productie-CRM, SSO, publiek endpoint en gemeten bedrijfsimpact zijn geen stiekeme beloftes van deze lokale showcase.
+
+## Bronarchief zonder Git (v3.0.1)
+
+Terugtesten van de v3.0.0-zip vond een Git-aanname in `check` en `verify:install`. De patch gebruikt het gecontroleerde bronmanifest wanneer de projectmap geen eigen Git-root heeft. De geïsoleerde installatie draait de volledige controleketen; gewijzigde bronhashes en onveilige manifestpaden worden afgewezen. Pakketten maken blijft bewust aan een schone Git-commit gebonden.

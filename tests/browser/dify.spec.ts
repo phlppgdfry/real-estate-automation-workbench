@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+const { version } = JSON.parse(readFileSync('package.json', 'utf8'));
 const evidence = JSON.parse(readFileSync('public/dify/evidence.json', 'utf8'));
 const assistantSummary = evidence.cases.find((x: { tool: string }) => x.tool === 'assist').result
   .proposal.summary;
@@ -175,7 +176,9 @@ test('complete canvas viewer fits, zooms, switches evidence, traps focus and clo
   await viewer.getByRole('button', { name: 'Passend maken', exact: true }).click();
   expect(await fits()).toBe(true);
   await viewer.getByRole('button', { name: 'Echte run', exact: true }).click();
-  await expect(image).toHaveAttribute('src', /assistant-run.png\?v=3.0.0/);
+  expect(await image.getAttribute('src')).toMatch(
+    new RegExp(`assistant-run\\.png\\?v=${version.replaceAll('.', '\\.')}$`),
+  );
   await viewer.getByRole('button', { name: 'Volgende flow →', exact: true }).click();
   await expect(
     viewer.getByRole('heading', { name: 'Documentcontrole', exact: true }),
