@@ -83,7 +83,7 @@ npm run demo:api
 npm run check          # evaluatie, build, tests, bron/DSL-sync, drill, API, links en repo-scan
 npm run test:e2e       # echte browseracceptatie, ook tegen de lokale API
 npm run benchmark     # geen model of netwerk; Cloud-paden expliciet niet uitgevoerd
-npm run verify:install # geïsoleerde schone installatie en echte lokale HTTP-keten
+npm run verify:install # volledige controle zonder Git en echte lokale HTTP-keten
 ```
 
 Installeer voor browsertests eenmalig Chromium met `npx playwright install chromium`. De schone installatietest gebruikt de npm-cache; voer eerst `npm ci` uit. PDF vereist Poppler; OCR vereist Tesseract met `eng`. Controleer met `npm run install:check`.

@@ -1,13 +1,12 @@
 {
-  "recordedAt": "2026-10-29T08:33:10.091Z",
-  "version": "3.0.0",
+  "recordedAt": "2026-10-29T23:04:48.205Z",
+  "version": "3.0.1",
   "status": "passed",
   "checks": [
     "source copied without .env, database, node_modules or git metadata",
     "npm ci --offline",
     "fresh local credentials and catalogue",
-    "TypeScript and production build",
-    "restart and recovery drill",
+    "full npm run check without Git: build, tests, evaluation, recovery, schemas and source scan",
     "signed receipt → rule analysis → human approval → durable mock receipt over real HTTP",
     "production frontend served by local API"
   ],

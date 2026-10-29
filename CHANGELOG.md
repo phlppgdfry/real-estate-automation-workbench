@@ -1,5 +1,10 @@
 # Wijzigingen
 
+## 3.0.1 — Zelfstandig controleerbaar bronpakket
+
+- `check` en `verify:install` werken ook vanuit de release-zip zonder Git. Het bestandsmanifest controleert bronhashes en veilige paden.
+- De schone installatie draait nu de volledige controleketen, inclusief tests, broncontrole en formattering.
+
 ## 3.0.0 — Verbonden dossierwerkplek en controleerbare showcase
 
 - Duurzame intake, dossierdocumenten, brongebonden inhoudsreview, expiry, native Human Input-client en afzonderlijke HTTP-testconnector. Nieuwe workspace-API en migraties 4/5.

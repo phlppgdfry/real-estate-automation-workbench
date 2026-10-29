@@ -1,13 +1,7 @@
-import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
+import { sourceFiles } from './source-files.ts';
 
-const files = [
-  ...new Set(
-    execFileSync('git', ['ls-files', '-co', '--exclude-standard', '-z'], { encoding: 'utf8' })
-      .split('\0')
-      .filter(Boolean),
-  ),
-];
+const files = sourceFiles();
 const localSecrets = existsSync('.env.local')
   ? readFileSync('.env.local', 'utf8')
       .split('\n')

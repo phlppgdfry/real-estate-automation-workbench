@@ -1,4 +1,4 @@
-# Releasecontrole · v3.0.0
+# Releasecontrole · v3.0.1
 
 Deze release levert een controleerbare lokale showcase en overdraagbare Dify-bronnen. Het is geen productie-uitrol en geen claim dat alle externe afhankelijkheden beschikbaar zijn. Er zijn geen nieuwe betaalde modellen, abonnementen, externe accounts of publieke dossierendpoints toegevoegd.
 
@@ -13,7 +13,7 @@ Deze release levert een controleerbare lokale showcase en overdraagbare Dify-bro
 - Dify Human Input-client met pauze, bedoelde actie, één inzending en reconcile; lokale providercontracttests dekken approve, reject, timeout en onbekende uitkomst.
 - Meertalige regelregressies, inclusief ontkende bezoek-, schattings- en zoekvragen. Alle fixtures blijven als AI-geschreven gemarkeerd.
 - Uitvoerbare benchmark: dezelfde criteria voor directe query en de daadwerkelijke Python-Code-nodes van de vaste workflow; Cloud-cellen krijgen geen score wanneer ze niet zijn uitgevoerd.
-- Schone installatierunner zonder bestaande `.env`, database of node_modules: offline cache-installatie, setup, build, storingsdrill en echte HTTP-demo.
+- Schone installatierunner zonder bestaande `.env`, database of node_modules: offline cache-installatie, setup, volledige controleketen, storingsdrill en echte HTTP-demo.
 - Actuele startgids, bewijsmatrix, voorbeeldconfiguratie, Engelse reviewroute, beveiligingsbeleid en bijdragehandleiding.
 - Bron/DSL-sync, schema- en broncontrole, browseracceptatie, repo-scan en relatieve links in CI. Officiële Actions op commit-SHA en een vaste Ubuntu-versie.
 - Reproduceerbaar bronpakket uit een schone commit, met broncommit, bestandsmanifest en SHA-256-checksum. Geen lokale staat of credentials in het pakket.
@@ -43,7 +43,7 @@ npm run verify:install
 npm run release:package
 ```
 
-Lokaal geverifieerd: **76 unit-/integratietests**, **14 browseracceptatietests**, evaluatie **24/24 + 16/16 + 12/12 NL/FR/EN**, nul bekende kwetsbaarheden volgens `npm audit` op 29 oktober 2026. De [schone installatie](../public/install-verification.json) is met de echte lokale HTTP-keten uitgevoerd. Dit zijn technische regressie-uitkomsten, geen onafhankelijke model- of bedrijfsmeting.
+Lokaal geverifieerd: **79 unit-/integratietests**, **14 browseracceptatietests**, evaluatie **24/24 + 16/16 + 12/12 NL/FR/EN**, nul bekende kwetsbaarheden volgens `npm audit` op 29 oktober 2026. De [schone installatie](../public/install-verification.json) is met de echte lokale HTTP-keten uitgevoerd. Dit zijn technische regressie-uitkomsten, geen onafhankelijke model- of bedrijfsmeting.
 
 De CI-artifact `validation-evidence` bevat actuele evaluatie-, drill-, benchmark-, installatie- en replayrapporten. Historische Cloud-bewijzen blijven gedateerd in `public/dify`. Controleer een download met `shasum -a 256 -c SHA256SUMS.txt`; `RELEASE-MANIFEST.json` in de zip vermeldt broncommit en de hash van elk bronbestand. Dezelfde commit levert hetzelfde bronpakket op.
 
