@@ -67,19 +67,27 @@
       "id": "operations-assistant",
       "tool": "assist",
       "title": "Dossierassistent",
-      "subtitle": "Een volgende stap die een collega kan controleren",
+      "subtitle": "Dossieradvies of actuele interne procedures",
       "value": "Een collega begrijpt waarom een dossier vastloopt en welke controle nodig is, met verwijzingen naar de aangeleverde statusfeiten.",
-      "boundary": "De server maakt dossierfeiten: intentie, status, pogingen, catalogusstatus en blokkades. Geen naam, contactgegevens, ruwe aanvraag of vrij auditlog. Elke request start een nieuwe conversatie.",
+      "boundary": "De server maakt dossierfeiten: intentie, status, pogingen, catalogusstatus en blokkades. Geen naam, contactgegevens, ruwe aanvraag of vrij auditlog. Elke request start een nieuwe conversatie. Proceduretekst komt alleen uit de fictieve, actuele kennisbankbronnen; live prijzen en beschikbaarheid blijven catalogusfeiten.",
       "owner": "Een medewerker beoordeelt het advies. Alleen een operator mag een vastgelopen overdracht herstellen.",
-      "failure": "Een citaat met een onbekende bron of andere tekst stopt de run. Geen automatisch alternatief advies; toon de fout en raadpleeg het bronsysteem.",
+      "failure": "Een citaat met een onbekende bron of andere tekst stopt de run. Geen automatisch alternatief advies; toon de fout en raadpleeg het bronsysteem. Retrieval-fouten hebben een eigen antwoordtak; bronfouten stoppen de run zonder modelalternatief.",
       "steps": [
         {
           "id": "start",
           "title": "1 · Dossiervraag",
-          "description": "Ontvangt een vraag en optionele context. De lokale API haalt de context zelf uit de store; de browser kan geen feiten meegeven.",
+          "description": "Ontvangt de vraag, optionele dossiercontext en route case/procedures. Proceduretaal is nl of fr; de standaardroute blijft dossieradvies.",
           "input": "sys.query + case_context",
           "output": "Vraag en JSON-context",
           "check": "Lege context in Studio gebruikt uitsluitend de ingebouwde fictieve demo-feiten."
+        },
+        {
+          "id": "route",
+          "title": "Dossieradvies of procedure?",
+          "description": "Scheiding tussen dossierfeiten en interne procedures. De procedureroute gebruikt geen LLM.",
+          "input": "Routekeuze",
+          "output": "Eén exclusieve route",
+          "check": "Proceduretekst is geen bewijs van actuele pandprijs of beschikbaarheid."
         },
         {
           "id": "prepare",
@@ -112,6 +120,46 @@
           "input": "Gecontroleerde JSON-string",
           "output": "answer · voorstel voor de medewerker",
           "check": "Een chatantwoord kan geen dossier goedkeuren of CRM-record wijzigen."
+        },
+        {
+          "id": "procedure-language",
+          "title": "Taal expliciet bepalen",
+          "description": "Valideert nl/fr en maakt de gedocumenteerde standaard nl expliciet wanneer een optioneel debugveld niet is meegestuurd. Andere talen worden geweigerd.",
+          "input": "Optionele procedure_language",
+          "output": "Gevalideerde taal",
+          "check": "De retrievalfilter en broncontrole gebruiken exact dezelfde genormaliseerde taal."
+        },
+        {
+          "id": "knowledge",
+          "title": "Actuele procedures · taalfilter",
+          "description": "Native Knowledge Retrieval doorzoekt de economische portfolio-kennisbank met state=current en de gekozen taal. Geen embeddings of reranking-model.",
+          "input": "Vraag en taal",
+          "output": "Maximaal vijf bronchunks",
+          "check": "Nieuwe workspace: koppel een eigen kennisbank opnieuw; tags vervangen metadatafilters niet."
+        },
+        {
+          "id": "knowledge-guard",
+          "title": "Procedurebron onafhankelijk toetsen",
+          "description": "Python accepteert uitsluitend canonieke actuele bronnen in de gekozen taal en vereist de volledige letterlijke proceduretekst. Onjuiste of verouderde bron stopt de run.",
+          "input": "Retrieved records en taal",
+          "output": "Gecontroleerde bronnen of expliciete onthouding",
+          "check": "Verwijder of verander een broncitaat: de guard moet weigeren."
+        },
+        {
+          "id": "procedure-answer",
+          "title": "Geciteerde procedure · geen model",
+          "description": "Geeft uitsluitend gecontroleerde proceduretekst en bron-ID terug. Bij geen treffers volgt een verduidelijkingsvraag.",
+          "input": "Gecontroleerd resultaat",
+          "output": "Voorstel met requires_human=true",
+          "check": "Een medewerker toetst de procedure aan het actuele dossier."
+        },
+        {
+          "id": "knowledge-error",
+          "title": "Zoekstoring · menselijke overname",
+          "description": "Een fout van retrieval gaat naar een expliciete storingsmelding, zonder modelantwoord of dossieractie.",
+          "input": "Retrieval-fouttak",
+          "output": "Menselijke overdracht",
+          "check": "Een mislukte broncontrole wordt nooit als geslaagde zoekrun gepresenteerd."
         }
       ],
       "tests": [
@@ -129,6 +177,11 @@
           "label": "Ontbrekend bewijs",
           "input": "Welke bezoekdatum heeft de klant bevestigd?",
           "expect": "Benoem ontbrekend bewijs; verzin geen afspraakdatum."
+        },
+        {
+          "label": "Procedure FR",
+          "input": "Route procedures, taal fr, vraag vendu",
+          "expect": "Alleen SOP-VISIT-FR-1, met exacte proceduretekst en menselijke controle."
         }
       ]
     },

@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-28",
+  "checkedAt": "2026-10-29",
   "purpose": "Navigatie en overdracht; tags verlenen geen rechten en vervangen geen metadatafilters.",
   "apps": [
     {
@@ -23,8 +23,8 @@
   "knowledge": {
     "name": "Duin & Dorp · Interne procedures",
     "intendedTags": ["Duin & Dorp", "Procedures", "NL / FR", "Fictieve data"],
-    "status": "definitions-created-binding-unconfirmed",
-    "verification": "UI-selectie navigeert naar Documents zonder koppeling; beperkte GET /datasets/{id}/tags bevestigt nul gekoppelde tags. Geen ruimere API-sleutel aangemaakt."
+    "status": "verified",
+    "verification": "Alle vier opgeslagen koppelingen op 29 oktober read-only bevestigd via GET /datasets/{id}/tags met de bestaande beperkte kennisbanksleutel."
   },
   "nativeAgent": {
     "name": "Duin & Dorp · Pandvergelijker",

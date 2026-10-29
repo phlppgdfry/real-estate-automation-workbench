@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-29T03:09:13.274Z",
+  "method": "Compare downloaded Dify app.yaml against canonical import DSL by node ID and full node data; compare all edge endpoints and handles.",
+  "checks": [
+    {
+      "app": "operations-assistant",
+      "nodeConfigurations": 11,
+      "connections": 10,
+      "scope": "all executable node data",
+      "configurationSha256": "fada43b0619e1220c8a890faebb0a5b7b3ee252692bbd296cf2685d7b72816ce",
+      "status": "passed"
+    },
+    {
+      "app": "document-review",
+      "nodeConfigurations": 23,
+      "connections": 16,
+      "scope": "all node data including notes",
+      "configurationSha256": "92f805c0afff3520d6a53395282c3f75ac993fffd6ef4b738a938ca15c79b761",
+      "status": "passed"
+    }
+  ],
+  "limitation": "Configuration equality is not proof of complete Cloud execution. The latest document export was downloaded on October 28; dossier export was downloaded after publishing version 3 on October 29."
+}

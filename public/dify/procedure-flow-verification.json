@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-29T03:08:08.747Z",
+  "app": "Dossierassistent",
+  "publishedVersion": 3,
+  "route": "procedures",
+  "language": "fr",
+  "query": "vendu",
+  "httpStatus": 400,
+  "status": "blocked-model-quota",
+  "code": "invalid_param",
+  "limitation": "Dify blocks the complete chatflow before branch execution because model quota is exhausted. Component retrieval success does not prove end-to-end execution."
+}

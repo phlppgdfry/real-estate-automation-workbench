@@ -1,6 +1,6 @@
 # Werkplan v3 — lopende implementatie
 
-Werkstatus, geen releaseclaim. De gebruiker heeft alle tien verbeterpunten, de aanvullende Dify-functies en consistente tags gevraagd. Branch: `feature/connected-operations`. Laatste controle: 28 oktober 2026.
+Werkstatus, geen releaseclaim. De gebruiker heeft alle tien verbeterpunten, de aanvullende Dify-functies en consistente tags gevraagd. Branch: `feature/connected-operations`. Laatste controle: 29 oktober 2026.
 
 ## Uitgevoerd
 
@@ -16,7 +16,7 @@ Werkstatus, geen releaseclaim. De gebruiker heeft alle tien verbeterpunten, de a
 - Zeven uitlegkaarten in live Agentvergelijking gepubliceerd; exacte live export en importbron gelijkgetrokken. Nieuwe volledige screenshot opgeslagen.
 - Nieuwe Economical-kennisbank `293e6f00-77fc-4ca5-8ace-72d9567b816d`: vijf fictieve documenten, alle vijf `completed` en enabled. Metadata language/state/version gesynchroniseerd. Eén expliciet goedgekeurde sleutel beperkt tot deze kennisbank, uitsluitend in genegeerde `.env.local` (0600).
 - Kennisbankinstallatiescript heeft standaard dry run en synchroniseert alleen de vijf bekende bronbestanden. Native retrieval-client past filters toe en weigert onafhankelijk verkeerde taal, verouderde documenten en verzonnen citaten.
-- Installatiecontrole slaagt voor Node 24+, Python, Poppler en Tesseract. 68 unit-/integratietests slagen; 12 browseracceptatietests slagen. Build, storingsdrill en OpenAPI-validatie slagen.
+- Installatiecontrole slaagt voor Node 24+, Python, Poppler en Tesseract. 71 unit-/integratietests slagen; 12 browseracceptatietests slagen. Build, storingsdrill en OpenAPI-validatie slagen.
 - OpenAPI uitgebreid met workspace/document/review/reconcile/knowledge/traces/connector/case-routes.
 
 ## Concrete externe toestand
@@ -27,15 +27,13 @@ Werkstatus, geen releaseclaim. De gebruiker heeft alle tien verbeterpunten, de a
 - De originele Text Summarizer is na export en expliciete toestemming verwijderd; vier Studio-apps, één vrij slot. Backup blijft genegeerd lokaal. Werk eerst bestaande apps bij voordat het vijfde triggerslot wordt gebruikt.
 - De gebruiker doet evaluatielabelreview later. Geen menselijke labelvalidatie of onafhankelijke benchmark claimen.
 
+## Afronding op 29 oktober
+
+- Dossierassistentversie 3 gepubliceerd met native Knowledge Retrieval, actuele-taalfilters, expliciete NL-standaard, onafhankelijke canonieke broncontrole en een aparte retrievalfouttak. De procedureroute heeft geen pad naar een LLM of schrijftool.
+- De nieuwe live export en importbron bevatten exact dezelfde 11 uitvoerbare nodeconfiguraties en 10 verbindingen. De documentexport komt overeen voor alle 23 nodeconfiguraties en 16 verbindingen. Bewijs: `public/dify/canvas-verification.json`.
+- Alle vier kennisbanktags zijn met de bestaande beperkte sleutel read-only bevestigd. De eerdere UI-fout is opgelost; classificatie bijgewerkt.
+- Knowledge API-verificatie opnieuw geslaagd voor NL, FR en superseded-only controle. Een echte request naar de gepubliceerde chatflow gaf nog HTTP 400 `invalid_param` door uitgeput modelquotum. Bewijs: `public/dify/procedure-flow-verification.json`. Dit blijft een blokkade, ook al gebruikt de procedureroute zelf geen model.
+
 ## Nog af te werken
 
-1. Knowledge Retrieval-node in bestaande dossierassistent toevoegen met taal/status/versiecontrole. Directe native Knowledge API-route werkt en is ook beschikbaar in de lokale werkplek.
-2. Vier Studio-apps hebben consistente tags, na herladen geverifieerd. Vier kennisbanktagdefinities bestaan, maar koppelen via de Cloud-UI blijft niet bewaard; scoped read bevestigt nul koppelingen. Classificatie en beperking: `public/dify/classification.json`. Losse native Agent heeft in deze beta-interface geen tagoptie; naam, rol, beschrijving en vastgoedpictogram zijn gecontroleerd.
-3. Documentcanvasbeschrijvingen zijn opnieuw geïmporteerd/gepubliceerd; Dify-checklist zonder fouten. Volledige native PNG-export vervangt de oude documentfoto. Laatste live DSL-export vergelijken.
-4. Native bestandsrun en Human Input-approve/reject/timeout live verifiëren zodra quota beschikbaar is. Lokale tests dekken het protocol, niet de Cloud-uitvoering.
-5. Driewegs benchmark directe query / vaste Dify-workflow / native Agent met identieke criteria. Geen ingevulde scores zonder echte runs.
-6. Afzonderlijke native Schedule/Integration Trigger-app. User Input en Trigger zijn wederzijds exclusief. Eventuele nieuwe externe accounttoegang concreet laten goedkeuren; geen fictieve integratieclaim.
-7. Meer reviewer-/timeout-/browseracceptatie; native knowledge en veilige trace-download zijn toegevoegd; componenten waar zinvol verder opdelen.
-8. Meertalige evaluaties en eenvoudig menselijk reviewbestand afronden; uitgestelde review blijft zichtbaar.
-9. Schone installatie zonder lokale env/data slaagt: npm ci --offline, setup, documenttools, build en storingsdrill. Nieuwe lokale API-screenshots en opname zijn toegevoegd. Verse Dify-import op een lege workspace blijft niet getest.
-10. Volledige checks, secret-value scan, checkpoint/PR, CI/merge/release en Pages verifiëren. Checkpoint volgt; nog geen volledige v3-release geclaimd.
+De technisch afgeronde retrieval- en tagpunten staan hierboven. De resterende stappen zijn: 4. Native bestandsrun en Human Input-approve/reject/timeout live verifiëren zodra quota beschikbaar is. Lokale tests dekken het protocol, niet de Cloud-uitvoering. 5. Driewegs benchmark directe query / vaste Dify-workflow / native Agent met identieke criteria. Geen ingevulde scores zonder echte runs. 6. Afzonderlijke native Schedule/Integration Trigger-app. User Input en Trigger zijn wederzijds exclusief. Eventuele nieuwe externe accounttoegang concreet laten goedkeuren; geen fictieve integratieclaim. 7. Meer reviewer-/timeout-/browseracceptatie; native knowledge en veilige trace-download zijn toegevoegd; componenten waar zinvol verder opdelen. 8. Meertalige evaluaties en eenvoudig menselijk reviewbestand afronden; uitgestelde review blijft zichtbaar. 9. Schone installatie zonder lokale env/data slaagt: npm ci --offline, setup, documenttools, build en storingsdrill. Nieuwe lokale API-screenshots en opname zijn toegevoegd. Verse Dify-import op een lege workspace blijft niet getest. 10. Volledige checks, secret-value scan, checkpoint/PR, CI/merge/release en Pages verifiëren. Checkpoint volgt; nog geen volledige v3-release geclaimd.

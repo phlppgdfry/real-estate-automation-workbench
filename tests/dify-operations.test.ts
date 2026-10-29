@@ -195,6 +195,7 @@ test('importable DSL has no tools/secrets and embedded code equals tested source
       const allowed = ['start', 'code', 'llm', 'end', 'answer'];
       if (file === 'document-review')
         allowed.push('if-else', 'document-extractor', 'variable-aggregator', 'human-input');
+      if (file === 'operations-assistant') allowed.push('if-else', 'knowledge-retrieval');
       assert.ok(allowed.includes(node.data.type), `Unexpected executable node: ${node.data.type}`);
       if (node.data.type === 'human-input') {
         assert.ok(node.data.delivery_methods.length > 0);
@@ -214,9 +215,20 @@ test('importable DSL has no tools/secrets and embedded code equals tested source
           file === 'lead-intake'
             ? { validate: 'validate_lead' }
             : file === 'operations-assistant'
-              ? { prepare: 'prepare_context', validate: 'validate_assistant' }
+              ? {
+                  prepare: 'prepare_context',
+                  validate: 'validate_assistant',
+                  'knowledge-guard': 'validate_knowledge',
+                  'procedure-language': 'select_procedure_language',
+                }
               : { redact: 'redact_document', validate: 'validate_document' };
-        assert.equal(node.data.code, readFileSync(`dify/code/${files[node.id]}.py`, 'utf8'));
+        assert.equal(
+          node.data.code,
+          readFileSync(`dify/code/${files[node.id]}.py`, 'utf8').replace(
+            '__PROCEDURES_JSON__',
+            JSON.stringify(JSON.parse(readFileSync('data/knowledge/procedures.json', 'utf8'))),
+          ),
+        );
       }
     }
   }

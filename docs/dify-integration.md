@@ -12,7 +12,7 @@ De werkbank bevat aanvraaganalyse, een dossierassistent, documentcontrole en een
 
 ## Leesbare canvassen
 
-Elke canonieke import-DSL bevat zeven gekleurde notitiepanelen en een beschrijving per uitvoerbare stap. Die uitleg reist mee met de importeerbare DSL. De vierde live flow bevat twee handmatig geplaatste overzichtskaarten; de uitgebreidere importvariant bevat zeven kaarten. Een app-limiet blokkeerde herimport in deze workspace; de uitvoerbare code is exact gelijk en getest. De site biedt dezelfde inhoud als klikbare stappen met invoer, uitvoer, controlepunt, gegevensgrens, eigenaar en testscenario’s. Lees de [canvas-reviewgids](dify-canvas-review.md) voor de ontwerpafwegingen en demonstratievragen.
+Elke canonieke import-DSL bevat zeven gekleurde notitiepanelen en een beschrijving per uitvoerbare stap. Die uitleg reist mee met de importeerbare DSL. De vier live flows bevatten elk zeven uitlegkaarten. De definitieve dossierexport is op 29 oktober vergeleken met alle 11 uitvoerbare nodeconfiguraties en 10 verbindingen; de documentexport met alle 23 nodeconfiguraties en 16 verbindingen. De site biedt dezelfde inhoud als klikbare stappen met invoer, uitvoer, controlepunt, gegevensgrens, eigenaar en testscenario’s. Lees de [canvas-reviewgids](dify-canvas-review.md) voor de ontwerpafwegingen en demonstratievragen.
 
 ## Starten
 
@@ -66,7 +66,7 @@ Alle routes vereisen een Bearer-token; alleen een reviewer mag modelruns aanvrag
 | POST `/api/dify/assist`   | `{ "leadId": "…", "question": "…" }` | Voorstel met exacte verwijzingen naar serverfeiten |
 | POST `/api/dify/document` | `{ "text": "…" }`                    | Gegevens met broncitaten en geminimaliseerde bron  |
 
-Documentcontrole ondersteunt geplakte tekst, TXT en Markdown; maximaal 12.000 tekens en voor de browserupload 12 kB. PDF, OCR, URL-fetching, RAG en juridische volledigheidscontrole zijn niet geïmplementeerd. Het document wordt niet als dossier opgeslagen. Dify kan inhoud en logs bewaren volgens de workspace-instellingen: de lokale minimisatie is geen garantie op verwijdering bij de provider. Gebruik fictieve gegevens voor deze demo.
+De oorspronkelijke Dify-werkbanktab ondersteunt geplakte tekst, TXT en Markdown (maximaal 12.000 tekens en 12 kB). De verbonden lokale werkplek ondersteunt daarnaast dossieropslag, PDF/DOCX/EML-extractie en expliciete begrensde OCR. De gepubliceerde native documentflow heeft een Document Extractor en optionele Human Input. De dossierassistent biedt een aparte NL/FR-procedureroute met Knowledge Retrieval en onafhankelijke broncontrole. Volledige nieuwe Cloud-runs blijven door het uitgeputte modelquotum geblokkeerd; de directe Knowledge API is opnieuw live getest. Dify kan inhoud en logs bewaren volgens de workspace-instellingen: de lokale minimisatie is geen garantie op verwijdering bij de provider. Gebruik fictieve gegevens voor deze demo.
 
 ## Grenzen die in code worden gecontroleerd
 
@@ -76,7 +76,7 @@ Bij documentcontrole wordt de lijst met onbevestigde basisvelden onafhankelijk a
 - De verplichte menselijke controle wordt door code toegevoegd, niet door het model bepaald. De assistent heeft geen tools, geheugen tussen dossiers of schrijfrechten.
 - Dossiercontext bevat alleen intentie, werkstatus, catalogusstatus en redenen; geen naam, e-mailadres, ruwe aanvraag of vrij auditlog. Een gepseudonimiseerde gebruikers-ID wordt per serverprincipal afgeleid. Elke aanvraag start een nieuwe conversatie.
 - Documentcontactdetails worden vóór de provider beperkt met e-mail- en telefoonachtige patronen. Dit is een heuristiek: namen, adressen en alle identificatoren worden niet gegarandeerd verwijderd.
-- Providerantwoorden zijn begrensd op 256 KiB; de standaardtimeout is 30 seconden. Alleen blocking JSON wordt ondersteund. Sleutels en ruwe providerfouten verschijnen niet in HTTP-foutmeldingen.
+- Providerantwoorden zijn begrensd op 256 KiB; de standaardtimeout is 30 seconden. De oorspronkelijke werkbankroutes gebruiken blocking JSON; de afzonderlijke native Human Input-client gebruikt begrensde SSE voor de formulierpauze en hervatting. Sleutels en ruwe providerfouten verschijnen niet in HTTP-foutmeldingen.
 - Onjuiste output geeft een zichtbare 502 zonder dossierwijziging. De bestaande inbox bewaart ontvangst vóór de modelcall en gebruikt zijn aparte herstelproces. De adapter herhaalt zelf geen POST.
 - Een exact citaat bewijst alleen herkomst, niet de juistheid van de interpretatie, volledigheid of veiligheid van een voorgestelde stap. Een medewerker controleert dat nog steeds.
 
