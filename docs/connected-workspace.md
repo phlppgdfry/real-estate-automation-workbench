@@ -34,12 +34,18 @@ Kies Nederlands of Frans en gebruik **Zoek in actuele procedures** voor de lokal
 
 **Runmetadata downloaden** exporteert uitsluitend operationele metadata. Prompts, documentinhoud, reviewlinks en credentials zijn uitgesloten. Het configureerbare kostenbudget gebruikt gerapporteerde tokens en reserveringen. De prijs per token is een zelf ingestelde bovengrens; onbekend verbruik blijft een reservering, geen bewezen maximum. Een model kan meer tokens gebruiken dan vooraf gereserveerd. Dit is geen harde providerlimiet of factuur. Het dagvenster volgt Europe/Brussels, inclusief zomer- en wintertijd.
 
-De [opname](../public/dify/connected-local-demo.webm) toont duurzame intake, analyse, upload en lokale procedures met de echte lokale API. [Screenshot](../public/dify/screenshots/connected-workspace.png). Dit is geen live Dify-modelbewijs.
+De [opname (MP4)](../public/dify/connected-local-demo.mp4) toont duurzame intake, analyse, upload en lokale procedures met de echte lokale API. [Screenshot](../public/dify/screenshots/connected-workspace.png). Dit is geen live Dify-modelbewijs.
 
 ## Gecontroleerde overdracht
 
-`npm run verify:install` maakt een geïsoleerde kopie zonder bestaande credentials, database of node_modules. Offline npm-installatie, setup, build, storingsdrill en de echte HTTP-demoketen worden uitgevoerd. Het rapport staat in `var/install-verification.json` en als CI-artifact.
+`npm run verify:install` maakt een geïsoleerde kopie zonder bestaande credentials, database of node_modules. Offline npm-installatie, setup, de volledige controleketen, storingsdrill en de echte HTTP-demoketen worden uitgevoerd. Het rapport staat in `var/install-verification.json` en als CI-artifact.
 
 De native Document Extractor en Human Input-client zijn gebouwd. De volledige nieuwe Cloud-bestandsrun en hervatting blijven door het opgebruikte gratis modelquotum geblokkeerd. Lokale protocoltests dekken approve/reject/timeout en onbekende uitkomst; het scherm test ook inhoudelijke correcties en verlopen reviews.
 
 De aparte [native timer](native-trigger.md) heeft werkelijk op een gepland moment uitgevoerd met 0 modeltokens en staat na de test uit. De [vergelijkingsrunner](benchmark.md) werkt standaard zonder netwerk of model. De drie [externe verificatievoorwaarden](release-readiness.md) — modelbudget, menselijke labels en volledig verse Dify-workspace — worden niet stilzwijgend als geslaagd behandeld.
+
+## Video opnieuw opnemen en controleren
+
+`npm run build && npm run capture:connected` maakt een rustige opname met zeven hoofdstukken via een geïsoleerde echte lokale API. Vereist lokaal Chromium, FFmpeg en FFprobe. De opname gebruikt geen bestaande `.env`, providersleutels of externe modellen. Laat de opname aflopen; het script bewaart pas na het sluiten van de browsercontext de definitieve MP4 (H.264, faststart), WebM, poster en hoofdstukmetadata. De tijdstempels komen van de echte acties; geen verwerkingssucces wordt nagebootst.
+
+De media-acceptatie gebruikt Chrome voor H.264-ondersteuning, ook op Linux; de andere browsertests gebruiken Chromium. De browseracceptatie controleert de werkelijke mediaduur (65–120 seconden), afspelen, doorspoelen via hoofdstukken, het einde van de MP4, de WebM-fallback en de publieke pagina op desktop en mobiel. De repo-controle vergelijkt de grootte en SHA-256 van beide bestanden met `data/demo-video.json`. Een bestand van ongeveer één seconde voldoet dus niet meer. De video bevat toelichting in beeld, downloadlinks en een uitklapbare tekstversie.

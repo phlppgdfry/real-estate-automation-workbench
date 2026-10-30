@@ -1,6 +1,6 @@
 import { RunLedger, type RunBudget } from './run-ledger';
 import { workspaceRoute } from './workspace';
-import { readFileSync, existsSync, statSync } from 'node:fs';
+import { readFileSync, existsSync, statSync, createReadStream } from 'node:fs';
 import { resolve, extname, sep } from 'node:path';
 import { ComparisonInputSchema } from '../src/comparison-contract';
 import { analyseDify, assistDify, reviewDocumentDify, compareDify } from './dify-services';
@@ -123,7 +123,11 @@ export function makeServer(config: Config) {
           'Retry-After': '2',
         });
       }
-      if (req.method === 'GET' && config.staticRoot && !path.startsWith('/api/')) {
+      if (
+        (req.method === 'GET' || req.method === 'HEAD') &&
+        config.staticRoot &&
+        !path.startsWith('/api/')
+      ) {
         const root = resolve(config.staticRoot);
         const relative = path
           .replace(/^\/real-estate-automation-workbench/, '')
@@ -138,15 +142,47 @@ export function makeServer(config: Config) {
             '.png': 'image/png',
             '.svg': 'image/svg+xml',
             '.txt': 'text/plain; charset=utf-8',
+            '.mp4': 'video/mp4',
+            '.webm': 'video/webm',
           };
-          res.writeHead(200, {
+          const size = statSync(file).size;
+          let start = 0,
+            end = size - 1;
+          const range = req.headers.range;
+          if (range) {
+            const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+            if (match && (match[1] || match[2])) {
+              start = match[1] ? Number(match[1]) : Math.max(0, size - Number(match[2]));
+              end = match[1] && match[2] ? Math.min(size - 1, Number(match[2])) : size - 1;
+            }
+            if (
+              !match ||
+              (!match[1] && !match[2]) ||
+              !Number.isSafeInteger(start) ||
+              !Number.isSafeInteger(end) ||
+              start > end ||
+              start >= size ||
+              (match[1] === '' && Number(match[2]) === 0)
+            ) {
+              res.writeHead(416, { 'Content-Range': `bytes */${size}` });
+              return res.end();
+            }
+          }
+          res.writeHead(range ? 206 : 200, {
             'Content-Type': mime[extname(file)] ?? 'application/octet-stream',
+            'Content-Length': Math.max(0, end - start + 1),
+            'Accept-Ranges': 'bytes',
+            ...(range ? { 'Content-Range': `bytes ${start}-${end}/${size}` } : {}),
             'X-Content-Type-Options': 'nosniff',
             'Cache-Control': 'no-store',
             'Content-Security-Policy':
               "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'",
           });
-          return res.end(readFileSync(file));
+          if (req.method === 'HEAD' || size === 0) return res.end();
+          const stream = createReadStream(file, { start, end });
+          stream.on('error', () => res.destroy());
+          res.on('close', () => stream.destroy());
+          return stream.pipe(res);
         }
         return send(res, 404, { error: 'NOT_FOUND' });
       }

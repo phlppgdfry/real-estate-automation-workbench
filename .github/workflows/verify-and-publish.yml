@@ -24,7 +24,9 @@ jobs:
       - name: Check reproducible evaluation report
         run: git diff --exit-code -- data/evaluation-report.json public/evaluation.json
       - name: Install browser dependencies
-        run: npx playwright install --with-deps chromium
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright install chrome
         timeout-minutes: 5
       - run: npm run test:e2e
       - run: npm run benchmark

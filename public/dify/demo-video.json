@@ -1,0 +1,57 @@
+{
+  "title": "Van aanvraag naar bron",
+  "duration": 76.12,
+  "width": 1280,
+  "height": 900,
+  "recordedAt": "2026-10-30T01:10:38.309Z",
+  "scope": "Real local API, fictitious data, no provider credentials or Dify model requests.",
+  "chapters": [
+    {
+      "start": 0,
+      "title": "Van aanvraag naar bron",
+      "description": "Echte klikken en lokale API-verwerking met fictieve gegevens. Zonder betaalde modelcalls."
+    },
+    {
+      "start": 7,
+      "title": "Verbinden",
+      "description": "Een persoonlijke sessie opent de lokale werkplek. De tijdelijke token blijft gemaskeerd."
+    },
+    {
+      "start": 15,
+      "title": "Duurzame intake",
+      "description": "De bezoekvraag wordt eerst opgeslagen. De ontvangstwachtrij staat klaar vóór de analyse."
+    },
+    {
+      "start": 25,
+      "title": "Analyse en menselijke controle",
+      "description": "Lokale regels maken een dossier en conceptantwoord. Goedkeuring en overdracht blijven aparte acties."
+    },
+    {
+      "start": 36,
+      "title": "Document toevoegen",
+      "description": "Een fictieve pandfiche wordt aan hetzelfde dossier gekoppeld. Geen bestand gaat naar Dify."
+    },
+    {
+      "start": 48,
+      "title": "Actuele procedure · Nederlands",
+      "description": "De lokale zoekroute toont het antwoord met bron-ID en citaat. Verkochte panden worden uitgesloten."
+    },
+    {
+      "start": 62,
+      "title": "Franse bron en controleerbaar resultaat",
+      "description": "Dezelfde vraag gebruikt nu uitsluitend de Franse procedure. Dit bewijst lokale werking, geen Dify Cloud-run."
+    }
+  ],
+  "files": [
+    {
+      "format": "mp4",
+      "bytes": 1378493,
+      "sha256": "607ef063a7c5a77762c13020c5fb71d9cc2c9da593df4b313d831c2a4ac21802"
+    },
+    {
+      "format": "webm",
+      "bytes": 1353895,
+      "sha256": "877707960476381bf3b2fb02c01bcc59424e64b435f718f9150fd21741f106a7"
+    }
+  ]
+}

@@ -35,7 +35,7 @@ De publieke demo gebruikt browseropslag. De verbonden werkplek draait lokaal met
 
 ![Verbonden lokale dossierwerkplek met documentinbox en procedurezoekroute](public/dify/screenshots/connected-workspace.png)
 
-[Bekijk de echte lokale API-opname](public/dify/connected-local-demo.webm). De opname gebruikt fictieve data en maakt geen Dify-modelcalls.
+[Bekijk de echte lokale API-opname (MP4)](public/dify/connected-local-demo.mp4), of gebruik [WebM](public/dify/connected-local-demo.webm). De speler heeft hoofdstukken en een tekstversie. De opname gebruikt fictieve data en maakt geen Dify-modelcalls.
 
 ## De belangrijkste ontwerpkeuze
 
@@ -86,7 +86,7 @@ npm run benchmark     # geen model of netwerk; Cloud-paden expliciet niet uitgev
 npm run verify:install # volledige controle zonder Git en echte lokale HTTP-keten
 ```
 
-Installeer voor browsertests eenmalig Chromium met `npx playwright install chromium`. De schone installatietest gebruikt de npm-cache; voer eerst `npm ci` uit. PDF vereist Poppler; OCR vereist Tesseract met `eng`. Controleer met `npm run install:check`.
+Installeer voor browsertests eenmalig Chromium en Chrome met `npx playwright install chromium chrome`. De schone installatietest gebruikt de npm-cache; voer eerst `npm ci` uit. PDF vereist Poppler; OCR vereist Tesseract met `eng`. Controleer met `npm run install:check`.
 
 ## Dify importeren en bewijs beoordelen
 
