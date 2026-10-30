@@ -1,4 +1,4 @@
-# Releasecontrole · v3.0.2
+# Releasecontrole · v3.0.3
 
 Deze release levert een controleerbare lokale showcase en overdraagbare Dify-bronnen. Het is geen productie-uitrol en geen claim dat alle externe afhankelijkheden beschikbaar zijn. Er zijn geen nieuwe betaalde modellen, abonnementen, externe accounts of publieke dossierendpoints toegevoegd.
 

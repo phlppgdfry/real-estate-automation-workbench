@@ -1,5 +1,9 @@
 # Wijzigingen
 
+## 3.0.3 — Toelichting vrij van de videobediening
+
+- De toelichting staat boven de opgenomen werkplek, zodat de native bediening de tekst bij pauzeren niet overlapt. MP4, WebM, poster en metadata zijn samen bijgewerkt.
+
 ## 3.0.2 — Leesbare demonstratie en echte mediacontrole
 
 - Vervangt de 1,88 seconde durende opname door een rustig getimede echte lokale demo met zeven hoofdstukken en toelichting in beeld.

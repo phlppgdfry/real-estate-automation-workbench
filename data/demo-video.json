@@ -2,7 +2,7 @@
   "title": "Van aanvraag naar bron",
   "duration": 76.12,
   "width": 1280,
-  "height": 900,
+  "height": 1000,
   "recordedAt": "2026-10-30T01:10:38.309Z",
   "scope": "Real local API, fictitious data, no provider credentials or Dify model requests.",
   "chapters": [
@@ -45,13 +45,13 @@
   "files": [
     {
       "format": "mp4",
-      "bytes": 1378493,
-      "sha256": "607ef063a7c5a77762c13020c5fb71d9cc2c9da593df4b313d831c2a4ac21802"
+      "bytes": 1426364,
+      "sha256": "31e2280eaec0fe6d515f7cf04feedc735bf5c551f2ad1ee8ab859915ce0b8a63"
     },
     {
       "format": "webm",
-      "bytes": 1353895,
-      "sha256": "877707960476381bf3b2fb02c01bcc59424e64b435f718f9150fd21741f106a7"
+      "bytes": 1362737,
+      "sha256": "ba3a6dc86c3c989f05fc3f5f3c057325e94825b33056cf8eb6ba32d8acf66f84"
     }
   ]
 }

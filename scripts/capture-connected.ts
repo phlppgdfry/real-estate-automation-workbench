@@ -185,12 +185,19 @@ try {
   const raw = 'var/recordings/connected-paced.webm';
   await video.saveAs(raw);
   const base = 'public/dify/connected-local-demo';
+  // Put the editorial caption above the UI, clear of native playback controls.
+  const composition =
+    '[0:v]split=2[ui][band];[ui]crop=1280:814:0:0,pad=1280:1000:0:110:color=0x102d28[canvas];[band]crop=1280:86:0:814[caption];[canvas][caption]overlay=0:12[video]';
   execFileSync(
     'ffmpeg',
     [
       '-y',
       '-i',
       raw,
+      '-filter_complex',
+      composition,
+      '-map',
+      '[video]',
       '-an',
       '-c:v',
       'libx264',
@@ -212,6 +219,10 @@ try {
       '-y',
       '-i',
       raw,
+      '-filter_complex',
+      composition,
+      '-map',
+      '[video]',
       '-an',
       '-c:v',
       'libvpx-vp9',
@@ -232,7 +243,7 @@ try {
       '-ss',
       String(chapters[3].start + 3),
       '-i',
-      raw,
+      `${base}.mp4`,
       '-frames:v',
       '1',
       'public/dify/screenshots/connected-video-poster.png',
@@ -260,7 +271,7 @@ try {
     title: 'Van aanvraag naar bron',
     duration,
     width: 1280,
-    height: 900,
+    height: 1000,
     recordedAt: new Date().toISOString(),
     scope: 'Real local API, fictitious data, no provider credentials or Dify model requests.',
     chapters: chapters.map((c, i) => ({ ...c, start: i === 0 ? 0 : c.start })),
