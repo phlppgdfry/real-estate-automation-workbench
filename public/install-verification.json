@@ -1,6 +1,6 @@
 {
-  "recordedAt": "2026-10-30T01:18:18.881Z",
-  "version": "3.0.2",
+  "recordedAt": "2026-10-30T04:06:02.609Z",
+  "version": "3.0.3",
   "status": "passed",
   "checks": [
     "source copied without .env, database, node_modules or git metadata",

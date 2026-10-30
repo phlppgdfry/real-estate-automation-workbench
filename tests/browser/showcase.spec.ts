@@ -50,6 +50,10 @@ test('published video has readable duration, plays, seeks by chapter and reaches
     .locator('.video-heading')
     .evaluate((e) => scrollTo(0, e.getBoundingClientRect().top + scrollY - 24));
   await page.screenshot({ path: info.outputPath('video-player-desktop.png') });
+  expect(await video.evaluate((v: HTMLVideoElement) => [v.videoWidth, v.videoHeight])).toEqual([
+    demo.width,
+    demo.height,
+  ]);
   const duration = await video.evaluate((v: HTMLVideoElement) => v.duration);
   expect(duration).toBeGreaterThanOrEqual(65);
   expect(duration).toBeLessThanOrEqual(120);
