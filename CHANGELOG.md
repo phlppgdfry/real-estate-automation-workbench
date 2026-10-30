@@ -1,5 +1,12 @@
 # Wijzigingen
 
+## 3.0.2 — Leesbare demonstratie en echte mediacontrole
+
+- Vervangt de 1,88 seconde durende opname door een rustig getimede echte lokale demo met zeven hoofdstukken en toelichting in beeld.
+- MP4 met faststart, WebM-fallback, eigen poster, downloadlinks, hoofdstuknavigatie en tekstversie.
+- Lokale mediaserver ondersteunt juiste videotypes, HEAD en bytebereiken voor betrouwbaar doorspoelen.
+- Browsercontrole van werkelijke duur, afspelen, doorspoelen, einde en desktop/mobiele publieke pagina’s; broncontrole bewaakt de videohashes.
+
 ## 3.0.1 — Zelfstandig controleerbaar bronpakket
 
 - `check` en `verify:install` werken ook vanuit de release-zip zonder Git. Het bestandsmanifest controleert bronhashes en veilige paden.

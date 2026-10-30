@@ -3,6 +3,7 @@ import { DocumentReviewPanel } from './DocumentReviewPanel';
 import { statusLabels } from '../domain';
 import { Snapshot, type SnapshotData } from '../connected-contract';
 import { WorkspaceResult } from './WorkspaceResult';
+import { ShowcaseVideo } from './ShowcaseVideo';
 export function ConnectedWorkspace() {
   const resultTarget = useRef<HTMLDivElement>(null);
   const local = ['127.0.0.1', 'localhost', '[::1]'].includes(location.hostname);
@@ -121,26 +122,7 @@ export function ConnectedWorkspace() {
           <a href="https://github.com/phlppgdfry/real-estate-automation-workbench/blob/main/docs/connected-workspace.md">
             Starten en volledige demonstratieroute ↗
           </a>
-          <figure>
-            <video
-              controls
-              preload="metadata"
-              poster={`${import.meta.env.BASE_URL}dify/screenshots/procedures.png`}
-              style={{ width: '100%', borderRadius: 12 }}
-            >
-              <source
-                src={`${import.meta.env.BASE_URL}dify/connected-local-demo.webm`}
-                type="video/webm"
-              />
-              <a href={`${import.meta.env.BASE_URL}dify/connected-local-demo.webm`}>
-                Opname downloaden
-              </a>
-            </video>
-            <figcaption>
-              Echte lokale API-demonstratie: duurzame intake, analyse, documentupload en
-              procedurezoekroute met fictieve gegevens. Geen live Dify-modelrun.
-            </figcaption>
-          </figure>
+          <ShowcaseVideo />
         </div>
       ) : (
         <>

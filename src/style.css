@@ -1875,3 +1875,63 @@ dialog.canvas-viewer:not([open]) {
   width: 100%;
   color: var(--muted);
 }
+
+.showcase-video {
+  margin: 28px 0 0;
+}
+.video-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.showcase-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  background: #102d28;
+}
+.video-chapters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+}
+.connected-workspace .video-chapters button {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 13px;
+  background: #eef5ef;
+  color: #183c31;
+  border: 1px solid #c3d8cb;
+}
+.video-chapters span {
+  font-variant-numeric: tabular-nums;
+  color: #496b5c;
+}
+.showcase-video figcaption {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.video-downloads {
+  margin: 16px 0;
+}
+.video-transcript li {
+  margin: 16px 0;
+}
+.video-transcript p {
+  margin: 4px 0;
+}
+@media (max-width: 600px) {
+  .video-chapters {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

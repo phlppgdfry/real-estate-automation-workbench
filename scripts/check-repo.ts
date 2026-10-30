@@ -1,5 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { sourceFiles } from './source-files.ts';
+import { createHash } from 'node:crypto';
 
 const files = sourceFiles();
 const localSecrets = existsSync('.env.local')
@@ -28,12 +29,24 @@ for (const file of files) {
 for (const [source, published] of [
   ['data/benchmark-report.json', 'public/dify/benchmark.json'],
   ['data/trigger-verification.json', 'public/dify/trigger-verification.json'],
+  ['data/demo-video.json', 'public/dify/demo-video.json'],
 ]) {
   if (
     JSON.stringify(JSON.parse(readFileSync(source, 'utf8'))) !==
     JSON.stringify(JSON.parse(readFileSync(published, 'utf8')))
   )
     problems.push(source + ': published evidence differs');
+}
+const demo = JSON.parse(readFileSync('data/demo-video.json', 'utf8'));
+for (const format of ['mp4', 'webm']) {
+  const file = demo.files.find((entry: { format: string }) => entry.format === format);
+  const bytes = readFileSync(`public/dify/connected-local-demo.${format}`);
+  if (
+    !file ||
+    file.bytes !== bytes.length ||
+    file.sha256 !== createHash('sha256').update(bytes).digest('hex')
+  )
+    problems.push(format + ': demo video differs from verified recording');
 }
 if (problems.length) throw Error('REPO_SCAN_FAILED\n' + problems.join('\n'));
 console.log(

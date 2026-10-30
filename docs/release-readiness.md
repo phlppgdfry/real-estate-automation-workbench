@@ -1,4 +1,4 @@
-# Releasecontrole · v3.0.1
+# Releasecontrole · v3.0.2
 
 Deze release levert een controleerbare lokale showcase en overdraagbare Dify-bronnen. Het is geen productie-uitrol en geen claim dat alle externe afhankelijkheden beschikbaar zijn. Er zijn geen nieuwe betaalde modellen, abonnementen, externe accounts of publieke dossierendpoints toegevoegd.
 
@@ -35,7 +35,7 @@ Deze voorwaarden staan niet als onafgemaakte lokale code verstopt. De lokale rel
 ```bash
 npm ci
 npm run check
-npx playwright install chromium
+npx playwright install chromium chrome
 npm run test:e2e
 npm run benchmark
 npm run verify:install
@@ -43,7 +43,7 @@ npm run verify:install
 npm run release:package
 ```
 
-Lokaal geverifieerd: **79 unit-/integratietests**, **14 browseracceptatietests**, evaluatie **24/24 + 16/16 + 12/12 NL/FR/EN**, nul bekende kwetsbaarheden volgens `npm audit` op 29 oktober 2026. De [schone installatie](../public/install-verification.json) is met de echte lokale HTTP-keten uitgevoerd. Dit zijn technische regressie-uitkomsten, geen onafhankelijke model- of bedrijfsmeting.
+Lokaal geverifieerd: **80 unit-/integratietests**, **16 browseracceptatietests**, evaluatie **24/24 + 16/16 + 12/12 NL/FR/EN**, nul bekende kwetsbaarheden volgens `npm audit` op 29 oktober 2026. De [schone installatie](../public/install-verification.json) is met de echte lokale HTTP-keten uitgevoerd. Dit zijn technische regressie-uitkomsten, geen onafhankelijke model- of bedrijfsmeting.
 
 De CI-artifact `validation-evidence` bevat actuele evaluatie-, drill-, benchmark-, installatie- en replayrapporten. Historische Cloud-bewijzen blijven gedateerd in `public/dify`. Controleer een download met `shasum -a 256 -c SHA256SUMS.txt`; `RELEASE-MANIFEST.json` in de zip vermeldt broncommit en de hash van elk bronbestand. Dezelfde commit levert hetzelfde bronpakket op.
 

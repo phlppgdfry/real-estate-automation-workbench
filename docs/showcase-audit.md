@@ -22,3 +22,9 @@ De [releasecontrole](release-readiness.md) bewaart de echte resterende verificat
 ## Bronarchief zonder Git (v3.0.1)
 
 Terugtesten van de v3.0.0-zip vond een Git-aanname in `check` en `verify:install`. De patch gebruikt het gecontroleerde bronmanifest wanneer de projectmap geen eigen Git-root heeft. De geïsoleerde installatie draait de volledige controleketen; gewijzigde bronhashes en onveilige manifestpaden worden afgewezen. Pakketten maken blijft bewust aan een schone Git-commit gebonden.
+
+## Werkelijke videokwaliteit (v3.0.2)
+
+De eerdere opname bestond en had een geldig videobestand, maar duurde slechts 1,88 seconde. Dat was onvoldoende gecontroleerd. De vervanging heeft leesbare pauzes, zeven hoofdstukken en toelichting in beeld. De publieke speler heeft een MP4-bron met vooraf beschikbare metadata, WebM-fallback en tekstversie. Nieuwe browseracceptatie speelt beide bestanden werkelijk af en controleert duur, hoofdstuksprong en het MP4-einde. De productiepagina’s worden ook op 1440 en 375 pixels nagekeken op ontbrekende bestanden, runtimefouten en horizontale overflow.
+
+De nieuwe afspeeltest vond bovendien dat de lokale statische server nog geen bytebereiken ondersteunde: hoofdstuksprongen bleven daardoor aan het begin hangen. De server levert nu videotypes, HEAD en gedeeltelijke responses; een echte HTTP-regressietest dekt gesloten, open en suffixbereiken en ongeldige verzoeken.
