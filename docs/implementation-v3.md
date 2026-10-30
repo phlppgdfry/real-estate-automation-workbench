@@ -1,6 +1,6 @@
 # Werkplan v3 · afgeronde lokale showcase en externe verificatievoorwaarden
 
-Stand: 29 oktober 2026. Het eerdere werk op `feature/connected-operations` is via PR #5 samengevoegd. De showcase-afronding staat op `feature/showcase-completion`. De actuele product- en bewijsgrenzen staan in [de releasecontrole](release-readiness.md).
+Historisch werkplan van 29 oktober 2026. De uitvoering is afgerond: `feature/connected-operations` is via PR #5 samengevoegd en `feature/showcase-completion` via PR #6. Latere fixes zijn opgenomen in de definitieve productrelease v3.0.3; de werkbranches zijn opgeruimd. De actuele productgrenzen en het afsluitbesluit staan in [de releasecontrole](release-readiness.md#definitieve-afsluitaudit).
 
 ## Uitgevoerde tienpuntenafwerking
 

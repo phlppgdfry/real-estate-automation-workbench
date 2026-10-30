@@ -2,6 +2,8 @@
 
 Een vastgoedaanvraag één keer ontvangen, het juiste pand controleren en het werk betrouwbaar aan een collega overdragen. Deze portfolio-case verbindt procesanalyse, een werkende dossierwerkplek en vijf Dify-flows met controleerbaar bewijs.
 
+**Stack:** React · TypeScript · Node.js · SQLite · Python · Dify · Playwright. [Definitieve afsluitaudit en onderhoudsbesluiten](docs/release-readiness.md#definitieve-afsluitaudit).
+
 [![Verify and publish](https://github.com/phlppgdfry/real-estate-automation-workbench/actions/workflows/verify-and-publish.yml/badge.svg)](https://github.com/phlppgdfry/real-estate-automation-workbench/actions/workflows/verify-and-publish.yml)
 
 **[Probeer de demo](https://phlppgdfry.github.io/real-estate-automation-workbench/?tour)** · **[Techniek & bewijs](https://phlppgdfry.github.io/real-estate-automation-workbench/?view=technical)** · **[Installatie](#zelf-draaien-zonder-modelbudget)** · **[English reviewer guide](docs/review-en.md)** · **[Bronpakket](https://github.com/phlppgdfry/real-estate-automation-workbench/releases/latest)**
