@@ -8,7 +8,7 @@ export function ShowcaseEvidence() {
     <section className="dify-card" aria-label="Bewijs en resterende grenzen">
       <p className="eyebrow">Controleer zelf wat er werkelijk is uitgevoerd</p>
       <h3>Van werkende demo naar aantoonbaar gedrag</h3>
-      <div className="dify-table">
+      <div className="dify-table" role="region" aria-label="Bewijsvergelijking" tabIndex={0}>
         <table>
           <thead>
             <tr>

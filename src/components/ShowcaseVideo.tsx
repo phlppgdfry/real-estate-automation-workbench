@@ -52,7 +52,7 @@ export function ShowcaseVideo() {
       {failed ? (
         <p role="alert">Afspelen lukt niet in deze browser. Download de opname hieronder.</p>
       ) : null}
-      <div className="video-chapters" aria-label="Videohoofdstukken">
+      <div className="video-chapters" role="group" aria-label="Videohoofdstukken">
         {demo.chapters.map((chapter) => (
           <button
             key={chapter.start}
