@@ -109,6 +109,8 @@ Het huidige gratis Dify-modelquotum is opgebruikt. Bestaande live resultaten bli
 
 De calculator toont scenario-aannames; evaluatievoorbeelden zijn AI-geschreven regressies, geen onafhankelijke accuracymeting. Een exact citaat bewijst herkomst, geen juiste interpretatie. [Evaluatiemethode](docs/evaluation.md) · [menselijke review](docs/evaluation-human-review.md).
 
+Voor een gesprek: [pitch van 30 seconden, businessroute van 3 minuten en technische route van 10 minuten](docs/portfolio-interview-guide.md).
+
 ## Herkomst en licentie
 
 Philippe Godfroy, met AI-assistentie, 2026. Code MIT; documentatie en fictieve data CC BY 4.0: [LICENSE](LICENSE). Afhankelijkheden behouden hun eigen licenties. Systeemfonts, geen externe fontverzoeken. De interface is HTML/CSS; screenshots en opnamen tonen de werkende toepassingen.

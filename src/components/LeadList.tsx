@@ -29,7 +29,7 @@ export function LeadList({
           onChange={(e) => setSearch(e.target.value)}
         />
       </label>
-      <div className="filters" aria-label="Filter aanvragen">
+      <div className="filters" role="group" aria-label="Filter aanvragen">
         {[
           ['all', 'Alles'],
           ['review', 'Te beoordelen'],

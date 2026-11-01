@@ -19,7 +19,7 @@ export function LeadDetail({
     <section className="panel lead-detail" aria-label="Aanvraagdetails">
       <div className="detail-heading">
         <div>
-          <h2>
+          <h2 id="selected-case-title" tabIndex={-1}>
             {lead.extraction.intent === 'visit' && listing
               ? `Bezoek aan de ${listing.title}`
               : intentLabels[lead.extraction.intent]}

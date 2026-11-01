@@ -64,6 +64,16 @@ export function App() {
     }
   }, [session]);
   const lead = session.leads.find((x) => x.id === selected) ?? session.leads[0];
+  function selectLead(id: string) {
+    setSelected(id);
+    if (window.matchMedia('(max-width: 620px)').matches) {
+      requestAnimationFrame(() => {
+        const title = document.getElementById('selected-case-title');
+        title?.focus({ preventScroll: true });
+        title?.scrollIntoView({ block: 'start', behavior: 'auto' });
+      });
+    }
+  }
   function change(fn: (l: Lead) => Lead, notice?: string) {
     try {
       const changed = fn(lead);
@@ -82,7 +92,7 @@ export function App() {
     try {
       const l = createLead(input, session.listings, new Date().toISOString());
       setSession((s) => ({ ...s, leads: [l, ...s.leads] }));
-      setSelected(l.id);
+      selectLead(l.id);
       setView('leads');
       setForm(false);
       setNotice(
@@ -152,7 +162,10 @@ export function App() {
         <header className="page-header">
           <div>
             <h1>Elke aanvraag, goed opgevolgd.</h1>
-            <p>Van eerste contact naar een gecontroleerde volgende stap.</p>
+            <p>Vastgoedaanvragen controleren, menselijk goedkeuren en betrouwbaar overdragen.</p>
+            <p className="portfolio-context">
+              Portfolio van Philippe Godfroy · fictieve data · ontwikkeld met AI-assistentie.
+            </p>
           </div>
           <div className="header-actions">
             <button onClick={() => setTour(true)}>Rondleiding</button>
@@ -161,7 +174,7 @@ export function App() {
             </button>
           </div>
         </header>
-        <div className="metrics" aria-label="Procesindicatoren">
+        <div className="metrics" role="group" aria-label="Procesindicatoren">
           {[
             [session.leads.length, 'Aanvragen'],
             [session.leads.filter((x) => x.status === 'review').length, 'Te beoordelen'],
@@ -195,7 +208,7 @@ export function App() {
               ))}
             </ol>
             <div className="workbench">
-              <LeadList leads={session.leads} selected={selected} onSelect={setSelected} />
+              <LeadList leads={session.leads} selected={selected} onSelect={selectLead} />
               <LeadDetail
                 key={lead.id}
                 lead={lead}
@@ -265,7 +278,8 @@ export function App() {
           <Technical />
         )}
         <footer>
-          Onafhankelijke portfolio-case. Geen echte klanten, CRM-koppeling of verzending.{' '}
+          Zelfgestuurde portfolio-case, ontwikkeld met AI-assistentie. Fictieve data, geen
+          productie-CRM of verzending.{' '}
           <a href="https://github.com/phlppgdfry/real-estate-automation-workbench">
             Broncode & onderbouwing ↗
           </a>
