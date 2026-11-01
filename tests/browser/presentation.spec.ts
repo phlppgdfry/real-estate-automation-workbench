@@ -38,9 +38,12 @@ test('desktop selection stays in the list and mobile evidence table is keyboard-
   await expect(page.getByRole('group', { name: 'Procesindicatoren', exact: true })).toBeVisible();
   await expect(page.getByRole('group', { name: 'Filter aanvragen', exact: true })).toBeVisible();
   await expect(page.locator('.page-header')).toContainText('ontwikkeld met AI-assistentie');
-  await page.setViewportSize({ width: 375, height: 812 });
+  // At 375px Arial can fit the table completely, unlike the macOS system font.
+  // Use the 320px reflow viewport and require real overflow before testing a scroll key.
+  await page.setViewportSize({ width: 320, height: 812 });
   await page.goto('./?view=technical');
   const table = page.getByRole('region', { name: 'Bewijsvergelijking', exact: true });
+  expect(await table.evaluate((e) => e.scrollWidth - e.clientWidth)).toBeGreaterThan(0);
   // Reach the scroll region using real Tab navigation, not programmatic focus.
   for (let i = 0; i < 35 && !(await table.evaluate((e) => e === document.activeElement)); i++)
     await page.keyboard.press('Tab');
